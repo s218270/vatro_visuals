@@ -19,3 +19,27 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Infinite scrolling animation */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.whitespace-nowrap {
+  white-space: nowrap;
+  font-size: 3rem;
+  font-weight: bold;
+  color: white;
+  width: 200%; /* Extend width to ensure continuous animation */
+}
+
+.relative .absolute {
+  position: absolute;
+  display: flex;
+  align-items: center;
+}
