@@ -43,3 +43,914 @@ body {
   display: flex;
   align-items: center;
 }
+
+/* src/fonts.css */
+@font-face {
+  font-family: "Akira";
+  src: url("/fonts/Akira Expanded Demo.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* Ensures text is visible while the font loads */
+}
+
+.text-font {
+  font-family: "Akira", sans-serif;
+  font-weight: normal; /* or bold, if you have multiple weights */
+}
+
+.carousel-container {
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+  border-color: #4b5563;
+  width: 100%;
+}
+
+.carousel-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  &:hover {
+    transform: scale(0.9);
+    box-shadow: 5px 5px 8px rgba(222, 222, 222, 0.362),
+      10px 10px 8px rgba(152, 133, 133, 0.392),
+      15px 15px 8px rgba(139, 154, 139, 0.303);
+  }
+  border-radius: 20%;
+  background: rgb(41, 40, 40);
+}
+
+.carousel-card > img {
+  height: 80%;
+  width: 80%;
+  border-radius: 10%;
+}
+
+.carousel-track {
+  display: flex;
+  position: absolute;
+  left: 0;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  gap: 16px;
+  width: 200%;
+  height: 100%;
+  animation: slide 20s linear infinite;
+  &:hover {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes slide {
+  0% {
+    left: 0;
+  }
+  100% {
+    left: -100%;
+  }
+}
+
+.animate-border {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-border::before,
+.animate-border::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 2px solid transparent;
+  animation-duration: 1.5s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation-fill-mode: forwards;
+}
+
+.animate-border::before {
+  top: 0;
+  left: 0;
+  border-top: 2px solid white;
+  border-left: 2px solid white;
+  animation-name: border-top-left;
+}
+
+.animate-border::after {
+  bottom: 0;
+  right: 0;
+  border-bottom: 2px solid white;
+  border-right: 2px solid white;
+  animation-name: border-bottom-right;
+}
+
+@keyframes border-top-left {
+  0% {
+    transform: scaleX(0) scaleY(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes border-bottom-right {
+  0% {
+    transform: scaleX(0) scaleY(0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 1;
+  }
+}
+
+.border-animation {
+  position: relative;
+  overflow: hidden;
+}
+
+.border-animation::before,
+.border-animation::after {
+  content: "";
+  position: absolute;
+  background: transparent;
+  transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.border-animation::before {
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-top: 4px solid white;
+  border-left: 4px solid white;
+}
+
+.border-animation::after {
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-bottom: 4px solid white;
+  border-right: 4px solid white;
+}
+
+.border-animation.animate-in::before {
+  width: 100%;
+  height: 100%;
+  transition-delay: 0s;
+}
+
+.border-animation.animate-in::after {
+  width: 100%;
+  height: 100%;
+  transition-delay: 0.3s;
+}
+
+.border-animation.animate-out::before {
+  width: 0;
+  height: 0;
+  transition-delay: 0.3s;
+}
+
+.border-animation.animate-out::after {
+  width: 0;
+  height: 0;
+  transition-delay: 0s;
+}
+
+@keyframes border-draw {
+  0% {
+    clip-path: polygon(50% 0%, 50% 0%, 50% 0%, 50% 0%);
+  }
+  25% {
+    clip-path: polygon(50% 0%, 100% 0%, 100% 50%, 50% 50%);
+  }
+  50% {
+    clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
+  }
+  75% {
+    clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
+  100% {
+    clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%);
+  }
+}
+/*   
+  .animate-border-draw {
+    animation: border-draw 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  .clip-path-circle-0 {
+    clip-path: circle(0% at 50% 0%);
+  }
+  .clip-path-circle-100 {
+    clip-path: circle(150% at 50% 0%);
+  } */
+
+.custom-border-animation {
+  position: relative;
+  overflow: hidden;
+  padding: 0.5rem 1.5rem; /* padding to prevent text clipping */
+  z-index: 0;
+}
+
+/* BIAŁA FAZA */
+.custom-border-animation::before,
+.custom-border-animation::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  z-index: 1;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-border-animation::before {
+  top: 0;
+  left: 0;
+  border-top: 2px solid white;
+  border-left: 2px solid white;
+}
+
+.custom-border-animation::after {
+  bottom: 0;
+  right: 0;
+  border-bottom: 2px solid white;
+  border-right: 2px solid white;
+  transition-delay: 0.2s;
+}
+
+/* FIOLETOWA FAZA */
+.custom-border-animation span::before,
+.custom-border-animation span::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  z-index: 2;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-border-animation span::before {
+  top: 0;
+  left: 0;
+  border-top: 2px solid #6a00d1;
+  border-left: 2px solid #6a00d1;
+  transition-delay: 0.9s;
+}
+
+.custom-border-animation span::after {
+  bottom: 0;
+  right: 0;
+  border-bottom: 2px solid #6a00d1;
+  border-right: 2px solid #6a00d1;
+  transition-delay: 1.1s;
+}
+
+/* HOVER: animacja */
+.custom-border-animation:hover::before,
+.custom-border-animation:hover::after,
+.custom-border-animation:hover span::before,
+.custom-border-animation:hover span::after {
+  width: 100%;
+  height: 100%;
+}
+
+.button-border-wrapper {
+  padding: 0 15px;
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box; /* Ensure padding and border are included in size */
+}
+
+.button-border-content {
+  border-radius: 3px;
+  position: relative;
+  z-index: 10;
+  background: transparent;
+  color: white;
+  transition: transform 0.2s ease, color 0.3s ease;
+  white-space: normal;
+  font-weight: 500;
+  font-size: 0.9rem;
+  min-width: unset;
+  min-height: 2.5rem;
+  box-sizing: border-box;
+  margin: 0;
+  display: block;
+  width: 100%;
+  /* height: 100%; removed to allow vertical growth */
+  max-width: 100%;
+  word-break: break-word;
+  /* Let height be determined by content */
+}
+
+/* Autouzupełnianie (chrome, safari) */
+section#section5 input.button-border-content:-webkit-autofill,
+section#section5 input.button-border-content:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #18181b inset !important;
+  box-shadow: 0 0 0 1000px #18181b inset !important;
+  -webkit-text-fill-color: #fff !important;
+  color: #fff !important;
+  caret-color: #fff !important;
+}
+/* Lista podpowiedzi (datalist) */
+section#section5
+  input.button-border-content::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+section#section5 input.button-border-content:-internal-autofill-selected {
+  background-color: #18181b !important;
+  color: #fff !important;
+}
+
+/* Firefox autocomplete dropdown */
+section#section5 input.button-border-content:-moz-autofill,
+section#section5 input.button-border-content:-moz-autofill:focus {
+  box-shadow: 0 0 0 1000px #18181b inset !important;
+  color: #fff !important;
+}
+
+/* Ogólne style dla borderów */
+/* .border-line {
+  border-radius: 3px;
+
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  box-sizing: border-box;
+  border-style: solid;
+  border-color: transparent;
+  transition-property: width, height, border-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 0.6s, 0.6s, 0.3s;
+  z-index: 5;
+} */
+
+/* Białe krawędzie */
+.border-white-1 {
+  top: 0;
+  left: 0;
+  border-top: 2px solid transparent;
+  border-left: 2px solid transparent;
+  transition-delay: 0s, 0s, 0s;
+  z-index: 6;
+}
+
+.border-white-2 {
+  bottom: 0;
+  right: 0;
+  border-bottom: 2px solid transparent;
+  border-right: 2px solid transparent;
+  transition-delay: 0.15s, 0.15s, 0.15s;
+  z-index: 6;
+}
+
+/* Fioletowe krawędzie */
+.border-purple-1 {
+  top: 0;
+  left: 0;
+  border-top: 2px solid transparent;
+  border-left: 2px solid transparent;
+  transition-delay: 0.6s, 0.6s, 0.6s;
+  z-index: 7;
+}
+
+.border-purple-2 {
+  bottom: 0;
+  right: 0;
+  border-bottom: 2px solid transparent;
+  border-right: 2px solid transparent;
+  transition-delay: 0.75s, 0.75s, 0.75s;
+  z-index: 7;
+}
+
+/* Hover: animacja rozrostu i pokazywania borderów */
+.button-border-wrapper:hover .border-white-1,
+.button-border-wrapper:hover .border-white-2 {
+  width: 100%;
+  height: 100%;
+  border-color: white;
+}
+
+.button-border-wrapper:hover .border-purple-1,
+.button-border-wrapper:hover .border-purple-2 {
+  width: 100%;
+  height: 100%;
+  border-color: #6a00d1;
+}
+
+/* Normalny stan - wszystko ukryte */
+.button-border-wrapper .border-white-1,
+.button-border-wrapper .border-white-2,
+.button-border-wrapper .border-purple-1,
+.button-border-wrapper .border-purple-2 {
+  width: 0;
+  height: 0;
+  border-color: transparent;
+}
+
+/* Animacja zanikania */
+/* Fioletowy znika pierwszy */
+.button-border-wrapper:not(:hover) .border-purple-1,
+.button-border-wrapper:not(:hover) .border-purple-2 {
+  transition-delay: 0s !important;
+  border-color: transparent !important;
+  width: 0 !important;
+  height: 0 !important;
+  transition-duration: 0.3s !important;
+  transition-timing-function: ease-out !important;
+}
+
+/* Biały znika po fioletowym */
+.button-border-wrapper:not(:hover) .border-white-1,
+.button-border-wrapper:not(:hover) .border-white-2 {
+  transition-delay: 0.3s !important;
+  border-color: transparent !important;
+  width: 0 !important;
+  height: 0 !important;
+  transition-duration: 0.3s !important;
+  transition-timing-function: ease-out !important;
+}
+
+/* .glitch-text {
+  position: relative;
+  color: white;
+  font-weight: 500;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  background: transparent;
+  overflow: visible;
+  transition: color 0.3s ease;
+}
+
+.glitch-text:hover {
+  color: transparent;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: white;
+  background: transparent;
+  white-space: nowrap;
+  font-weight: 500;
+  font-size: 0.9rem;
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease;
+}
+
+.glitch-text:hover::before,
+.glitch-text:hover::after {
+  opacity: 1;
+  animation-duration: 0.8s;
+  animation-timing-function: linear;
+  animation-iteration-count: 1; 
+}
+
+.glitch-text:hover::before {
+  left: 0;
+  text-shadow: -2px 0 red;
+  animation-name: glitch-anim-left;
+}
+
+.glitch-text:hover::after {
+  left: 0;
+  text-shadow: -2px 0 cyan;
+  animation-name: glitch-anim-right;
+}
+
+@keyframes glitch-anim-left {
+  0% {
+    clip: rect(0, 9999px, 0, 0);
+    transform: translate(0);
+    opacity: 0;
+  }
+  20% {
+    clip: rect(10px, 9999px, 50px, 0);
+    transform: translate(-2px, -2px);
+    opacity: 1;
+  }
+  60% {
+    clip: rect(10px, 9999px, 40px, 0);
+    transform: translate(-3px, 2px);
+    opacity: 1;
+  }
+  100% {
+    clip: rect(0, 9999px, 0, 0);
+    transform: translate(0);
+    opacity: 0;
+  }
+}
+
+@keyframes glitch-anim-right {
+  0% {
+    clip: rect(0, 9999px, 0, 0);
+    transform: translate(0);
+    opacity: 0;
+  }
+  20% {
+    clip: rect(20px, 9999px, 60px, 0);
+    transform: translate(2px, 2px);
+    opacity: 1;
+  }
+  60% {
+    clip: rect(5px, 9999px, 35px, 0);
+    transform: translate(3px, -2px);
+    opacity: 1;
+  }
+  100% {
+    clip: rect(0, 9999px, 0, 0);
+    transform: translate(0);
+    opacity: 0;
+  }
+} */
+
+/* Normalny biały tekst */
+/* Normal white text */
+/* White text fades out on hover */
+.glitch-text-white {
+  color: white;
+  opacity: 1;
+  transition: opacity 0.1s;
+  position: relative;
+  z-index: 10;
+}
+
+/* Purple text on top, initially hidden */
+.glitch-text-purple {
+  color: #6a00d1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 0.3s ease;
+  z-index: 15;
+}
+
+/* .glitch-text-purple:hover {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+} */
+
+/* On hover: fade white out, purple in */
+.button-border-wrapper:hover .glitch-text-white {
+  opacity: 0;
+  transition-delay: 0.6s !important;
+  transition: opacity 1.8s ease;
+}
+
+.button-border-wrapper:hover .glitch-text-purple {
+  opacity: 1;
+  transition-delay: 0.6s !important;
+  transition: opacity 1.8s ease;
+  /* animation: none !important; */
+}
+
+/* On mouse leave: glitch purple out */
+.button-border-wrapper:not(:hover) .glitch-text-purple.glitch-out {
+  animation: glitch-purple 1s linear forwards;
+}
+
+/* After glitch ends, hide purple again */
+.glitch-text-purple.glitch-done {
+  opacity: 0;
+  animation: none;
+}
+
+/* Glitch animation */
+@keyframes glitch-purple {
+  0% {
+    clip: rect(0, 9999px, 0, 0);
+    transform: translate(0);
+    opacity: 1;
+  }
+  20% {
+    clip: rect(20px, 9999px, 60px, 0);
+    transform: translate(2px, 2px);
+  }
+  60% {
+    clip: rect(5px, 9999px, 35px, 0);
+    transform: translate(3px, -2px);
+  }
+  100% {
+    clip: rect(0, 9999px, 0, 0);
+    transform: translate(0);
+    opacity: 0;
+  }
+}
+
+.glassmorphism {
+  backdrop-filter: blur(30px);
+  box-shadow: 0px 0px 30px rgba(227, 228, 237, 0.37);
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  background: rgba(
+    10,
+    10,
+    20,
+    0.65
+  ); /* Slightly less visible dark background */
+}
+
+/* Hamburger menu icon styles */
+.hamburger {
+  display: inline-block;
+  width: 24px; /* smaller */
+  height: 24px; /* smaller */
+  position: relative;
+  cursor: pointer;
+  z-index: 100;
+  transition: 0.3s;
+}
+.hamburger-bar {
+  display: block;
+  position: absolute;
+  height: 2px; /* thinner */
+  width: 100%;
+  background: white;
+  border-radius: 1px;
+  opacity: 1;
+  left: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hamburger-bar.top {
+  top: 4px;
+}
+.hamburger-bar.middle {
+  top: 11px;
+}
+.hamburger-bar.bottom {
+  top: 18px;
+}
+.hamburger.open .hamburger-bar.top {
+  transform: translateY(7px) rotate(45deg);
+}
+.hamburger.open .hamburger-bar.middle {
+  opacity: 0;
+}
+.hamburger.open .hamburger-bar.bottom {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Trigger border growth when .animate-in is applied (like hover) */
+/* .button-border-wrapper.animate-in .border-white-1,
+.button-border-wrapper.animate-in .border-white-2 {
+  width: 100%;
+  height: 100%;
+  border-color: white;
+}
+
+.button-border-wrapper.animate-in .border-purple-1,
+.button-border-wrapper.animate-in .border-purple-2 {
+  width: 100%;
+  height: 100%;
+  border-color: #6a00d1;
+} */
+
+/* === Enable scroll-based activation (like hover) === */
+.button-border-wrapper.animate-in .border-white-1,
+.button-border-wrapper.animate-in .border-white-2 {
+  width: 100%;
+  height: 100%;
+  border-color: white;
+}
+
+.button-border-wrapper.animate-in .border-purple-1,
+.button-border-wrapper.animate-in .border-purple-2 {
+  width: 100%;
+  height: 100%;
+  border-color: #6a00d1;
+}
+
+/* Animate out when leaving viewport */
+.button-border-wrapper.animate-out .border-purple-1,
+.button-border-wrapper.animate-out .border-purple-2 {
+  transition-delay: 0s !important;
+  border-color: transparent !important;
+  width: 0 !important;
+  height: 0 !important;
+  transition-duration: 0.3s !important;
+  transition-timing-function: ease-out !important;
+}
+
+.button-border-wrapper.animate-out .border-white-1,
+.button-border-wrapper.animate-out .border-white-2 {
+  transition-delay: 0.3s !important;
+  border-color: transparent !important;
+  width: 0 !important;
+  height: 0 !important;
+  transition-duration: 0.3s !important;
+  transition-timing-function: ease-out !important;
+}
+
+.scroll-animate.animate-in .border-white-1,
+.scroll-animate.animate-in .border-white-2 {
+  width: 100%;
+  height: 100%;
+  border-color: white;
+}
+
+.scroll-animate.animate-in .border-purple-1,
+.scroll-animate.animate-in .border-purple-2 {
+  width: 100%;
+  height: 100%;
+  border-color: #6a00d1;
+}
+
+.scroll-animate.animate-out .border-purple-1,
+.scroll-animate.animate-out .border-purple-2 {
+  transition-delay: 0s !important;
+  width: 0 !important;
+  height: 0 !important;
+  border-color: transparent !important;
+  transition-duration: 0.3s !important;
+  transition-timing-function: ease-out !important;
+}
+
+.scroll-animate.animate-out .border-white-1,
+.scroll-animate.animate-out .border-white-2 {
+  transition-delay: 0.3s !important;
+  width: 0 !important;
+  height: 0 !important;
+  border-color: transparent !important;
+  transition-duration: 0.3s !important;
+  transition-timing-function: ease-out !important;
+}
+
+/* Kiedy element jest widoczny w viewportcie */
+.button-border-wrapper.border-visible .border-white-1,
+.button-border-wrapper.border-visible .border-white-2 {
+  width: 100%;
+  height: 100%;
+  border-color: white;
+}
+
+.button-border-wrapper.border-visible .border-purple-1,
+.button-border-wrapper.border-visible .border-purple-2 {
+  width: 100%;
+  height: 100%;
+  border-color: #6a00d1;
+}
+
+/* Można opcjonalnie usunąć lub zostawić hover jeśli chcesz też hover dodatkowo */
+/* .button-border-wrapper:hover { ... } */
+
+/* Scroll-triggered animacja jak hover – aktywowana przez klasę */
+.button-border-wrapper.border-animated .border-white-1,
+.button-border-wrapper.border-animated .border-white-2 {
+  width: 100%;
+  height: 100%;
+  border-color: white;
+  transition-delay: 0s, 0s, 0s;
+}
+
+.button-border-wrapper.border-animated .border-purple-1,
+.button-border-wrapper.border-animated .border-purple-2 {
+  width: 100%;
+  height: 100%;
+  border-color: #6a00d1;
+  transition-delay: 0.6s, 0.6s, 0.6s;
+}
+
+.button-border-scroll {
+  position: relative;
+  display: inline-block;
+  vertical-align: top; /* żeby lepiej układały się obok siebie */
+}
+
+/* .button-border-content {
+  margin: 0;
+  padding: 2px;
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+} */
+
+/* Linie borderów */
+.border-line {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  box-sizing: border-box;
+  border-style: solid;
+  border-color: transparent;
+  border-radius: 4px;
+  transition-property: width, height, border-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 0.6s, 0.6s, 0.3s;
+  z-index: 5;
+}
+
+/* Pozycjonowanie linii */
+
+/* Białe linie - góra-lewo i dół-prawo */
+/* .border-white-1 {
+  top: 0;
+  left: 0;
+  border-top: 2px solid transparent;
+  border-left: 2px solid transparent;
+  transition-delay: 0s, 0s, 0s;
+  z-index: 6;
+} */
+/* .border-white-2 {
+  bottom: 0;
+  right: 0;
+  border-bottom: 2px solid transparent;
+  border-right: 2px solid transparent;
+  transition-delay: 0.15s, 0.15s, 0.15s;
+  z-index: 6;
+} */
+
+/* Fioletowe linie - góra-lewo i dół-prawo */
+/* .border-purple-1 {
+  top: 0;
+  left: 0;
+  border-top: 2px solid transparent;
+  border-left: 2px solid transparent;
+  transition-delay: 0.6s, 0.6s, 0.6s;
+  z-index: 7;
+} */
+/* .border-purple-2 {
+  bottom: 0;
+  right: 0;
+  border-bottom: 2px solid transparent;
+  border-right: 2px solid transparent;
+  transition-delay: 0.75s, 0.75s, 0.75s;
+  z-index: 7;
+} */
+
+/* Stan aktywny - pokazanie borderów */
+.button-border-scroll.active .border-white-1,
+.button-border-scroll.active .border-white-2 {
+  width: 100%;
+  height: 100%;
+  border-color: white;
+}
+.button-border-scroll.active .border-purple-1,
+.button-border-scroll.active .border-purple-2 {
+  width: 100%;
+  height: 100%;
+  border-color: #6a00d1;
+}
+
+/* Stan nieaktywny - schowanie borderów */
+.button-border-scroll:not(.active) .border-purple-1,
+.button-border-scroll:not(.active) .border-purple-2 {
+  transition-delay: 0s !important;
+  border-color: transparent !important;
+  width: 0 !important;
+  height: 0 !important;
+  transition-duration: 0.3s !important;
+  transition-timing-function: ease-out !important;
+}
+
+.button-border-scroll:not(.active) .border-white-1,
+.button-border-scroll:not(.active) .border-white-2 {
+  transition-delay: 0.3s !important;
+  border-color: transparent !important;
+  width: 0 !important;
+  height: 0 !important;
+  transition-duration: 0.3s !important;
+  transition-timing-function: ease-out !important;
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.appear {
+  opacity: 1 !important;
+  animation: appear 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
