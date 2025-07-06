@@ -7,7 +7,7 @@ import Section2 from "../components/section2";
 import Section3 from "../components/section3";
 import Section4 from "../components/section4";
 import Section5 from "../components/section5";
-import LogoAnimation from "@/components/LogoAnimation";
+// import LogoAnimation from "@/components/LogoAnimation";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { getProjects } from "../lib/getProjects";
@@ -15,6 +15,7 @@ import { getProjects } from "../lib/getProjects";
 export default function Home() {
   const [speed, setSpeed] = useState(20);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const searchParams =
     typeof window !== "undefined"
       ? new URLSearchParams(window.location.search)
@@ -111,6 +112,20 @@ export default function Home() {
     }
   }, []);
 
+  // Helper: check if mobile
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const checkMobile = () => {
+        setIsMobile(
+          window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent)
+        );
+      };
+      checkMobile();
+      window.addEventListener("resize", checkMobile);
+      return () => window.removeEventListener("resize", checkMobile);
+    }
+  }, []);
+
   return (
     <div>
       <nav
@@ -118,7 +133,15 @@ export default function Home() {
         style={{ border: "none" }}
       >
         {/* Video background */}
-        {/* <button onClick={() => scrollToSection("section1")}>HOME</button> */}
+        {/* <video
+          autoPlay
+          loop
+          muted
+          className="w-24 h-full object-cover left-auto right-auto cursor-pointer bg-transparent"
+          onClick={() => scrollToSection("section1")}
+        >
+          <source src="/Logo_WWW_2.webm" type="video/webm" />
+        </video> */}
         <div className="h-full px-2 hidden md:flex items-center justify-center">
           <div className="button-border-wrapper">
             <button
@@ -210,15 +233,8 @@ export default function Home() {
             O MNIE
           </button>
         </div> */}
-        <video
-          autoPlay
-          loop
-          muted
-          className="w-24 h-full object-cover left-auto right-auto cursor-pointer bg-transparent"
-          onClick={() => scrollToSection("section1")}
-        >
-          <source src="/Logo_WWW_2.webm" type="video/webm" />
-        </video>
+        {/* Render LogoAnimation only on desktop */}
+        {/* {!isMobile && <LogoAnimation scrollToSection={scrollToSection} />} */}
         <div className="h-full px-2 hidden md:flex items-center justify-center">
           <div className="button-border-wrapper">
             <button
@@ -479,7 +495,8 @@ export default function Home() {
         )}
       </nav>
       {/* <Section1 scrollToSection={scrollToSection} /> */}
-      <LogoAnimation scrollToSection={scrollToSection} />
+      {/* LogoAnimation wyłączone na wszystkich urządzenia */}
+      {/* <LogoAnimation scrollToSection={scrollToSection} /> */}
       {/* <Section2 scrollToSection={scrollToSection} /> */}
       <Section3 speed={speed} scrollToSection={scrollToSection} />
       <Section4 scrollToSection={scrollToSection} />
