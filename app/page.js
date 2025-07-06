@@ -7,7 +7,7 @@ import Section2 from "../components/section2";
 import Section3 from "../components/section3";
 import Section4 from "../components/section4";
 import Section5 from "../components/section5";
-// import LogoAnimation from "@/components/LogoAnimation";
+import LogoAnimation from "@/components/LogoAnimation";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { getProjects } from "../lib/getProjects";
@@ -495,8 +495,8 @@ export default function Home() {
         )}
       </nav>
       {/* <Section1 scrollToSection={scrollToSection} /> */}
-      {/* LogoAnimation wyłączone na wszystkich urządzenia */}
-      {/* <LogoAnimation scrollToSection={scrollToSection} /> */}
+      {/* Przywrócono LogoAnimation */}
+      <LogoAnimation scrollToSection={scrollToSection} />
       {/* <Section2 scrollToSection={scrollToSection} /> */}
       <Section3 speed={speed} scrollToSection={scrollToSection} />
       <Section4 scrollToSection={scrollToSection} />
