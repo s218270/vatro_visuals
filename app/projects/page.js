@@ -9,7 +9,7 @@ export default async function ProjectsPage() {
       {/* Przycisk cofania pod navbarem */}
       <div className="fixed top-24 left-4 z-40">
         <div className="button-border-wrapper">
-          <a
+          <Link
             href="/"
             className="button-border-content bg-black p-4 rounded-full"
             style={{
@@ -67,7 +67,7 @@ export default async function ProjectsPage() {
                 />
               </svg>
             </span>
-          </a>
+          </Link>
           <div className="border-line border-white-1"></div>
           <div className="border-line border-white-2"></div>
           {/* White Glow */}
@@ -87,7 +87,7 @@ export default async function ProjectsPage() {
       <h1 className="text-4xl font-bold mb-8 text-center">All Projects</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
         {projects.map((project) => (
-          <a
+          <Link
             key={project.id}
             href={`/projects/${project.id}`}
             className="group relative block overflow-hidden rounded-lg transition-transform hover:scale-105"
@@ -107,7 +107,7 @@ export default async function ProjectsPage() {
               <h2 className="text-xl font-bold mb-2">{project.title}</h2>
               <p className="text-gray-300">{project.shortDescription}</p>
             </div>
-          </a>
+          </Link>
         ))}
       </div>
     </div>
