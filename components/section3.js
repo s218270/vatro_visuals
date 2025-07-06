@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import ToolsList from "./ToolsList";
 import AnimatedText from "./AnimatedText";
 
@@ -125,35 +125,53 @@ function InfiniteScrollText({
           transform: `translateX(${offset}px)`,
         }}
       >
-        <span
-          ref={textRef}
-          style={{
-            color: hollow ? "transparent" : "#fff",
-            WebkitTextStroke: hollow ? "2px #fff" : undefined,
-            textStroke: hollow ? "2px #fff" : undefined,
-            fontWeight: hollow ? 900 : 500,
-            opacity: 0.5,
-            filter: "blur(0.5px)",
-            fontSize: style?.fontSize,
-            fontFamily: style?.fontFamily,
-          }}
-        >
-          {text.repeat(150)}
-        </span>
-        <span
-          style={{
-            color: hollow ? "transparent" : "#fff",
-            WebkitTextStroke: hollow ? "2px #fff" : undefined,
-            textStroke: hollow ? "2px #fff" : undefined,
-            fontWeight: hollow ? 900 : 500,
-            opacity: 0.5,
-            filter: "blur(0.5px)",
-            fontSize: style?.fontSize,
-            fontFamily: style?.fontFamily,
-          }}
-        >
-          {text.repeat(150)}
-        </span>
+        {hollow ? (
+          <span
+            ref={textRef}
+            style={{
+              color: "transparent",
+              WebkitTextStroke: "14px #fff",
+              textStroke: "8px #fff",
+              fontWeight: 900,
+              opacity: 0.5,
+              fontSize: style?.fontSize,
+              fontFamily: style?.fontFamily,
+              lineHeight: 1,
+              // Alternatywnie, jeśli chcesz efekt shadow zamiast stroke, odkomentuj poniżej:
+              // textShadow: `0 0 2px #fff, 0 0 4px #fff, 0 0 8px #fff, 0 0 12px #fff, 0 0 16px #fff, 0 0 20px #fff, 0 0 24px #fff, 0 0 28px #fff`,
+            }}
+          >
+            {text.repeat(150)}
+          </span>
+        ) : (
+          <>
+            <span
+              ref={textRef}
+              style={{
+                color: "#fff",
+                fontWeight: 500,
+                opacity: 0.5,
+                filter: "blur(0.5px)",
+                fontSize: style?.fontSize,
+                fontFamily: style?.fontFamily,
+              }}
+            >
+              {text.repeat(150)}
+            </span>
+            <span
+              style={{
+                color: "#fff",
+                fontWeight: 500,
+                opacity: 0.5,
+                filter: "blur(0.5px)",
+                fontSize: style?.fontSize,
+                fontFamily: style?.fontFamily,
+              }}
+            >
+              {text.repeat(150)}
+            </span>
+          </>
+        )}
       </div>
     </div>
   );
@@ -168,6 +186,44 @@ export default function Section3({ speed, scrollToSection }) {
   const inViewImage = useInView(imageRef, 120);
   const inViewOmnie = useInView(omnieRef, 120);
   const inViewTools = useInView(toolsRef, 120);
+
+  // --- RESET ANIMACJI BORDERÓW/Glow przy szybkim wejściu/wyjściu z widoku ---
+  useEffect(() => {
+    const el = imageRef.current;
+    if (!el) return;
+    if (inViewImage) {
+      el.classList.remove("active");
+      requestAnimationFrame(() => {
+        el.classList.add("active");
+      });
+    } else {
+      el.classList.remove("active");
+    }
+  }, [inViewImage]);
+  useEffect(() => {
+    const el = omnieRef.current;
+    if (!el) return;
+    if (inViewOmnie) {
+      el.classList.remove("active");
+      requestAnimationFrame(() => {
+        el.classList.add("active");
+      });
+    } else {
+      el.classList.remove("active");
+    }
+  }, [inViewOmnie]);
+  useEffect(() => {
+    const el = toolsRef.current;
+    if (!el) return;
+    if (inViewTools) {
+      el.classList.remove("active");
+      requestAnimationFrame(() => {
+        el.classList.add("active");
+      });
+    } else {
+      el.classList.remove("active");
+    }
+  }, [inViewTools]);
 
   // Scroll speed-up logic
   const [isScrolling, setIsScrolling] = useState(false);
@@ -193,6 +249,32 @@ export default function Section3({ speed, scrollToSection }) {
       className="min-h-[1000px] w-full bg-black flex flex-col items-center justify-center relative overflow-hidden h-auto lg:h-screen"
       ref={containerRef}
     >
+      {/* Gradient overlay at the top */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "30vh",
+          zIndex: 10,
+          pointerEvents: "none",
+          background: "linear-gradient(to bottom, #000 0%, transparent 100%)",
+        }}
+      />
+      {/* Gradient overlay at the bottom */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          width: "100vw",
+          height: "30vh",
+          zIndex: 10,
+          pointerEvents: "none",
+          background: "linear-gradient(to top, #000 0%, transparent 100%)",
+        }}
+      />
       {/* Animated background text lines */}
       {/* VATRO line: scrolls right, 5% from top, starts at left: 0 */}
       <InfiniteScrollText
@@ -200,14 +282,15 @@ export default function Section3({ speed, scrollToSection }) {
         className="vatro-bg-text vatroline"
         direction="right"
         style={{
-          fontSize: "clamp(7rem, 18vw, 18rem)",
+          fontSize: "60vh", // 60% wysokości sekcji
           fontWeight: 500,
           color: "#fff",
-          top: "5%",
+          top: "-15vh", // wychodzi ponad sekcję
           left: 0,
           position: "absolute",
           opacity: 0.5,
           zIndex: 0,
+          lineHeight: 1,
         }}
         isScrolling={isScrolling}
       />
@@ -218,16 +301,17 @@ export default function Section3({ speed, scrollToSection }) {
         direction="left"
         hollow={true}
         style={{
-          fontSize: "clamp(7rem, 18vw, 18rem)",
+          fontSize: "60vh", // 60% wysokości sekcji
           fontWeight: 900,
           color: "transparent",
-          WebkitTextStroke: "2px #fff",
+          WebkitTextStroke: "2px #fff", // cienki outline
           textStroke: "2px #fff",
-          bottom: "5%",
+          bottom: "-15vh", // wychodzi pod sekcję
           right: 0,
           position: "absolute",
           opacity: 0.5,
           zIndex: 0,
+          lineHeight: 1,
         }}
         isScrolling={isScrolling}
       />
@@ -245,8 +329,8 @@ export default function Section3({ speed, scrollToSection }) {
         {/* Image: col 1, row 1-2 on lg, row 1 on mobile */}
         <div
           ref={imageRef}
-          className={`button-border-scroll p-[2px] portrait-lg glassmorphism w-full h-full max-w-full max-h-full sm:max-h-[450px] md:max-h-[400px] lg:row-span-2 lg:col-span-1 lg:w-full lg:h-full lg:max-w-full lg:max-h-full ${
-            inViewImage ? "active" : ""
+          className={`button-border-scroll border-3x-slow p-[2px] portrait-lg glassmorphism w-full h-full max-w-full max-h-full sm:max-h-[450px] md:max-h-[400px] lg:row-span-2 lg:col-span-1 lg:w-full lg:h-full lg:max-w-full lg:max-h-full${
+            inViewImage ? " active" : ""
           }`}
           style={{
             position: "relative",
@@ -272,26 +356,74 @@ export default function Section3({ speed, scrollToSection }) {
             className="button-border-content w-full h-full object-cover"
             style={{
               objectFit: "cover",
-              width: "100%",
-              height: "100%",
+              width: "calc(100% - 4px)", // odsunięcie od borderów
+              height: "calc(100% - 4px)",
               minHeight: 0,
               minWidth: 0,
               background: "#111",
               opacity: 1,
               borderRadius: "3px",
+              position: "relative",
+              zIndex: 2,
             }}
           />
-          <div className="border-line border-white-1"></div>
-          <div className="border-line border-white-2"></div>
-          <div className="border-line border-purple-1"></div>
-          <div className="border-line border-purple-2"></div>
+          <div
+            className="border-line border-white-1"
+            style={{ borderTopWidth: "4px", borderLeftWidth: "4px" }}
+          ></div>
+          <div
+            className="border-line border-white-2"
+            style={{ borderBottomWidth: "4px", borderRightWidth: "4px" }}
+          ></div>
+          {/* White Glow */}
+          <div
+            className="border-white-glow-top"
+            style={{ height: "4px" }}
+          ></div>
+          <div
+            className="border-white-glow-right"
+            style={{ width: "4px" }}
+          ></div>
+          <div
+            className="border-white-glow-bottom"
+            style={{ height: "4px" }}
+          ></div>
+          <div
+            className="border-white-glow-left"
+            style={{ width: "4px" }}
+          ></div>
+          <div
+            className="border-line border-purple-1"
+            style={{ borderTopWidth: "4px", borderLeftWidth: "4px" }}
+          ></div>
+          <div
+            className="border-line border-purple-2"
+            style={{ borderBottomWidth: "4px", borderRightWidth: "4px" }}
+          ></div>
+          {/* Purple Glow */}
+          <div
+            className="border-purple-glow-top"
+            style={{ height: "4px" }}
+          ></div>
+          <div
+            className="border-purple-glow-right"
+            style={{ width: "4px" }}
+          ></div>
+          <div
+            className="border-purple-glow-bottom"
+            style={{ height: "4px" }}
+          ></div>
+          <div
+            className="border-purple-glow-left"
+            style={{ width: "4px" }}
+          ></div>
         </div>
 
         {/* O mnie: col 2-3, row 1 on lg */}
         <div
           ref={omnieRef}
-          className={`button-border-scroll glassmorphism w-full max-w-full sm:max-h-[450px] md:max-h-[400px] ${
-            inViewOmnie ? "active" : ""
+          className={`button-border-scroll border-3x-slow glassmorphism w-full max-w-full sm:max-h-[450px] md:max-h-[400px]${
+            inViewOmnie ? " active" : ""
           } lg:col-span-2 lg:row-span-1 flex flex-col`}
           style={{
             position: "relative",
@@ -357,17 +489,63 @@ export default function Section3({ speed, scrollToSection }) {
               />
             </p>
           </div>
-          <div className="border-line border-white-1"></div>
-          <div className="border-line border-white-2"></div>
-          <div className="border-line border-purple-1"></div>
-          <div className="border-line border-purple-2"></div>
+          <div
+            className="border-line border-white-1"
+            style={{ borderTopWidth: "4px", borderLeftWidth: "4px" }}
+          ></div>
+          <div
+            className="border-line border-white-2"
+            style={{ borderBottomWidth: "4px", borderRightWidth: "4px" }}
+          ></div>
+          {/* White Glow */}
+          <div
+            className="border-white-glow-top"
+            style={{ height: "4px" }}
+          ></div>
+          <div
+            className="border-white-glow-right"
+            style={{ width: "4px" }}
+          ></div>
+          <div
+            className="border-white-glow-bottom"
+            style={{ height: "4px" }}
+          ></div>
+          <div
+            className="border-white-glow-left"
+            style={{ width: "4px" }}
+          ></div>
+          <div
+            className="border-line border-purple-1"
+            style={{ borderTopWidth: "4px", borderLeftWidth: "4px" }}
+          ></div>
+          <div
+            className="border-line border-purple-2"
+            style={{ borderBottomWidth: "4px", borderRightWidth: "4px" }}
+          ></div>
+          {/* Purple Glow */}
+          <div
+            className="border-purple-glow-top"
+            style={{ height: "4px" }}
+          ></div>
+          <div
+            className="border-purple-glow-right"
+            style={{ width: "4px" }}
+          ></div>
+          <div
+            className="border-purple-glow-bottom"
+            style={{ height: "4px" }}
+          ></div>
+          <div
+            className="border-purple-glow-left"
+            style={{ width: "4px" }}
+          ></div>
         </div>
 
         {/* Tools: col 2-3, row 2 on lg */}
         <div
           ref={toolsRef}
-          className={`button-border-scroll glassmorphism w-full max-w-full sm:max-h-[450px] md:max-h-[400px] ${
-            inViewTools ? "active" : ""
+          className={`button-border-scroll border-3x-slow glassmorphism w-full max-w-full sm:max-h-[450px] md:max-h-[400px]${
+            inViewTools ? " active" : ""
           } lg:col-span-2 lg:row-span-1 flex flex-col`}
           style={{
             position: "relative",
@@ -404,13 +582,60 @@ export default function Section3({ speed, scrollToSection }) {
             <AnimatedText text="Narzędzia" inView={inViewTools} as="span" />
           </h3>
           <ToolsList inView={inViewTools} />
-          <div className="border-line border-white-1"></div>
-          <div className="border-line border-white-2"></div>
-          <div className="border-line border-purple-1"></div>
-          <div className="border-line border-purple-2"></div>
+          <div
+            className="border-line border-white-1"
+            style={{ borderTopWidth: "4px", borderLeftWidth: "4px" }}
+          ></div>
+          <div
+            className="border-line border-white-2"
+            style={{ borderBottomWidth: "4px", borderRightWidth: "4px" }}
+          ></div>
+          {/* White Glow */}
+          <div
+            className="border-white-glow-top"
+            style={{ height: "4px" }}
+          ></div>
+          <div
+            className="border-white-glow-right"
+            style={{ width: "4px" }}
+          ></div>
+          <div
+            className="border-white-glow-bottom"
+            style={{ height: "4px" }}
+          ></div>
+          <div
+            className="border-white-glow-left"
+            style={{ width: "4px" }}
+          ></div>
+          <div
+            className="border-line border-purple-1"
+            style={{ borderTopWidth: "4px", borderLeftWidth: "4px" }}
+          ></div>
+          <div
+            className="border-line border-purple-2"
+            style={{ borderBottomWidth: "4px", borderRightWidth: "4px" }}
+          ></div>
+          {/* Purple Glow */}
+          <div
+            className="border-purple-glow-top"
+            style={{ height: "4px" }}
+          ></div>
+          <div
+            className="border-purple-glow-right"
+            style={{ width: "4px" }}
+          ></div>
+          <div
+            className="border-purple-glow-bottom"
+            style={{ height: "4px" }}
+          ></div>
+          <div
+            className="border-purple-glow-left"
+            style={{ width: "4px" }}
+          ></div>
         </div>
       </div>
 
+      {/* Button with glitch animation reset on hover */}
       <div
         className="button-border-wrapper"
         style={{
@@ -429,6 +654,13 @@ export default function Section3({ speed, scrollToSection }) {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+          }}
+          onMouseEnter={(e) => {
+            const purple = e.currentTarget.querySelector(".glitch-text-purple");
+            if (!purple) return;
+            purple.classList.remove("glitch-done", "glitch-out");
+            void purple.offsetWidth;
+            purple.classList.add("glitch-done");
           }}
           onMouseLeave={(e) => {
             const purple = e.currentTarget.querySelector(".glitch-text-purple");
@@ -486,8 +718,18 @@ export default function Section3({ speed, scrollToSection }) {
         </button>
         <div className="border-line border-white-1"></div>
         <div className="border-line border-white-2"></div>
+        {/* White Glow */}
+        <div className="border-white-glow-top"></div>
+        <div className="border-white-glow-right"></div>
+        <div className="border-white-glow-bottom"></div>
+        <div className="border-white-glow-left"></div>
         <div className="border-line border-purple-1"></div>
         <div className="border-line border-purple-2"></div>
+        {/* Purple Glow */}
+        <div className="border-purple-glow-top"></div>
+        <div className="border-purple-glow-right"></div>
+        <div className="border-purple-glow-bottom"></div>
+        <div className="border-purple-glow-left"></div>
       </div>
     </section>
   );

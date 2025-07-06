@@ -46,15 +46,15 @@ body {
 
 /* src/fonts.css */
 @font-face {
-  font-family: "Akira";
-  src: url("/fonts/Akira Expanded Demo.otf") format("opentype");
+  font-family: "Benzin-ExtraBold";
+  src: url("/fonts/Benzin-ExtraBold.ttf") format("opentype");
   font-weight: normal;
   font-style: normal;
   font-display: swap; /* Ensures text is visible while the font loads */
 }
 
 .text-font {
-  font-family: "Akira", sans-serif;
+  font-family: "Benzin-ExtraBold", sans-serif;
   font-weight: normal; /* or bold, if you have multiple weights */
 }
 
@@ -339,7 +339,6 @@ body {
   transition: transform 0.2s ease, color 0.3s ease;
   white-space: normal;
   font-weight: 500;
-  font-size: 0.9rem;
   min-width: unset;
   min-height: 2.5rem;
   box-sizing: border-box;
@@ -666,7 +665,6 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 
 .glassmorphism {
   backdrop-filter: blur(30px);
-  box-shadow: 0px 0px 30px rgba(227, 228, 237, 0.37);
   border: 2px solid rgba(255, 255, 255, 0.18);
   background: rgba(
     10,
@@ -863,7 +861,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   border-radius: 4px;
   transition-property: width, height, border-color;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 0.6s, 0.6s, 0.3s;
+  transition-duration: 6s, 6s, 3s;
   z-index: 5;
 }
 
@@ -953,4 +951,245 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 .appear {
   opacity: 1 !important;
   animation: appear 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* === GLOW ANIMACJE DLA BORDERÓW (pełne: góra, dół, lewo, prawo) === */
+.border-white-glow-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  pointer-events: none;
+  border-radius: 3px 3px 0 0;
+  box-shadow: 0 0 8px 2px white;
+  opacity: 0.7;
+  z-index: 5;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+}
+.border-white-glow-bottom {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 2px;
+  pointer-events: none;
+  border-radius: 0 0 3px 3px;
+  box-shadow: 0 0 8px 2px white;
+  opacity: 0.7;
+  z-index: 5;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+}
+.border-white-glow-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 0;
+  pointer-events: none;
+  border-radius: 3px 0 0 3px;
+  box-shadow: 0 0 8px 2px white;
+  opacity: 0.7;
+  z-index: 5;
+  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+}
+.border-white-glow-right {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 2px;
+  height: 0;
+  pointer-events: none;
+  border-radius: 0 3px 3px 0;
+  box-shadow: 0 0 8px 2px white;
+  opacity: 0.7;
+  z-index: 5;
+  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+}
+
+.border-purple-glow-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  pointer-events: none;
+  border-radius: 3px 3px 0 0;
+  box-shadow: 0 0 12px 3px #6a00d1;
+  opacity: 0.7;
+  z-index: 5;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+}
+.border-purple-glow-bottom {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 2px;
+  pointer-events: none;
+  border-radius: 0 0 3px 3px;
+  box-shadow: 0 0 12px 3px #6a00d1;
+  opacity: 0.7;
+  z-index: 5;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+}
+.border-purple-glow-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 0;
+  pointer-events: none;
+  border-radius: 3px 0 0 3px;
+  box-shadow: 0 0 12px 3px #6a00d1;
+  opacity: 0.7;
+  z-index: 5;
+  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+}
+.border-purple-glow-right {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 2px;
+  height: 0;
+  pointer-events: none;
+  border-radius: 0 3px 3px 0;
+  box-shadow: 0 0 12px 3px #6a00d1;
+  opacity: 0.7;
+  z-index: 5;
+  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+}
+
+/* Animacja białego glow - hover i scroll-in-view */
+.button-border-wrapper:hover .border-white-glow-top,
+.button-border-scroll.active .border-white-glow-top {
+  width: 100%;
+  opacity: 0.7;
+  transition-delay: 0s, 0s;
+}
+.button-border-wrapper:hover .border-white-glow-right,
+.button-border-scroll.active .border-white-glow-right {
+  height: 100%;
+  opacity: 0.7;
+  transition-delay: 0.15s, 0.15s;
+}
+.button-border-wrapper:hover .border-white-glow-bottom,
+.button-border-scroll.active .border-white-glow-bottom {
+  width: 100%;
+  opacity: 0.7;
+  transition-delay: 0.3s, 0.3s;
+}
+.button-border-wrapper:hover .border-white-glow-left,
+.button-border-scroll.active .border-white-glow-left {
+  height: 100%;
+  opacity: 0.7;
+  transition-delay: 0s, 0s;
+}
+.button-border-wrapper:not(:hover) .border-white-glow-top,
+.button-border-wrapper:not(:hover) .border-white-glow-bottom,
+.button-border-wrapper:not(:hover) .border-white-glow-left,
+.button-border-wrapper:not(:hover) .border-white-glow-right,
+.button-border-scroll:not(.active) .border-white-glow-top,
+.button-border-scroll:not(.active) .border-white-glow-bottom,
+.button-border-scroll:not(.active) .border-white-glow-left,
+.button-border-scroll:not(.active) .border-white-glow-right {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  transition-delay: 0.3s, 0.3s;
+}
+
+/* Animacja fioletowego glow - hover i scroll-in-view */
+.button-border-wrapper:hover .border-purple-glow-top,
+.button-border-scroll.active .border-purple-glow-top {
+  width: 100%;
+  opacity: 0.7;
+  transition-delay: 0.6s, 0.6s !important;
+}
+.button-border-wrapper:hover .border-purple-glow-right,
+.button-border-scroll.active .border-purple-glow-right {
+  height: 100%;
+  opacity: 0.7;
+  transition-delay: 0.75s, 0.75s !important;
+}
+.button-border-wrapper:hover .border-purple-glow-bottom,
+.button-border-scroll.active .border-purple-glow-bottom {
+  width: 100%;
+  opacity: 0.7;
+  transition-delay: 0.9s, 0.9s !important;
+}
+.button-border-wrapper:hover .border-purple-glow-left,
+.button-border-scroll.active .border-purple-glow-left {
+  height: 100%;
+  opacity: 0.7;
+  transition-delay: 0.6s, 0.6s !important;
+}
+.button-border-wrapper:not(:hover) .border-purple-glow-top,
+.button-border-wrapper:not(:hover) .border-purple-glow-bottom,
+.button-border-wrapper:not(:hover) .border-purple-glow-left,
+.button-border-wrapper:not(:hover) .border-purple-glow-right,
+.button-border-scroll:not(.active) .border-purple-glow-top,
+.button-border-scroll:not(.active) .border-purple-glow-bottom,
+.button-border-scroll:not(.active) .border-purple-glow-left,
+.button-border-scroll:not(.active) .border-purple-glow-right {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  transition-delay: 0s, 0s;
+}
+
+/* Przywrócenie prędkości borderów */
+.border-line {
+  transition-duration: 0.6s, 0.6s, 0.3s;
+}
+
+/* === 3x wolniejsze animacje borderów i glow dla dużych elementów (fala, białe i fioletowe width/opacity równo) === */
+.border-3x-slow .border-white-1,
+.border-3x-slow .border-white-2 {
+  transition-delay: 0s !important;
+  transition-duration: 1.8s !important;
+}
+.border-3x-slow .border-purple-1,
+.border-3x-slow .border-purple-2 {
+  transition-delay: 1.8s !important;
+  transition-duration: 1.8s !important;
+}
+/* Glow: width/height i opacity równo */
+.border-3x-slow .border-white-glow-top,
+.border-3x-slow .border-white-glow-bottom {
+  transition: width 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s !important;
+  transition-delay: 0s, 0s !important;
+}
+.border-3x-slow .border-white-glow-left,
+.border-3x-slow .border-white-glow-right {
+  transition: height 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s !important;
+  transition-delay: 0s, 0s !important;
+}
+.border-3x-slow .border-purple-glow-top,
+.border-3x-slow .border-purple-glow-bottom {
+  transition: width 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s !important;
+  transition-delay: 1.8s, 1.8s !important;
+}
+.border-3x-slow .border-purple-glow-left,
+.border-3x-slow .border-purple-glow-right {
+  transition: height 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s !important;
+  transition-delay: 1.8s, 1.8s !important;
+}
+
+/* Szybkie animacje: width/height i opacity równo (dla glow) */
+.border-white-glow-top,
+.border-white-glow-bottom {
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s !important;
+}
+.border-white-glow-left,
+.border-white-glow-right {
+  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s !important;
+}
+.border-purple-glow-top,
+.border-purple-glow-bottom {
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s !important;
+}
+.border-purple-glow-left,
+.border-purple-glow-right {
+  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s !important;
 }

@@ -68,14 +68,14 @@ export default function Section5() {
 
       <div
         ref={formRef}
-        className={`button-border-scroll glassmorphism w-full max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl relative ${
+        className={`button-border-scroll border-3x-slow glassmorphism w-full max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl relative ${
           inViewForm ? "active appear" : ""
         }`}
         style={{
           opacity: inViewForm ? 1 : 0,
           transform: inViewForm ? "translateY(0)" : "translateY(60px)",
           transition: "opacity 0.7s, transform 0.7s",
-          borderRadius: 16,
+          borderRadius: 3,
           marginBottom: 48,
         }}
       >
@@ -100,10 +100,10 @@ export default function Section5() {
             )}
             {/* Email field */}
             <div
-              className={`button-border-scroll relative ${
+              className={`button-border-scroll border-3x-slow relative ${
                 inViewForm ? "active appear" : ""
               }`}
-              style={{ borderRadius: 8, padding: 0 }}
+              style={{ borderRadius: 3, padding: 0 }}
             >
               <label
                 htmlFor="email"
@@ -144,27 +144,61 @@ export default function Section5() {
               {/* Border lines below input */}
               <div
                 className="border-line border-white-1"
-                style={{ zIndex: 1 }}
+                style={{ borderTopWidth: "4px", borderLeftWidth: "4px" }}
               ></div>
               <div
                 className="border-line border-white-2"
-                style={{ zIndex: 1 }}
+                style={{ borderBottomWidth: "4px", borderRightWidth: "4px" }}
+              ></div>
+              {/* White Glow */}
+              <div
+                className="border-white-glow-top"
+                style={{ height: "4px" }}
+              ></div>
+              <div
+                className="border-white-glow-right"
+                style={{ width: "4px" }}
+              ></div>
+              <div
+                className="border-white-glow-bottom"
+                style={{ height: "4px" }}
+              ></div>
+              <div
+                className="border-white-glow-left"
+                style={{ width: "4px" }}
               ></div>
               <div
                 className="border-line border-purple-1"
-                style={{ zIndex: 1 }}
+                style={{ borderTopWidth: "4px", borderLeftWidth: "4px" }}
               ></div>
               <div
                 className="border-line border-purple-2"
-                style={{ zIndex: 1 }}
+                style={{ borderBottomWidth: "4px", borderRightWidth: "4px" }}
+              ></div>
+              {/* Purple Glow */}
+              <div
+                className="border-purple-glow-top"
+                style={{ height: "4px" }}
+              ></div>
+              <div
+                className="border-purple-glow-right"
+                style={{ width: "4px" }}
+              ></div>
+              <div
+                className="border-purple-glow-bottom"
+                style={{ height: "4px" }}
+              ></div>
+              <div
+                className="border-purple-glow-left"
+                style={{ width: "4px" }}
               ></div>
             </div>
             {/* Message field */}
             <div
-              className={`button-border-scroll relative ${
+              className={`button-border-scroll border-3x-slow relative ${
                 inViewForm ? "active appear" : ""
               }`}
-              style={{ borderRadius: 8, padding: 0 }}
+              style={{ borderRadius: 3, padding: 0 }}
             >
               <label
                 htmlFor="message"
@@ -204,19 +238,53 @@ export default function Section5() {
               {/* Border lines below textarea */}
               <div
                 className="border-line border-white-1"
-                style={{ zIndex: 1 }}
+                style={{ borderTopWidth: "4px", borderLeftWidth: "4px" }}
               ></div>
               <div
                 className="border-line border-white-2"
-                style={{ zIndex: 1 }}
+                style={{ borderBottomWidth: "4px", borderRightWidth: "4px" }}
+              ></div>
+              {/* White Glow */}
+              <div
+                className="border-white-glow-top"
+                style={{ height: "4px" }}
+              ></div>
+              <div
+                className="border-white-glow-right"
+                style={{ width: "4px" }}
+              ></div>
+              <div
+                className="border-white-glow-bottom"
+                style={{ height: "4px" }}
+              ></div>
+              <div
+                className="border-white-glow-left"
+                style={{ width: "4px" }}
               ></div>
               <div
                 className="border-line border-purple-1"
-                style={{ zIndex: 1 }}
+                style={{ borderTopWidth: "4px", borderLeftWidth: "4px" }}
               ></div>
               <div
                 className="border-line border-purple-2"
-                style={{ zIndex: 1 }}
+                style={{ borderBottomWidth: "4px", borderRightWidth: "4px" }}
+              ></div>
+              {/* Purple Glow */}
+              <div
+                className="border-purple-glow-top"
+                style={{ height: "4px" }}
+              ></div>
+              <div
+                className="border-purple-glow-right"
+                style={{ width: "4px" }}
+              ></div>
+              <div
+                className="border-purple-glow-bottom"
+                style={{ height: "4px" }}
+              ></div>
+              <div
+                className="border-purple-glow-left"
+                style={{ width: "4px" }}
               ></div>
             </div>
             {/* Submit button */}
@@ -273,16 +341,36 @@ export default function Section5() {
               </button>
               <div className="border-line border-white-1"></div>
               <div className="border-line border-white-2"></div>
+              {/* White Glow */}
+              <div className="border-white-glow-top"></div>
+              <div className="border-white-glow-right"></div>
+              <div className="border-white-glow-bottom"></div>
+              <div className="border-white-glow-left"></div>
               <div className="border-line border-purple-1"></div>
               <div className="border-line border-purple-2"></div>
+              {/* Purple Glow */}
+              <div className="border-purple-glow-top"></div>
+              <div className="border-purple-glow-right"></div>
+              <div className="border-purple-glow-bottom"></div>
+              <div className="border-purple-glow-left"></div>
             </div>
           </form>
         )}
         {/* Border lines for the whole form */}
         <div className="border-line border-white-1"></div>
         <div className="border-line border-white-2"></div>
+        {/* White Glow */}
+        <div className="border-white-glow-top"></div>
+        <div className="border-white-glow-right"></div>
+        <div className="border-white-glow-bottom"></div>
+        <div className="border-white-glow-left"></div>
         <div className="border-line border-purple-1"></div>
         <div className="border-line border-purple-2"></div>
+        {/* Purple Glow */}
+        <div className="border-purple-glow-top"></div>
+        <div className="border-purple-glow-right"></div>
+        <div className="border-purple-glow-bottom"></div>
+        <div className="border-purple-glow-left"></div>
       </div>
 
       {/* Social media icons remain the same */}
@@ -398,8 +486,18 @@ export default function Section5() {
         </button>
         <div className="border-line border-white-1"></div>
         <div className="border-line border-white-2"></div>
+        {/* White Glow */}
+        <div className="border-white-glow-top"></div>
+        <div className="border-white-glow-right"></div>
+        <div className="border-white-glow-bottom"></div>
+        <div className="border-white-glow-left"></div>
         <div className="border-line border-purple-1"></div>
         <div className="border-line border-purple-2"></div>
+        {/* Purple Glow */}
+        <div className="border-purple-glow-top"></div>
+        <div className="border-purple-glow-right"></div>
+        <div className="border-purple-glow-bottom"></div>
+        <div className="border-purple-glow-left"></div>
       </div>
     </section>
   );

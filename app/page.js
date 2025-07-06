@@ -8,10 +8,17 @@ import Section3 from "../components/section3";
 import Section4 from "../components/section4";
 import Section5 from "../components/section5";
 import LogoAnimation from "@/components/LogoAnimation";
+import { useRouter, useSearchParams } from "next/navigation";
+
+import { getProjects } from "../lib/getProjects";
 
 export default function Home() {
   const [speed, setSpeed] = useState(20);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const searchParams =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search)
+      : null;
 
   // Toggle menu function
   const toggleMenu = () => {
@@ -71,11 +78,44 @@ export default function Home() {
     });
   }, []);
 
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const data = await getProjects();
+        console.log("Projects:", data);
+      } catch (error) {
+        console.error("Błąd przy pobieraniu projektów:", error);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    // Scroll to section if scrollTo param exists
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const scrollTo = params.get("scrollTo");
+      if (scrollTo) {
+        setTimeout(() => {
+          const section = document.getElementById(scrollTo);
+          if (section) {
+            section.scrollIntoView({ behavior: "smooth", block: "start" });
+            // Remove scrollTo param from URL after scroll
+            const url = new URL(window.location);
+            url.searchParams.delete("scrollTo");
+            window.history.replaceState({}, document.title, url.pathname);
+          }
+        }, 350); // Delay to ensure DOM is ready
+      }
+    }
+  }, []);
+
   return (
     <div>
       <nav
-        className="fixed z-50 top-0 w-screen h-16 text-white text-sm flex items-center flex-row justify-between md:justify-evenly text-nowrap glassmorphism"
-        style={{ borderLeft: "none", borderTop: "none" }}
+        className="fixed z-50 top-0 w-screen h-24 text-white text-lg flex items-center flex-row justify-between md:justify-evenly text-nowrap glassmorphism"
+        style={{ border: "none" }}
       >
         {/* Video background */}
         {/* <button onClick={() => scrollToSection("section1")}>HOME</button> */}
@@ -92,8 +132,18 @@ export default function Home() {
 
             <div className="border-line border-white-1"></div>
             <div className="border-line border-white-2"></div>
+            {/* White Glow */}
+            <div className="border-white-glow-top"></div>
+            <div className="border-white-glow-right"></div>
+            <div className="border-white-glow-bottom"></div>
+            <div className="border-white-glow-left"></div>
             <div className="border-line border-purple-1"></div>
             <div className="border-line border-purple-2"></div>
+            {/* Purple Glow */}
+            <div className="border-purple-glow-top"></div>
+            <div className="border-purple-glow-right"></div>
+            <div className="border-purple-glow-bottom"></div>
+            <div className="border-purple-glow-left"></div>
           </div>
         </div>
         <div className="h-full px-2 hidden md:flex items-center justify-center">
@@ -138,8 +188,18 @@ export default function Home() {
 
             <div className="border-line border-white-1"></div>
             <div className="border-line border-white-2"></div>
+            {/* White Glow */}
+            <div className="border-white-glow-top"></div>
+            <div className="border-white-glow-right"></div>
+            <div className="border-white-glow-bottom"></div>
+            <div className="border-white-glow-left"></div>
             <div className="border-line border-purple-1"></div>
             <div className="border-line border-purple-2"></div>
+            {/* Purple Glow */}
+            <div className="border-purple-glow-top"></div>
+            <div className="border-purple-glow-right"></div>
+            <div className="border-purple-glow-bottom"></div>
+            <div className="border-purple-glow-left"></div>
           </div>
         </div>
         {/* <div className="h-full w-12 hidden md:flex">
@@ -154,10 +214,10 @@ export default function Home() {
           autoPlay
           loop
           muted
-          className="w-16 h-full object-cover left-auto right-auto cursor-pointer bg-transparent"
+          className="w-24 h-full object-cover left-auto right-auto cursor-pointer bg-transparent"
           onClick={() => scrollToSection("section1")}
         >
-          <source src="/Logo_WWW.webm" type="video/webm" />
+          <source src="/Logo_WWW_2.webm" type="video/webm" />
         </video>
         <div className="h-full px-2 hidden md:flex items-center justify-center">
           <div className="button-border-wrapper">
@@ -201,8 +261,18 @@ export default function Home() {
 
             <div className="border-line border-white-1"></div>
             <div className="border-line border-white-2"></div>
+            {/* White Glow */}
+            <div className="border-white-glow-top"></div>
+            <div className="border-white-glow-right"></div>
+            <div className="border-white-glow-bottom"></div>
+            <div className="border-white-glow-left"></div>
             <div className="border-line border-purple-1"></div>
             <div className="border-line border-purple-2"></div>
+            {/* Purple Glow */}
+            <div className="border-purple-glow-top"></div>
+            <div className="border-purple-glow-right"></div>
+            <div className="border-purple-glow-bottom"></div>
+            <div className="border-purple-glow-left"></div>
           </div>
         </div>
         <div className="h-full px-2 hidden md:flex items-center justify-center">
@@ -247,10 +317,28 @@ export default function Home() {
 
             <div className="border-line border-white-1"></div>
             <div className="border-line border-white-2"></div>
+            {/* White Glow */}
+            <div className="border-white-glow-top"></div>
+            <div className="border-white-glow-right"></div>
+            <div className="border-white-glow-bottom"></div>
+            <div className="border-white-glow-left"></div>
             <div className="border-line border-purple-1"></div>
             <div className="border-line border-purple-2"></div>
+            {/* Purple Glow */}
+            <div className="border-purple-glow-top"></div>
+            <div className="border-purple-glow-right"></div>
+            <div className="border-purple-glow-bottom"></div>
+            <div className="border-purple-glow-left"></div>
           </div>
         </div>
+        {/* <div className="h-full w-12 hidden md:flex">
+          <button
+            onClick={() => scrollToSection("section3")}
+            className="text-center hover:scale-125 origin-center transition-all duration-100"
+          >
+            O MNIE
+          </button>
+        </div> */}
         {/* <div className="h-full w-12 hidden md:flex">
           <button
             onClick={() => scrollToSection("section4")}
@@ -299,9 +387,8 @@ export default function Home() {
           <div
             className="mobile-sidebar glassmorphism fixed right-0 w-1/2 h-screen md:hidden z-50 open"
             style={{
-              borderTop: "none",
-              borderRight: "none",
-              top: 60,
+              border: "none",
+              top: "6rem", // ustawione na wysokość navbaru (h-24 = 6rem = 96px)
               borderRadius: 0,
             }}
           >
@@ -373,8 +460,18 @@ export default function Home() {
                   </button>
                   <div className="border-line border-white-1"></div>
                   <div className="border-line border-white-2"></div>
+                  {/* White Glow */}
+                  <div className="border-white-glow-top"></div>
+                  <div className="border-white-glow-right"></div>
+                  <div className="border-white-glow-bottom"></div>
+                  <div className="border-white-glow-left"></div>
                   <div className="border-line border-purple-1"></div>
                   <div className="border-line border-purple-2"></div>
+                  {/* Purple Glow */}
+                  <div className="border-purple-glow-top"></div>
+                  <div className="border-purple-glow-right"></div>
+                  <div className="border-purple-glow-bottom"></div>
+                  <div className="border-purple-glow-left"></div>
                 </div>
               ))}
             </div>
