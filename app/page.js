@@ -132,16 +132,6 @@ export default function Home() {
         className="fixed z-50 top-0 w-screen h-24 text-white text-lg flex items-center flex-row justify-between md:justify-evenly text-nowrap glassmorphism"
         style={{ border: "none" }}
       >
-        {/* Video background */}
-        {/* <video
-          autoPlay
-          loop
-          muted
-          className="w-24 h-full object-cover left-auto right-auto cursor-pointer bg-transparent"
-          onClick={() => scrollToSection("section1")}
-        >
-          <source src="/Logo_WWW_2.webm" type="video/webm" />
-        </video> */}
         <div className="h-full px-2 hidden md:flex items-center justify-center">
           <div className="button-border-wrapper">
             <button
@@ -225,6 +215,44 @@ export default function Home() {
             <div className="border-purple-glow-left"></div>
           </div>
         </div>
+        {/* Video background z fallbackiem na iOS */}
+        {(() => {
+          if (
+            typeof navigator !== "undefined" &&
+            /iPad|iPhone|iPod/.test(navigator.userAgent)
+          ) {
+            // iOS: statyczne logo
+            return (
+              <img
+                src="/Logo%20Merged.svg"
+                alt="Logo"
+                className="w-24 h-full object-cover left-auto right-auto cursor-pointer bg-transparent"
+                style={{ display: "block" }}
+                onClick={() => scrollToSection("section1")}
+              />
+            );
+          } else {
+            // Android i inne: animacja webm
+            return (
+              <video
+                autoPlay
+                loop
+                muted
+                className="w-24 h-full object-cover ml-4 md:ml-0 left-auto right-auto cursor-pointer bg-transparent"
+                onClick={() => scrollToSection("section1")}
+              >
+                <source src="/Logo_WWW_2.webm" type="video/webm" />
+                {/* Fallback na wypadek braku wsparcia webm */}
+                <img
+                  src="/Logo%20Merged.svg"
+                  alt="Logo"
+                  className="w-24 h-full object-cover left-auto right-auto cursor-pointer bg-transparent"
+                  style={{ display: "block" }}
+                />
+              </video>
+            );
+          }
+        })()}
         {/* <div className="h-full w-12 hidden md:flex">
           <button
             onClick={() => scrollToSection("section3")}

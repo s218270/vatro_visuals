@@ -22,9 +22,24 @@ export default function LogoAnimation({
 }) {
   const mountRef = useRef();
   const [loading, setLoading] = useState(true);
+  const [webgl2Supported, setWebgl2Supported] = useState(true);
+
+  useEffect(() => {
+    // Sprawdź wsparcie WebGL2
+    if (typeof window !== "undefined") {
+      try {
+        const canvas = document.createElement("canvas");
+        const gl = canvas.getContext("webgl2");
+        setWebgl2Supported(!!gl);
+      } catch (e) {
+        setWebgl2Supported(false);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const mount = mountRef.current;
+    if (!webgl2Supported) return; // nie uruchamiaj animacji jeśli fallback
 
     // Responsive radius helper
     function getResponsiveRadius(base) {
@@ -91,10 +106,10 @@ export default function LogoAnimation({
                   child.material = new THREE.MeshStandardMaterial({
                     color: child.material.color || 0xffffff,
                     map: child.material.map || null,
-                    envMap,
+                    envMap: webgl2Supported ? envMap : null,
                     envMapIntensity: 1.5,
-                    metalness: 1,
-                    roughness: 0.1,
+                    metalness: 1.0,
+                    roughness: webgl2Supported ? 0.1 : 0.2,
                   });
                 }
               });
@@ -486,7 +501,32 @@ export default function LogoAnimation({
     angleDeltaDeg,
     verticalTiltDeltaDeg,
     invertVertical,
+    webgl2Supported,
   ]);
+
+  // Fallback: statyczne tło i uproszczone modele jeśli brak WebGL2
+  if (!webgl2Supported) {
+    return (
+      <div className="h-[400vh] w-full relative bg-black">
+        <div className="sticky top-0 h-screen w-full" style={{ zIndex: 1 }}>
+          <img
+            src="/meshes/Grunge.png"
+            alt="Background"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              position: "absolute",
+              top: 0,
+              left: 0,
+              zIndex: 0,
+            }}
+          />
+          {/* Możesz dodać tu uproszczone SVG/logo lub inne elementy jeśli chcesz */}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-[400vh] w-full relative bg-black">
