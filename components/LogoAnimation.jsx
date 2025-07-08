@@ -559,8 +559,8 @@ export default function LogoAnimation({
   }, [webgl2Supported, forceFallback]);
 
   // Fallback: uproszczona scena 3D na statycznym tle
-  if (!webgl2Supported || forceFallback) {
-    useEffect(() => {
+  useEffect(() => {
+    if (!webgl2Supported || forceFallback) {
       const mount = fallbackMountRef.current;
       if (!mount) return;
       // Responsive radius helper
@@ -785,34 +785,269 @@ export default function LogoAnimation({
         renderer.dispose();
         if (mount && mount.firstChild) mount.removeChild(mount.firstChild);
       };
-    }, []);
-    return (
-      <div className="h-[400vh] w-full relative bg-black">
-        <div className="sticky top-0 h-screen w-full" style={{ zIndex: 1 }}>
-          {fallbackLoading && (
-            <div className="absolute inset-0 z-20 flex items-center justify-center bg-black bg-opacity-90 pointer-events-auto">
-              <div
-                className="loader-ios"
-                style={{
-                  width: 64,
-                  height: 64,
-                  border: "6px solid #a259f7",
-                  borderTop: "6px solid #fff",
-                  borderRadius: "50%",
-                  animation: "spin 1.2s linear infinite",
-                }}
-              />
-              <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
-            </div>
-          )}
-          <div
-            ref={fallbackMountRef}
-            style={{ width: "100%", height: "100%" }}
-          />
-        </div>
-      </div>
-    );
-  }
+    }
+    // eslint-disable-next-line
+  }, [
+    webgl2Supported,
+    forceFallback,
+    startAngleDeg,
+    startVerticalTiltDeg,
+    startRadius,
+    startSkewDeg,
+    angleDeltaDeg,
+    verticalTiltDeltaDeg,
+    invertVertical,
+  ]);
+
+  // Fallback: statyczne tło i uproszczone modele jeśli brak WebGL2 lub wymuszony fallback
+  useEffect(() => {
+    if (!webgl2Supported || forceFallback) {
+      setShowStaticBg(false);
+      const timeout = setTimeout(() => setShowStaticBg(true), 2000);
+      return () => clearTimeout(timeout);
+    }
+  }, [webgl2Supported, forceFallback]);
+
+  // Fallback: uproszczona scena 3D na statycznym tle
+  useEffect(() => {
+    if (!webgl2Supported || forceFallback) {
+      const mount = fallbackMountRef.current;
+      if (!mount) return;
+      // Responsive radius helper
+      function getResponsiveRadius(base) {
+        return window.innerWidth < 768 ? base * 1.3 : base;
+      }
+      let radius = getResponsiveRadius(startRadius);
+      // Scene setup
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        30,
+        mount.clientWidth / mount.clientHeight,
+        0.1,
+        100
+      );
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+      });
+      renderer.setSize(mount.clientWidth, mount.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      mount.appendChild(renderer.domElement);
+      // Lighting
+      const ambient = new THREE.AmbientLight(0xffffff, 1.2);
+      const spot = new THREE.SpotLight(0xffffff, 2.5);
+      spot.position.set(10, 10, 10);
+      scene.add(ambient, spot);
+      // Model info
+      const modelInfos = [
+        { name: "V.glb", position: [-0.002, 0, 0] },
+        { name: "A.glb", position: [0.002, 0, -0.1] },
+        { name: "Dot.glb", position: [0, 0, -0.2] },
+        { name: "T.glb", position: [0, 0, 0.1] },
+      ];
+      const dotPosition = new THREE.Vector3();
+      const modelPositions = [];
+      let modelsLoaded = 0;
+      const loader = new GLTFLoader();
+      modelInfos.forEach(({ name, position }) => {
+        loader.load(`/meshes/${name}`, (gltf) => {
+          const model = gltf.scene;
+          model.position.set(...position);
+          modelPositions.push(model.position.clone());
+          if (name === "Dot.glb") dotPosition.copy(model.position);
+          model.traverse((child) => {
+            if (child.isMesh) {
+              child.material = new THREE.MeshStandardMaterial({
+                color: child.material.color || 0xffffff,
+                map: child.material.map || null,
+                envMap: null,
+                envMapIntensity: 0,
+                metalness: 1.0,
+                roughness: 0.3,
+              });
+            }
+          });
+          scene.add(model);
+          modelsLoaded++;
+          if (modelsLoaded === modelInfos.length) {
+            setFallbackLoading(false);
+            // Animacja kamery i liter jak w oryginale
+            const center = new THREE.Vector3();
+            modelPositions.forEach((pos) => center.add(pos));
+            center.divideScalar(modelPositions.length);
+            let skewAngle = THREE.MathUtils.degToRad(startSkewDeg);
+            const initialVerticalTilt =
+              THREE.MathUtils.degToRad(startVerticalTiltDeg);
+            const angleOffset =
+              THREE.MathUtils.degToRad(startAngleDeg) + Math.PI;
+            const angleDelta = THREE.MathUtils.degToRad(angleDeltaDeg);
+            let verticalTiltDelta =
+              THREE.MathUtils.degToRad(verticalTiltDeltaDeg);
+            if (invertVertical) verticalTiltDelta = -verticalTiltDelta;
+            function updateCameraPosition(
+              angleRad,
+              verticalTiltRad,
+              extra = {}
+            ) {
+              let extraX = extra.x || 0;
+              let extraY = extra.y || 0;
+              let extraRoll = extra.roll || 0;
+              const x = radius * Math.sin(angleRad) + extraX;
+              const y = radius * Math.cos(verticalTiltRad) + extraY;
+              const z = radius * Math.cos(angleRad);
+              const camPos = new THREE.Vector3(
+                center.x + x,
+                center.y + y,
+                center.z + z
+              );
+              camera.position.copy(camPos);
+              const up = new THREE.Vector3(0, 1, 0);
+              const lookAtMatrix = new THREE.Matrix4();
+              lookAtMatrix.lookAt(camPos, center, up);
+              const quat = new THREE.Quaternion();
+              quat.setFromRotationMatrix(lookAtMatrix);
+              if (extraRoll) {
+                const rollQuat = new THREE.Quaternion();
+                rollQuat.setFromAxisAngle(
+                  new THREE.Vector3(0, 0, 1),
+                  extraRoll
+                );
+                quat.multiply(rollQuat);
+              }
+              const skewQuat = new THREE.Quaternion();
+              skewQuat.setFromAxisAngle(new THREE.Vector3(0, 0, 1), -skewAngle);
+              quat.multiply(skewQuat);
+              camera.quaternion.copy(quat);
+            }
+            updateCameraPosition(-angleOffset, initialVerticalTilt);
+            const orbit = {
+              angle: -angleOffset,
+              verticalTilt: initialVerticalTilt,
+            };
+            gsap.set(orbit, {
+              angle: -angleOffset,
+              verticalTilt: initialVerticalTilt,
+            });
+            gsap.to(orbit, {
+              id: "camera-orbit-1",
+              angle: -angleOffset - Math.PI * 1.1,
+              verticalTilt: Math.PI / 2 + Math.PI * 0.1,
+              scrollTrigger: {
+                trigger: mount,
+                start: "top top",
+                end: "400%",
+                scrub: true,
+                onUpdate: (self) => {
+                  let roll = 0;
+                  const progress =
+                    self && typeof self.progress === "number"
+                      ? self.progress
+                      : self &&
+                        self.scrollTrigger &&
+                        typeof self.scrollTrigger.progress === "number"
+                      ? self.scrollTrigger.progress
+                      : 0;
+                  if (progress > 0.55) {
+                    roll = -((progress - 0.55) / 0.45) * 0.35;
+                  }
+                  updateCameraPosition(orbit.angle, orbit.verticalTilt, {
+                    roll,
+                  });
+                },
+              },
+              onUpdate: (self) => {
+                let roll = 0;
+                const progress =
+                  self && typeof self.progress === "number"
+                    ? self.progress
+                    : self &&
+                      self.scrollTrigger &&
+                      typeof self.scrollTrigger.progress === "number"
+                    ? self.scrollTrigger.progress
+                    : 0;
+                if (progress > 0.55) {
+                  roll = -((progress - 0.55) / 0.45) * 0.35;
+                }
+                updateCameraPosition(orbit.angle, orbit.verticalTilt, { roll });
+              },
+              onComplete: () => {
+                ScrollTrigger.refresh();
+              },
+            });
+            let radiusObj = { value: getResponsiveRadius(startRadius) };
+            gsap.to(radiusObj, {
+              value: getResponsiveRadius(startRadius * 1.35),
+              scrollTrigger: {
+                trigger: mount,
+                start: "180%",
+                end: "400%",
+                scrub: true,
+              },
+              ease: "power1.inOut",
+              onUpdate: () => {
+                radius = radiusObj.value;
+              },
+            });
+            scene.children.forEach((child, i) => {
+              if (child.isGroup || child.isMesh) {
+                const origY = child.position.y;
+                child.position.y = origY + 1;
+                gsap.to(child.position, {
+                  y: origY,
+                  duration: 1.1,
+                  delay: i * 0.08,
+                  ease: "power2.out",
+                });
+              }
+            });
+            ScrollTrigger.refresh();
+          }
+        });
+      });
+      // Tło: statyczny obrazek
+      renderer.setClearColor(0x000000, 0);
+      const bgImg = new window.Image();
+      bgImg.src = "/meshes/Grunge.png";
+      bgImg.onload = () => {
+        const bgTexture = new THREE.Texture(bgImg);
+        bgTexture.needsUpdate = true;
+        scene.background = bgTexture;
+      };
+      // Resize
+      function handleResize() {
+        if (!mount) return;
+        camera.aspect = mount.clientWidth / mount.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(mount.clientWidth, mount.clientHeight);
+        radius = getResponsiveRadius(startRadius);
+        ScrollTrigger.refresh();
+      }
+      window.addEventListener("resize", handleResize);
+      // Animacja
+      const animate = () => {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+      };
+      animate();
+      return () => {
+        window.removeEventListener("resize", handleResize);
+        ScrollTrigger.getAll().forEach((st) => st.kill());
+        renderer.dispose();
+        if (mount && mount.firstChild) mount.removeChild(mount.firstChild);
+      };
+    }
+    // eslint-disable-next-line
+  }, [
+    webgl2Supported,
+    forceFallback,
+    startAngleDeg,
+    startVerticalTiltDeg,
+    startRadius,
+    startSkewDeg,
+    angleDeltaDeg,
+    verticalTiltDeltaDeg,
+    invertVertical,
+  ]);
 
   return (
     <div className="h-[400vh] w-full relative bg-black">
