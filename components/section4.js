@@ -254,6 +254,15 @@ export default function Section4({ scrollToSection }) {
     // eslint-disable-next-line
   }, [displayed, projects, loaded]);
 
+  // Funkcja detekcji iOS
+  function isIOS() {
+    if (typeof window === "undefined") return false;
+    return (
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+    );
+  }
+
   return (
     <section
       id="section4"
@@ -568,19 +577,44 @@ export default function Section4({ scrollToSection }) {
                           background: "none",
                         }}
                       >
-                        <video
-                          src="/Loading_WWW.webm"
-                          autoPlay
-                          loop
-                          muted
-                          style={{
-                            width: 64,
-                            height: 64,
-                            objectFit: "contain",
-                            animation: "spin 1.2s linear infinite",
-                            background: "none",
-                          }}
-                        />
+                        {typeof window !== "undefined" && isIOS() ? (
+                          <div
+                            style={{
+                              width: 64,
+                              height: 64,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <div
+                              className="loader-ios"
+                              style={{
+                                width: 48,
+                                height: 48,
+                                border: "6px solid #a259f7",
+                                borderTop: "6px solid #fff",
+                                borderRadius: "50%",
+                                animation: "spin 1.2s linear infinite",
+                              }}
+                            />
+                            <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+                          </div>
+                        ) : (
+                          <video
+                            src="/Loading_WWW.webm"
+                            autoPlay
+                            loop
+                            muted
+                            style={{
+                              width: 64,
+                              height: 64,
+                              objectFit: "contain",
+                              animation: "spin 1.2s linear infinite",
+                              background: "none",
+                            }}
+                          />
+                        )}
                         <style>{`
                           @keyframes spin { 100% { transform: rotate(360deg); } }
                         `}</style>

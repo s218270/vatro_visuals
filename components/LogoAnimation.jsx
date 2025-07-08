@@ -9,6 +9,17 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Funkcja detekcji iOS/mobilnych urządzeń
+function isIOS() {
+  if (typeof window === "undefined") return false;
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+}
+function isMobile() {
+  if (typeof window === "undefined") return false;
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
 export default function LogoAnimation({
   startAngleDeg = 10,
   startVerticalTiltDeg = 110,
@@ -23,23 +34,34 @@ export default function LogoAnimation({
   const mountRef = useRef();
   const [loading, setLoading] = useState(true);
   const [webgl2Supported, setWebgl2Supported] = useState(true);
+  const [forceFallback, setForceFallback] = useState(false);
 
   useEffect(() => {
-    // Sprawdź wsparcie WebGL2
+    // Sprawdź wsparcie WebGL2 i wymuś fallback na iOS/mobilnych
     if (typeof window !== "undefined") {
+      let fallback = false;
+      if (isIOS() || isMobile()) fallback = true;
       try {
         const canvas = document.createElement("canvas");
         const gl = canvas.getContext("webgl2");
         setWebgl2Supported(!!gl);
+        if (!gl) fallback = true;
+        // Sprawdź limity GPU
+        if (gl) {
+          const maxCube = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
+          if (maxCube < 2048) fallback = true;
+        }
       } catch (e) {
+        fallback = true;
         setWebgl2Supported(false);
       }
+      setForceFallback(fallback);
     }
   }, []);
 
   useEffect(() => {
     const mount = mountRef.current;
-    if (!webgl2Supported) return; // nie uruchamiaj animacji jeśli fallback
+    if (!webgl2Supported || forceFallback) return; // nie uruchamiaj animacji jeśli fallback
 
     // Responsive radius helper
     function getResponsiveRadius(base) {
@@ -319,9 +341,23 @@ export default function LogoAnimation({
     // (bgScene, bgCamera, uniforms, bgMaterial, bgQuad, renderer.render(bgScene, bgCamera), uniforms.iTime.value)
     // --- ZOSTAW TYLKO PROCEDURALNY SKYBOX NA SFERZE ---
     // --- PROCEDURALNA CUBEMAPA Z SHADEREM ---
-    // Usuń proceduralny skybox na sferze!
-    // ---
-    const cubeRes = 4096;
+    // Dynamiczne limity
+    let cubeRes = 4096;
+    let STEP = 256;
+    if (isIOS() || isMobile()) {
+      cubeRes = 1024;
+      STEP = 64;
+    } else if (typeof window !== "undefined") {
+      // Sprawdź limity GPU
+      try {
+        const canvas = document.createElement("canvas");
+        const gl = canvas.getContext("webgl2");
+        if (gl) {
+          const maxCube = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
+          if (maxCube < 4096) cubeRes = maxCube;
+        }
+      } catch {}
+    }
     const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(cubeRes, {
       type: THREE.HalfFloatType,
     });
@@ -348,6 +384,7 @@ export default function LogoAnimation({
         iResolution: { value: new THREE.Vector3(cubeRes, cubeRes, 1) },
         faceIndex: { value: 0 },
         uScroll: { value: 0 },
+        STEP: { value: STEP },
       },
       vertexShader: `
         varying vec2 vUv;
@@ -357,11 +394,11 @@ export default function LogoAnimation({
         }
       `,
       fragmentShader: `
-        #define STEP 256
         #define EPS .001
         uniform vec3 iResolution;
         uniform float uScroll;
         uniform int faceIndex;
+        uniform int STEP;
         varying vec2 vUv;
         float smin( float a, float b, float k ) {
             float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
@@ -502,10 +539,29 @@ export default function LogoAnimation({
     verticalTiltDeltaDeg,
     invertVertical,
     webgl2Supported,
+    forceFallback,
   ]);
 
-  // Fallback: statyczne tło i uproszczone modele jeśli brak WebGL2
-  if (!webgl2Supported) {
+  // Fallback: statyczne tło i uproszczone modele jeśli brak WebGL2 lub wymuszony fallback
+  if (!webgl2Supported || forceFallback) {
+    // Na iOS: loader zamiast webm
+    if (isIOS()) {
+      return (
+        <div className="h-[400vh] w-full relative bg-black">
+          <div className="sticky top-0 h-screen w-full flex items-center justify-center" style={{ zIndex: 1 }}>
+            <div className="flex flex-col items-center justify-center w-full h-full">
+              <div className="flex items-center justify-center w-full h-full z-20">
+                <div style={{ width: 120, height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div className="loader-ios" style={{ width: 64, height: 64, border: '6px solid #a259f7', borderTop: '6px solid #fff', borderRadius: '50%', animation: 'spin 1.2s linear infinite' }} />
+                  <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    // Pozostałe urządzenia: statyczny obrazek
     return (
       <div className="h-[400vh] w-full relative bg-black">
         <div className="sticky top-0 h-screen w-full" style={{ zIndex: 1 }}>
@@ -522,7 +578,6 @@ export default function LogoAnimation({
               zIndex: 0,
             }}
           />
-          {/* Możesz dodać tu uproszczone SVG/logo lub inne elementy jeśli chcesz */}
         </div>
       </div>
     );
