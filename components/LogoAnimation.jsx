@@ -12,12 +12,16 @@ gsap.registerPlugin(ScrollTrigger);
 // Funkcja detekcji iOS/mobilnych urządzeń
 function isIOS() {
   if (typeof window === "undefined") return false;
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+  return (
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+  );
 }
 function isMobile() {
   if (typeof window === "undefined") return false;
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
 }
 
 export default function LogoAnimation({
@@ -35,6 +39,7 @@ export default function LogoAnimation({
   const [loading, setLoading] = useState(true);
   const [webgl2Supported, setWebgl2Supported] = useState(true);
   const [forceFallback, setForceFallback] = useState(false);
+  const [showStaticBg, setShowStaticBg] = useState(false);
 
   useEffect(() => {
     // Sprawdź wsparcie WebGL2 i wymuś fallback na iOS/mobilnych
@@ -543,16 +548,45 @@ export default function LogoAnimation({
   ]);
 
   // Fallback: statyczne tło i uproszczone modele jeśli brak WebGL2 lub wymuszony fallback
+  useEffect(() => {
+    if (!webgl2Supported || forceFallback) {
+      setShowStaticBg(false);
+      const timeout = setTimeout(() => setShowStaticBg(true), 2000);
+      return () => clearTimeout(timeout);
+    }
+  }, [webgl2Supported, forceFallback]);
+
   if (!webgl2Supported || forceFallback) {
-    // Na iOS: loader zamiast webm
-    if (isIOS()) {
+    if (!showStaticBg) {
+      // Najpierw spinner przez 2 sekundy
       return (
         <div className="h-[400vh] w-full relative bg-black">
-          <div className="sticky top-0 h-screen w-full flex items-center justify-center" style={{ zIndex: 1 }}>
+          <div
+            className="sticky top-0 h-screen w-full flex items-center justify-center"
+            style={{ zIndex: 1 }}
+          >
             <div className="flex flex-col items-center justify-center w-full h-full">
               <div className="flex items-center justify-center w-full h-full z-20">
-                <div style={{ width: 120, height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div className="loader-ios" style={{ width: 64, height: 64, border: '6px solid #a259f7', borderTop: '6px solid #fff', borderRadius: '50%', animation: 'spin 1.2s linear infinite' }} />
+                <div
+                  style={{
+                    width: 120,
+                    height: 120,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <div
+                    className="loader-ios"
+                    style={{
+                      width: 64,
+                      height: 64,
+                      border: "6px solid #a259f7",
+                      borderTop: "6px solid #fff",
+                      borderRadius: "50%",
+                      animation: "spin 1.2s linear infinite",
+                    }}
+                  />
                   <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
                 </div>
               </div>
@@ -561,7 +595,7 @@ export default function LogoAnimation({
         </div>
       );
     }
-    // Pozostałe urządzenia: statyczny obrazek
+    // Po 2 sekundach zawsze statyczne tło
     return (
       <div className="h-[400vh] w-full relative bg-black">
         <div className="sticky top-0 h-screen w-full" style={{ zIndex: 1 }}>
