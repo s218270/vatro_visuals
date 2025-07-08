@@ -40,6 +40,8 @@ export default function LogoAnimation({
   const [webgl2Supported, setWebgl2Supported] = useState(true);
   const [forceFallback, setForceFallback] = useState(false);
   const [showStaticBg, setShowStaticBg] = useState(false);
+  const [fallbackLoading, setFallbackLoading] = useState(true);
+  const fallbackMountRef = useRef();
 
   useEffect(() => {
     // Sprawdź wsparcie WebGL2 i wymuś fallback na iOS/mobilnych
@@ -558,8 +560,6 @@ export default function LogoAnimation({
 
   // Fallback: uproszczona scena 3D na statycznym tle
   if (!webgl2Supported || forceFallback) {
-    const [fallbackLoading, setFallbackLoading] = useState(true);
-    const fallbackMountRef = useRef();
     useEffect(() => {
       const mount = fallbackMountRef.current;
       if (!mount) return;
