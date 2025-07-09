@@ -392,6 +392,9 @@ export default function LogoAnimation({
         faceIndex: { value: 0 },
         uScroll: { value: 0 },
         STEP: { value: STEP },
+        uSkyboxRotation: { value: 0 }, // Y axis
+        uSkyboxRotationX: { value: 0 }, // X axis
+        uSkyboxYOffset: { value: 0.38 }, // NEW: vertical offset for skybox
       },
       vertexShader: `
         varying vec2 vUv;
@@ -406,6 +409,9 @@ export default function LogoAnimation({
         uniform float uScroll;
         uniform int faceIndex;
         uniform int STEP;
+        uniform float uSkyboxRotation; // Y axis
+        uniform float uSkyboxRotationX; // X axis
+        uniform float uSkyboxYOffset; // NEW
         varying vec2 vUv;
         float smin( float a, float b, float k ) {
             float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
@@ -467,11 +473,36 @@ export default function LogoAnimation({
           if(face==4) return normalize(vec3( uv.x, -uv.y,  1.0)); // posZ
           return         normalize(vec3(-uv.x, -uv.y, -1.0));     // negZ
         }
+        // Rotate a vector around Y axis
+        vec3 rotateY(vec3 v, float angle) {
+          float s = sin(angle);
+          float c = cos(angle);
+          return vec3(
+            c * v.x + s * v.z,
+            v.y,
+            -s * v.x + c * v.z
+          );
+        }
+        // Rotate a vector around X axis (NEW)
+        vec3 rotateX(vec3 v, float angle) {
+          float s = sin(angle);
+          float c = cos(angle);
+          return vec3(
+            v.x,
+            c * v.y - s * v.z,
+            s * v.y + c * v.z
+          );
+        }
         void main() {
             vec2 fragCoord = vUv * iResolution.xy;
             vec2 uv = (fragCoord.xy-.5*iResolution.xy)/iResolution.y;
             // Cubemap ray direction
             vec3 rayDir = getRayDir(vUv, faceIndex);
+            rayDir = rotateY(rayDir, uSkyboxRotation); // Y axis
+            rayDir = rotateX(rayDir, uSkyboxRotationX); // X axis
+            rayDir.y += uSkyboxYOffset; // NEW: shift skybox up
+            rayDir.y *= -1.0; // FLIP SKYBOX UPSIDE DOWN
+            rayDir = normalize(rayDir); // re-normalize after offset/flip
             // Camera setup
             vec3 rayOrigin = vec3(uv + vec2(0.,6.), -1. );
             // Blend cubemap direction with original shader direction for seamlessness
@@ -504,6 +535,10 @@ export default function LogoAnimation({
     });
     const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), quadMaterial);
     quadScene.add(quad);
+    // Set skybox rotation angles and height offset here (in radians/units)
+    quadMaterial.uniforms.uSkyboxRotation.value = Math.PI; // 180 deg Y axis
+    quadMaterial.uniforms.uSkyboxRotationX.value = -Math.PI; // 180 deg X axis, upside down
+    quadMaterial.uniforms.uSkyboxYOffset.value = 0.38; // vertical offset
     for (let i = 0; i < 6; i++) {
       quadMaterial.uniforms.faceIndex.value = i;
       renderer.setRenderTarget(cubeRenderTarget, i);

@@ -665,13 +665,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 
 .glassmorphism {
   backdrop-filter: blur(30px);
-  border: 2px solid rgba(255, 255, 255, 0.18);
-  background: rgba(
-    10,
-    10,
-    20,
-    0.65
-  ); /* Slightly less visible dark background */
+  background: rgba(10, 10, 20, 0.65);
 }
 
 /* Hamburger menu icon styles */

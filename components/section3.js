@@ -1,193 +1,25 @@
 "use client";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import ToolsList from "./ToolsList";
 import AnimatedText from "./AnimatedText";
+import useInView from "../lib/useInView";
+import InfiniteScrollSVGLine from "./InfiniteScrollSVGLine";
 
-function useInView(ref, offset = 200) {
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    function onScroll() {
-      if (!ref.current) return;
-      const rect = ref.current.getBoundingClientRect();
-      const isVisible =
-        rect.top < window.innerHeight - offset && rect.bottom > offset;
-      setInView(isVisible);
-    }
-    onScroll();
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [ref, offset]);
-  return inView;
-}
-
-// InfiniteScrollText: seamless, non-jumping, customizable text line
-function InfiniteScrollText({
-  text,
-  className,
-  style,
-  direction = "left",
-  hollow = false,
-  scrollSpeed = 30,
-  scrollSpeedFast = 120,
-  isScrolling,
-}) {
-  const containerRef = useRef(null);
-  const textRef = useRef(null);
-  const [offset, setOffset] = useState(0);
-  const [velocity, setVelocity] = useState(scrollSpeed);
-  const [isUserScrolling, setIsUserScrolling] = useState(false);
-  const [textWidth, setTextWidth] = useState(0);
-
-  // Measure the width of a single text block
-  useEffect(() => {
-    if (textRef.current) {
-      setTextWidth(textRef.current.offsetWidth);
-    }
-  }, [text]);
-
-  // Set initial offset for direction="right" after textWidth is known
-  useEffect(() => {
-    if (direction === "right" && textWidth) {
-      setOffset(-textWidth);
-    } else if (direction === "left") {
-      setOffset(0);
-    }
-  }, [direction, textWidth]);
-
-  useEffect(() => {
-    setIsUserScrolling(isScrolling);
-  }, [isScrolling]);
-
-  useEffect(() => {
-    let animationFrame;
-    let prevTimestamp = null;
-    let currentVelocity = velocity;
-    let targetVelocity = isUserScrolling ? scrollSpeedFast : scrollSpeed;
-    const ACCEL = 200; // px/sec^2, how fast to accelerate
-
-    function animate(ts) {
-      if (!prevTimestamp) prevTimestamp = ts;
-      const dt = (ts - prevTimestamp) / 1000; // seconds
-      prevTimestamp = ts;
-      // Smoothly approach target velocity
-      if (currentVelocity < targetVelocity) {
-        currentVelocity = Math.min(
-          currentVelocity + ACCEL * dt,
-          targetVelocity
-        );
-      } else if (currentVelocity > targetVelocity) {
-        currentVelocity = Math.max(
-          currentVelocity - ACCEL * dt,
-          targetVelocity
-        );
-      }
-      setVelocity(currentVelocity);
-      // Move offset
-      setOffset((prev) => {
-        let next =
-          prev + (direction === "left" ? -1 : 1) * currentVelocity * dt;
-        if (textWidth) {
-          if (direction === "left") {
-            if (next <= -textWidth) next += textWidth;
-          } else {
-            if (next >= textWidth) next -= textWidth;
-          }
-        }
-        return next;
-      });
-      animationFrame = requestAnimationFrame(animate);
-    }
-    animationFrame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationFrame);
-    // eslint-disable-next-line
-  }, [isUserScrolling, direction, scrollSpeed, scrollSpeedFast, textWidth]);
-
-  // Render two copies for seamless loop
-  return (
-    <div
-      ref={containerRef}
-      className={className}
-      style={{
-        ...style,
-        overflow: "hidden",
-        width: "100vw",
-        minWidth: "100vw",
-        pointerEvents: "none",
-        userSelect: "none",
-        position: style?.position || "absolute",
-      }}
-    >
-      <div
-        style={{
-          display: "inline-block",
-          whiteSpace: "nowrap",
-          willChange: "transform",
-          transform: `translateX(${offset}px)`,
-        }}
-      >
-        {hollow ? (
-          <span
-            ref={textRef}
-            style={{
-              color: "transparent",
-              WebkitTextStroke: "14px #fff",
-              textStroke: "8px #fff",
-              fontWeight: 900,
-              opacity: 0.5,
-              fontSize: style?.fontSize,
-              fontFamily: style?.fontFamily,
-              lineHeight: 1,
-              // Alternatywnie, jeśli chcesz efekt shadow zamiast stroke, odkomentuj poniżej:
-              // textShadow: `0 0 2px #fff, 0 0 4px #fff, 0 0 8px #fff, 0 0 12px #fff, 0 0 16px #fff, 0 0 20px #fff, 0 0 24px #fff, 0 0 28px #fff`,
-            }}
-          >
-            {text.repeat(150)}
-          </span>
-        ) : (
-          <>
-            <span
-              ref={textRef}
-              style={{
-                color: "#fff",
-                fontWeight: 500,
-                opacity: 0.5,
-                filter: "blur(0.5px)",
-                fontSize: style?.fontSize,
-                fontFamily: style?.fontFamily,
-              }}
-            >
-              {text.repeat(150)}
-            </span>
-            <span
-              style={{
-                color: "#fff",
-                fontWeight: 500,
-                opacity: 0.5,
-                filter: "blur(0.5px)",
-                fontSize: style?.fontSize,
-                fontFamily: style?.fontFamily,
-              }}
-            >
-              {text.repeat(150)}
-            </span>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
+// Section3: Main About/Tools/Animated SVG section
+// Handles layout, in-view animations, and background SVG lines
 export default function Section3({ speed, scrollToSection }) {
+  // Refs for in-view detection
   const containerRef = useRef(null);
   const imageRef = useRef(null);
   const omnieRef = useRef(null);
   const toolsRef = useRef(null);
 
+  // In-view states for animated appearance
   const inViewImage = useInView(imageRef, 120);
   const inViewOmnie = useInView(omnieRef, 120);
   const inViewTools = useInView(toolsRef, 120);
 
-  // --- RESET ANIMACJI BORDERÓW/Glow przy szybkim wejściu/wyjściu z widoku ---
+  // Reset border/glow animation on in/out of view
   useEffect(() => {
     const el = imageRef.current;
     if (!el) return;
@@ -225,7 +57,7 @@ export default function Section3({ speed, scrollToSection }) {
     }
   }, [inViewTools]);
 
-  // Scroll speed-up logic
+  // User scroll detection for speeding up SVG lines
   const [isScrolling, setIsScrolling] = useState(false);
   useEffect(() => {
     let timeoutId;
@@ -241,6 +73,7 @@ export default function Section3({ speed, scrollToSection }) {
     };
   }, []);
 
+  // Animation duration for glitch button (not used for SVGs)
   const animDuration = isScrolling ? "200s" : "750s";
 
   return (
@@ -249,7 +82,7 @@ export default function Section3({ speed, scrollToSection }) {
       className="min-h-[1000px] w-full bg-black flex flex-col items-center justify-center relative overflow-hidden h-auto lg:h-screen"
       ref={containerRef}
     >
-      {/* Gradient overlay at the top */}
+      {/* Gradient overlays for top/bottom fade */}
       <div
         style={{
           position: "absolute",
@@ -262,7 +95,6 @@ export default function Section3({ speed, scrollToSection }) {
           background: "linear-gradient(to bottom, #000 0%, transparent 100%)",
         }}
       />
-      {/* Gradient overlay at the bottom */}
       <div
         style={{
           position: "absolute",
@@ -275,43 +107,71 @@ export default function Section3({ speed, scrollToSection }) {
           background: "linear-gradient(to top, #000 0%, transparent 100%)",
         }}
       />
-      {/* Animated background text lines */}
-      {/* VATRO line: scrolls right, 5% from top, starts at left: 0 */}
-      <InfiniteScrollText
-        text={"_VATRO"}
-        className="vatro-bg-text vatroline"
-        direction="right"
+      {/* Top set of animated background SVG lines */}
+      <InfiniteScrollSVGLine
+        src="/vatro_visuals_fill.svg"
+        className="vatro-bg-svg vatroline"
+        direction="left" // Opposite direction from first set
+        svgWidth={9500}
+        svgHeight={1020}
+        scale={0.5}
         style={{
-          fontSize: "60vh", // 60% wysokości sekcji
-          fontWeight: 500,
-          color: "#fff",
-          top: "-15vh", // wychodzi ponad sekcję
+          top: "7vh",
           left: 0,
           position: "absolute",
-          opacity: 0.5,
+          opacity: 0.4,
           zIndex: 0,
-          lineHeight: 1,
         }}
         isScrolling={isScrolling}
       />
-      {/* VISUALS line (hollow/outline, leading underscore): scrolls left, 5% from bottom, starts at right: 0 */}
-      <InfiniteScrollText
-        text={"_VISUALS"}
-        className="vatro-bg-text visualsline"
-        direction="left"
-        hollow={true}
+      <InfiniteScrollSVGLine
+        src="/vatro_visuals_outline.svg"
+        className="vatro-bg-svg visualsline"
+        direction="right" // Opposite direction from first set
+        svgWidth={9500}
+        svgHeight={1020}
+        scale={0.6}
         style={{
-          fontSize: "60vh", // 60% wysokości sekcji
-          fontWeight: 900,
-          color: "transparent",
-          WebkitTextStroke: "2px #fff", // cienki outline
-          textStroke: "2px #fff",
-          bottom: "-15vh", // wychodzi pod sekcję
+          top: "calc(7vh - 150px)",
           right: 0,
           position: "absolute",
-          opacity: 0.5,
+          opacity: 0.7,
           zIndex: 0,
-          lineHeight: 1,
+        }}
+        isScrolling={isScrolling}
+      />
+      {/* Animated background SVG lines (bottom set) */}
+      {/* Top line: center SVG at left: 0, scrolls right */}
+      <InfiniteScrollSVGLine
+        src="/vatro_visuals_fill.svg"
+        className="vatro-bg-svg vatroline"
+        direction="right"
+        svgWidth={9500}
+        svgHeight={1020}
+        scale={0.5}
+        style={{
+          bottom: "calc(7vh - 50px)",
+          left: 0,
+          position: "absolute",
+          opacity: 0.4,
+          zIndex: 0,
+        }}
+        isScrolling={isScrolling}
+      />
+      {/* Bottom line: center SVG at right: 0, scrolls left */}
+      <InfiniteScrollSVGLine
+        src="/vatro_visuals_outline.svg"
+        className="vatro-bg-svg visualsline"
+        direction="left"
+        svgWidth={9500}
+        svgHeight={1020}
+        scale={0.6}
+        style={{
+          bottom: "7vh",
+          right: 0,
+          position: "absolute",
+          opacity: 0.7,
+          zIndex: 0,
         }}
         isScrolling={isScrolling}
       />
@@ -731,6 +591,23 @@ export default function Section3({ speed, scrollToSection }) {
         <div className="border-purple-glow-bottom"></div>
         <div className="border-purple-glow-left"></div>
       </div>
+
+      {/* Radial fade below the section */}
+      <div
+        style={{
+          position: "absolute",
+          overflow: "visible",
+          left: "50%",
+          bottom: "-50vh", // Place below the bottom of the section
+          transform: "translateX(-50%)",
+          width: "150vw",
+          height: "80vh",
+          pointerEvents: "none",
+          zIndex: 0,
+          background:
+            "radial-gradient(ellipse at center, #a259f7 0%, transparent 70%)",
+        }}
+      />
     </section>
   );
 }
