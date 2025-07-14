@@ -4,6 +4,26 @@ import { getProjects } from "@/lib/getProjects";
 import Image from "next/image";
 import Link from "next/link";
 import "../fadein.css";
+import GlitchButton from "@/components/GlitchButton";
+import { useRef } from "react";
+
+export function useElementInView(offset = 120) {
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    function onScroll() {
+      if (!ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      const isVisible =
+        rect.top < window.innerHeight - offset && rect.bottom > offset;
+      setInView(isVisible);
+    }
+    onScroll();
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [offset]);
+  return [ref, inView];
+}
 
 export default function ProjectPage({ params }) {
   const { projectId } = params;
@@ -52,7 +72,7 @@ export default function ProjectPage({ params }) {
     return (
       <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center">
         <h1 className="text-3xl font-bold mb-4">Projekt nie znaleziony</h1>
-        <Link href="/projects" className="text-purple-400 underline">
+        <Link href="/projects" className="text-[#6a00d1]">
           Powrót do projektów
         </Link>
       </div>
@@ -63,23 +83,19 @@ export default function ProjectPage({ params }) {
     <div className="min-h-screen bg-black text-white p-0 pt-0 w-full">
       <div className="w-full flex items-start mt-4" style={{ height: 56 }}>
         <div className="fixed top-28 left-4 z-40">
-          <div className="button-border-wrapper">
-            <Link
-              href="/projects"
-              className="button-border-content bg-black p-4 rounded-full"
-              style={{
-                position: "relative",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <span
-                className="glitch-text-white"
+          <GlitchButton
+            styles={{ padding: "0" }}
+            text={
+              <Link
+                href="/projects"
                 style={{
+                  position: "relative",
                   display: "flex",
                   alignItems: "center",
-                  gap: 8,
+                  justifyContent: "center",
+                  width: "100%",
+                  height: "100%",
+                  padding: "16px 24px",
                 }}
               >
                 <svg
@@ -97,47 +113,9 @@ export default function ProjectPage({ params }) {
                     d="M19 9l-7 7-7-7"
                   />
                 </svg>
-              </span>
-              <span
-                className="glitch-text-purple"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="w-6 h-6 text-[#a259f7]"
-                  style={{ transform: "rotate(90deg)" }}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </span>
-            </Link>
-            <div className="border-line border-white-1"></div>
-            <div className="border-line border-white-2"></div>
-            {/* White Glow */}
-            <div className="border-white-glow-top"></div>
-            <div className="border-white-glow-right"></div>
-            <div className="border-white-glow-bottom"></div>
-            <div className="border-white-glow-left"></div>
-            <div className="border-line border-purple-1"></div>
-            <div className="border-line border-purple-2"></div>
-            {/* Purple Glow */}
-            <div className="border-purple-glow-top"></div>
-            <div className="border-purple-glow-right"></div>
-            <div className="border-purple-glow-bottom"></div>
-            <div className="border-purple-glow-left"></div>
-          </div>
+              </Link>
+            }
+          />
         </div>
       </div>
       {project.mainImage && (
@@ -152,7 +130,7 @@ export default function ProjectPage({ params }) {
                   style={{
                     width: 48,
                     height: 48,
-                    border: "6px solid #a259f7",
+                    border: "6px solid #6a00d1",
                     borderTop: "6px solid #fff",
                     borderRadius: "50%",
                     animation: "spin 1.2s linear infinite",
@@ -168,7 +146,6 @@ export default function ProjectPage({ params }) {
                     width: 48,
                     height: 48,
                     objectFit: "contain",
-                    animation: "spin 1.2s linear infinite",
                     background: "none",
                   }}
                 />
@@ -232,8 +209,8 @@ export default function ProjectPage({ params }) {
             animationFillMode: "both",
           }}
         >
-          <div className="w-full items-center justify-center flex py-4">
-            <span className="font-semibold">Pliki:</span>
+          <div className="w-full items-center justify-center flex py-4 text-2xl">
+            <span>Pliki:</span>
           </div>
           <ul className="flex flex-col gap-8 mt-4">
             {project.files.map((file, idx) => {
@@ -275,8 +252,8 @@ export default function ProjectPage({ params }) {
                     animationFillMode: "both",
                   }}
                 >
-                  <div className="mb-4 text-center text-base text-white font-semibold">
-                    {file.description || "No description"}
+                  <div className="mb-4 text-center text-base text-white">
+                    {file.description || ""}
                   </div>
                   {imgUrl && (
                     <div className="mt-4 w-full rounded-[3px] relative flex flex-col items-center">
@@ -287,7 +264,7 @@ export default function ProjectPage({ params }) {
                               style={{
                                 width: 48,
                                 height: 48,
-                                border: "6px solid #a259f7",
+                                border: "6px solid #6a00d1",
                                 borderTop: "6px solid #fff",
                                 borderRadius: "50%",
                                 animation: "spin 1.2s linear infinite",
@@ -303,7 +280,6 @@ export default function ProjectPage({ params }) {
                                 width: 48,
                                 height: 48,
                                 objectFit: "contain",
-                                animation: "spin 1.2s linear infinite",
                                 background: "none",
                               }}
                             />
@@ -317,7 +293,7 @@ export default function ProjectPage({ params }) {
                           alt={file.description || `File ${idx + 1}`}
                           width={400}
                           height={250}
-                          className="rounded border border-gray-700 object-contain bg-black"
+                          className="object-contain"
                           onLoad={() => handleFileImageLoad(idx)}
                           onError={() => handleFileImageLoad(idx)}
                           style={{ borderRadius: "inherit" }}
@@ -327,7 +303,7 @@ export default function ProjectPage({ params }) {
                         <video
                           src={imgUrl}
                           controls
-                          className="rounded border border-gray-700 bg-black w-full max-h-64 object-contain"
+                          className="w-full max-h-64 object-contain"
                           style={{ borderRadius: "inherit" }}
                           onLoadedData={() => handleFileImageLoad(idx)}
                           onError={() => handleFileImageLoad(idx)}
@@ -338,7 +314,7 @@ export default function ProjectPage({ params }) {
                           href={imgUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-purple-400 underline mt-2"
+                          className="mt-2"
                           onLoad={() => handleFileImageLoad(idx)}
                         >
                           Pobierz plik {ext.toUpperCase()}
@@ -349,7 +325,7 @@ export default function ProjectPage({ params }) {
                           href={imgUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-purple-400 underline mt-2"
+                          className="mt-2"
                           onLoad={() => handleFileImageLoad(idx)}
                         >
                           Zobacz plik

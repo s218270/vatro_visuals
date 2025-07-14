@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { getProjects } from "../lib/getProjects";
 import Link from "next/link";
 import { useInView } from "react-intersection-observer";
+import GlitchButton from "./GlitchButton";
 
 export default function Section4({ scrollToSection }) {
   const [activeIndex, setActiveIndex] = useState(1);
@@ -276,6 +277,31 @@ export default function Section4({ scrollToSection }) {
         transition: "background-image 0.5s ease-in-out",
       }}
     >
+      {/* Gradient overlays for top/bottom fade */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "30vh",
+          zIndex: 10,
+          pointerEvents: "none",
+          background: "linear-gradient(to bottom, #000 0%, transparent 100%)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          height: "30vh",
+          zIndex: 10,
+          pointerEvents: "none",
+          background: "linear-gradient(to top, #000 0%, transparent 100%)",
+        }}
+      />
       {/* Additional background layer for smooth transition */}
       <div
         className="absolute inset-0 z-0"
@@ -317,91 +343,26 @@ export default function Section4({ scrollToSection }) {
             zIndex: 30,
           }}
         >
-          <div className="button-border-wrapper">
-            <button
-              onClick={handlePrev}
-              className="button-border-content bg-black p-4 rounded-full"
-              style={{
-                width: 64,
-                height: 64,
-                position: "relative",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-              onMouseEnter={() => handleNavButtonMouseEnter(0)}
-              onMouseLeave={(e) => {
-                const purple = e.currentTarget.querySelector(
-                  ".glitch-text-purple"
-                );
-                if (!purple) return;
-                purple.classList.remove("glitch-done");
-                purple.classList.add("glitch-out");
-                purple.addEventListener(
-                  "animationend",
-                  () => {
-                    purple.classList.remove("glitch-out");
-                    purple.classList.add("glitch-done");
-                  },
-                  { once: true }
-                );
-              }}
-              disabled={isTransitioning}
-            >
-              <span
-                className="glitch-text-white"
-                style={{ display: "flex", alignItems: "center", gap: 8 }}
+          <GlitchButton
+            onClick={handlePrev}
+            text={
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                className="w-6 h-6 text-white"
+                style={{ transform: "rotate(90deg)" }}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="w-6 h-6 text-white"
-                  style={{ transform: "rotate(90deg)" }}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </span>
-              <span
-                className="glitch-text-purple"
-                style={{ display: "flex", alignItems: "center", gap: 8 }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="w-6 h-6 text-[#a259f7]"
-                  style={{ transform: "rotate(90deg)" }}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </span>
-            </button>
-            <div className="border-line border-white-1"></div>
-            <div className="border-line border-white-2"></div>
-            <div className="border-white-glow-top"></div>
-            <div className="border-white-glow-right"></div>
-            <div className="border-white-glow-bottom"></div>
-            <div className="border-white-glow-left"></div>
-            <div className="border-line border-purple-1"></div>
-            <div className="border-line border-purple-2"></div>
-            <div className="border-purple-glow-top"></div>
-            <div className="border-purple-glow-right"></div>
-            <div className="border-purple-glow-bottom"></div>
-            <div className="border-purple-glow-left"></div>
-          </div>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            }
+          />
         </div>
         <div
           style={{
@@ -411,91 +372,26 @@ export default function Section4({ scrollToSection }) {
             zIndex: 30,
           }}
         >
-          <div className="button-border-wrapper">
-            <button
-              onClick={handleNext}
-              className="button-border-content bg-black p-4 rounded-full"
-              style={{
-                width: 64,
-                height: 64,
-                position: "relative",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-              onMouseEnter={() => handleNavButtonMouseEnter(1)}
-              onMouseLeave={(e) => {
-                const purple = e.currentTarget.querySelector(
-                  ".glitch-text-purple"
-                );
-                if (!purple) return;
-                purple.classList.remove("glitch-done");
-                purple.classList.add("glitch-out");
-                purple.addEventListener(
-                  "animationend",
-                  () => {
-                    purple.classList.remove("glitch-out");
-                    purple.classList.add("glitch-done");
-                  },
-                  { once: true }
-                );
-              }}
-              disabled={isTransitioning}
-            >
-              <span
-                className="glitch-text-white"
-                style={{ display: "flex", alignItems: "center", gap: 8 }}
+          <GlitchButton
+            onClick={handleNext}
+            text={
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                className="w-6 h-6 text-white"
+                style={{ transform: "rotate(-90deg)" }}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="w-6 h-6 text-white"
-                  style={{ transform: "rotate(-90deg)" }}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </span>
-              <span
-                className="glitch-text-purple"
-                style={{ display: "flex", alignItems: "center", gap: 8 }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="w-6 h-6 text-[#a259f7]"
-                  style={{ transform: "rotate(-90deg)" }}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </span>
-            </button>
-            <div className="border-line border-white-1"></div>
-            <div className="border-line border-white-2"></div>
-            <div className="border-white-glow-top"></div>
-            <div className="border-white-glow-right"></div>
-            <div className="border-white-glow-bottom"></div>
-            <div className="border-white-glow-left"></div>
-            <div className="border-line border-purple-1"></div>
-            <div className="border-line border-purple-2"></div>
-            <div className="border-purple-glow-top"></div>
-            <div className="border-purple-glow-right"></div>
-            <div className="border-purple-glow-bottom"></div>
-            <div className="border-purple-glow-left"></div>
-          </div>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            }
+          />
         </div>
 
         <div
@@ -550,149 +446,142 @@ export default function Section4({ scrollToSection }) {
                   className="w-full h-full"
                   style={{ display: "block", height: "100%" }}
                 >
-                  <div
-                    ref={(el) => (borderRefs.current[i] = el)}
-                    className={`button-border-scroll glassmorphism w-full h-[14.5rem] flex items-center justify-center relative ${
-                      hoveredIndex === i ? "active" : ""
-                    } animate-in`}
-                    style={{
-                      borderRadius: 3,
-                      minHeight: 0,
-                      minWidth: 0,
+                  <GlitchButton
+                    styles={{
                       padding: 0,
-                      transition: "height 0.3s cubic-bezier(0.4,0,0.2,1)",
-                      height: hoveredIndex === i ? "18rem" : "14.5rem",
+                      position: "relative",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
-                    {/* Loader tylko w środku karty */}
-                    {!loaded[i] && (
-                      <div
-                        className="flex items-center justify-center w-full h-full z-20"
-                        style={{
-                          position: "absolute",
-                          left: 0,
-                          top: 0,
-                          right: 0,
-                          bottom: 0,
-                          background: "none",
-                        }}
-                      >
-                        {typeof window !== "undefined" && isIOS() ? (
-                          <div
-                            style={{
-                              width: 64,
-                              height: 64,
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <div
-                              className="loader-ios"
-                              style={{
-                                width: 48,
-                                height: 48,
-                                border: "6px solid #a259f7",
-                                borderTop: "6px solid #fff",
-                                borderRadius: "50%",
-                                animation: "spin 1.2s linear infinite",
-                              }}
-                            />
-                            <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
-                          </div>
-                        ) : (
-                          <video
-                            src="/Loading_WWW.webm"
-                            autoPlay
-                            loop
-                            muted
-                            style={{
-                              width: 64,
-                              height: 64,
-                              objectFit: "contain",
-                              animation: "spin 1.2s linear infinite",
-                              background: "none",
-                            }}
-                          />
-                        )}
-                        <style>{`
-                          @keyframes spin { 100% { transform: rotate(360deg); } }
-                        `}</style>
-                      </div>
-                    )}
                     <div
-                      className="button-border-content w-full h-full flex flex-col items-center justify-center overflow-hidden cursor-pointer transition-all duration-200"
+                      ref={(el) => (borderRefs.current[i] = el)}
+                      className={`glassmorphism w-full h-[14.5rem] flex items-center justify-center relative`}
                       style={{
-                        backgroundImage: getImageUrl(project.mainImage)
-                          ? `url(${getImageUrl(project.mainImage)})`
-                          : undefined,
-                        backgroundColor: getImageUrl(project.mainImage)
-                          ? undefined
-                          : "#222",
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
                         borderRadius: 3,
-                        position: "relative",
-                        zIndex: 2,
+                        minHeight: 0,
+                        minWidth: 0,
+                        padding: 0,
+                        transition: "height 0.3s cubic-bezier(0.4,0,0.2,1)",
+                        height: hoveredIndex === i ? "18rem" : "14.5rem",
                       }}
                     >
-                      <span
-                        className="text-white text-xl bg-black/50 px-4 py-2 rounded"
-                        style={{ zIndex: 3, position: "relative" }}
-                      >
-                        {project.title}
-                      </span>
-                      {/* Short description on hover */}
-                      <div
-                        className={`w-full transition-all duration-300 bg-black/70 text-white text-base px-4 py-2 rounded-b absolute left-0 bottom-0 ${
-                          hoveredIndex === i
-                            ? "opacity-100 max-h-32"
-                            : "opacity-0 max-h-0 pointer-events-none"
-                        }`}
-                        style={{
-                          zIndex: 4,
-                          overflow: "hidden",
-                        }}
-                      >
-                        {project.shortDescription}
-                      </div>
-                      {/* DEBUG: pokaż URL jeśli nie ma obrazka */}
-                      {!getImageUrl(project.mainImage) && (
-                        <span
+                      {/* Loader tylko w środku karty */}
+                      {!loaded[i] && (
+                        <div
+                          className="flex items-center justify-center w-full h-full z-20"
                           style={{
-                            color: "red",
-                            fontSize: 10,
-                            wordBreak: "break-all",
                             position: "absolute",
-                            bottom: 0,
                             left: 0,
+                            top: 0,
                             right: 0,
-                            background: "#fff2",
-                            padding: 2,
+                            bottom: 0,
+                            background: "none",
                           }}
                         >
-                          brak obrazka
-                          <br />
-                          {JSON.stringify(project.mainImage)}
-                        </span>
+                          {typeof window !== "undefined" && isIOS() ? (
+                            <div
+                              style={{
+                                width: 64,
+                                height: 64,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <div
+                                className="loader-ios"
+                                style={{
+                                  width: 48,
+                                  height: 48,
+                                  border: "6px solid #6a00d1",
+                                  borderTop: "6px solid #fff",
+                                  borderRadius: "50%",
+                                  animation: "spin 1.2s linear infinite",
+                                }}
+                              />
+                              <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+                            </div>
+                          ) : (
+                            <video
+                              src="/Loading_WWW.webm"
+                              autoPlay
+                              loop
+                              muted
+                              style={{
+                                width: 64,
+                                height: 64,
+                                objectFit: "contain",
+                                background: "none",
+                              }}
+                            />
+                          )}
+                          <style>{`
+                          @keyframes spin { 100% { transform: rotate(360deg); } }
+                        `}</style>
+                        </div>
                       )}
-                    </div>
 
-                    <div className="border-line border-white-1"></div>
-                    <div className="border-line border-white-2"></div>
-                    {/* White Glow */}
-                    <div className="border-white-glow-top"></div>
-                    <div className="border-white-glow-right"></div>
-                    <div className="border-white-glow-bottom"></div>
-                    <div className="border-white-glow-left"></div>
-                    <div className="border-line border-purple-1"></div>
-                    <div className="border-line border-purple-2"></div>
-                    {/* Purple Glow */}
-                    <div className="border-purple-glow-top"></div>
-                    <div className="border-purple-glow-right"></div>
-                    <div className="border-purple-glow-bottom"></div>
-                    <div className="border-purple-glow-left"></div>
-                  </div>
+                      <div
+                        className="w-full h-full flex flex-col items-center justify-center overflow-hidden cursor-pointer transition-all duration-200"
+                        style={{
+                          backgroundImage: getImageUrl(project.mainImage)
+                            ? `url(${getImageUrl(project.mainImage)})`
+                            : undefined,
+                          backgroundColor: getImageUrl(project.mainImage)
+                            ? undefined
+                            : "#222",
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                          borderRadius: 3,
+                          position: "relative",
+                          zIndex: 2,
+                        }}
+                      >
+                        <span
+                          className="text-white text-xl bg-black/50 px-4 py-2 rounded"
+                          style={{ zIndex: 3, position: "relative" }}
+                        >
+                          {project.title}
+                        </span>
+                        {/* Short description on hover */}
+                        <div
+                          className={`w-full transition-all duration-300 bg-black/70 text-white text-base px-4 py-2 rounded-b absolute left-0 bottom-0 ${
+                            hoveredIndex === i
+                              ? "opacity-100 max-h-32"
+                              : "opacity-0 max-h-0 pointer-events-none"
+                          }`}
+                          style={{
+                            zIndex: 4,
+                            overflow: "hidden",
+                          }}
+                        >
+                          {project.shortDescription}
+                        </div>
+                        {/* DEBUG: pokaż URL jeśli nie ma obrazka */}
+                        {!getImageUrl(project.mainImage) && (
+                          <span
+                            style={{
+                              color: "red",
+                              fontSize: 10,
+                              wordBreak: "break-all",
+                              position: "absolute",
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              background: "#fff2",
+                              padding: 2,
+                            }}
+                          >
+                            brak obrazka
+                            <br />
+                            {JSON.stringify(project.mainImage)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </GlitchButton>
                 </Link>
               </div>
             );
@@ -700,54 +589,29 @@ export default function Section4({ scrollToSection }) {
         </div>
 
         {/* See All Link - styled and placed directly below carousel */}
-        <div className="w-full flex justify-center items-center mt-72 absolute left-0 right-0 z-20">
-          <div className="button-border-wrapper">
-            <Link
-              href="/projects"
-              className="button-border-content bg-black px-8 py-4 rounded-full flex items-center justify-center text-white text-lg font-semibold relative overflow-hidden"
-              style={{ minWidth: 220, minHeight: 56 }}
-              onMouseEnter={() => handleNavButtonMouseEnter(2)}
-              onMouseLeave={(e) => {
-                const purple = e.currentTarget.querySelector(
-                  ".glitch-text-purple"
-                );
-                if (!purple) return;
-                purple.classList.remove("glitch-done");
-                purple.classList.add("glitch-out");
-                purple.addEventListener(
-                  "animationend",
-                  () => {
-                    purple.classList.remove("glitch-out");
-                    purple.classList.add("glitch-done");
-                  },
-                  { once: true }
-                );
-              }}
-              ref={(el) => (navButtonRefs.current[2] = el)}
-            >
-              <span className="glitch-text-white">
-                Zobacz wszystkie projekty
-              </span>
-              <span
-                className="glitch-text-purple absolute left-0 top-0 w-full h-full flex items-center justify-center pointer-events-none"
-                style={{ zIndex: 2 }}
+        <div className="w-full flex justify-center items-center mt-96 absolute z-20 h-32">
+          <GlitchButton
+            styles={{
+              padding: "0",
+              textAlign: "center",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            text={
+              <Link
+                href="/projects"
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "16px 24px",
+                }}
               >
                 Zobacz wszystkie projekty
-              </span>
-            </Link>
-            <div className="border-line border-white-1"></div>
-            <div className="border-line border-white-2"></div>
-            <div className="border-white-glow-top"></div>
-            <div className="border-white-glow-right"></div>
-            <div className="border-white-glow-bottom"></div>
-            <div className="border-white-glow-left"></div>
-            <div className="border-line border-purple-1"></div>
-            <div className="border-line border-purple-2"></div>
-            <div className="border-purple-glow-top"></div>
-            <div className="border-purple-glow-right"></div>
-            <div className="border-purple-glow-bottom"></div>
-            <div className="border-purple-glow-left"></div>
-          </div>
+              </Link>
+            }
+          />
         </div>
 
         {/* Section Navigation Buttons */}
@@ -755,92 +619,26 @@ export default function Section4({ scrollToSection }) {
           className="flex flex-col items-center gap-4 absolute z-30 bottom-10 left-1/2"
           style={{ transform: "translateX(-50%)" }}
         >
+          <GlitchButton
+            onClick={() => scrollToSection("section5")}
+            text={
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                className="w-6 h-6 text-white"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            }
+          />
           {/* Scroll to section3 button (upwards) */}
-
-          {/* Scroll to section5 button (downwards) */}
-          <div
-            className="button-border-wrapper"
-            ref={(el) => (navButtonRefs.current[1] = el)}
-          >
-            <button
-              onClick={() => scrollToSection("section5")}
-              className="button-border-content bg-black p-4 rounded-full"
-              style={{
-                position: "relative",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-              onMouseEnter={() => handleNavButtonMouseEnter(1)}
-              onMouseLeave={(e) => {
-                const purple = e.currentTarget.querySelector(
-                  ".glitch-text-purple"
-                );
-                if (!purple) return;
-                purple.classList.remove("glitch-done");
-                purple.classList.add("glitch-out");
-                purple.addEventListener(
-                  "animationend",
-                  () => {
-                    purple.classList.remove("glitch-out");
-                    purple.classList.add("glitch-done");
-                  },
-                  { once: true }
-                );
-              }}
-            >
-              <span
-                className="glitch-text-white"
-                style={{ display: "flex", alignItems: "center", gap: 8 }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="w-6 h-6 text-white"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </span>
-              <span
-                className="glitch-text-purple"
-                style={{ display: "flex", alignItems: "center", gap: 8 }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="w-6 h-6 text-[#a259f7]"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </span>
-            </button>
-            <div className="border-line border-white-1"></div>
-            <div className="border-line border-white-2"></div>
-            <div className="border-white-glow-top"></div>
-            <div className="border-white-glow-right"></div>
-            <div className="border-white-glow-bottom"></div>
-            <div className="border-white-glow-left"></div>
-            <div className="border-line border-purple-1"></div>
-            <div className="border-line border-purple-2"></div>
-            <div className="border-purple-glow-top"></div>
-            <div className="border-purple-glow-right"></div>
-            <div className="border-purple-glow-bottom"></div>
-            <div className="border-purple-glow-left"></div>
-          </div>
         </div>
       </div>
     </section>

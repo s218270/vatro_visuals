@@ -1,3 +1,246 @@
+/* Unusual-animation: animate out on mouse leave (not hover) */
+/* === UNUSUAL ANIMATION (hover-based, unique classes, faster, all-CSS) === */
+/* .unusual-animation-wrapper {
+  position: relative;
+  display: inline-block;
+  border-radius: 3px;
+  overflow: visible;
+} */
+
+/* White phase: borders + glow */
+/* .unusual-animation-border-top-white,
+.unusual-animation-border-bottom-white,
+.unusual-animation-border-left-white,
+.unusual-animation-border-right-white {
+  position: absolute;
+  background: transparent;
+  transition: width 0.3s linear, height 0.3s linear, opacity 0.3s linear;
+  opacity: 0;
+  z-index: 10;
+}
+.unusual-animation-border-top-white {
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 0;
+  border-radius: 3px 3px 0 0;
+  background: white;
+}
+.unusual-animation-border-bottom-white {
+  bottom: 0;
+  right: 0;
+  height: 4px;
+  width: 0;
+  border-radius: 0 0 3px 3px;
+  background: white;
+}
+.unusual-animation-border-left-white {
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 0;
+  border-radius: 3px 0 0 3px;
+  background: white;
+}
+.unusual-animation-border-right-white {
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 0;
+  border-radius: 0 3px 3px 0;
+  background: white;
+}
+
+.unusual-animation-glow-top-white,
+.unusual-animation-glow-bottom-white,
+.unusual-animation-glow-left-white,
+.unusual-animation-glow-right-white {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 11;
+  box-shadow: 0 0 8px 2px white;
+  transition: width 0.3s linear, height 0.3s linear, opacity 0.3s linear;
+}
+.unusual-animation-glow-top-white {
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  border-radius: 3px 3px 0 0;
+}
+.unusual-animation-glow-bottom-white {
+  bottom: 0;
+  right: 0;
+  height: 2px;
+  width: 0;
+  border-radius: 0 0 3px 3px;
+}
+.unusual-animation-glow-left-white {
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 0;
+  border-radius: 3px 0 0 3px;
+}
+.unusual-animation-glow-right-white {
+  top: 0;
+  right: 0;
+  width: 2px;
+  height: 0;
+  border-radius: 0 3px 3px 0;
+} */
+
+/* Purple phase: borders + glow (triggered after 1s on hover) */
+/* .unusual-animation-border-top-purple,
+.unusual-animation-border-bottom-purple,
+.unusual-animation-border-left-purple,
+.unusual-animation-border-right-purple {
+  position: absolute;
+  background: transparent;
+  transition: width 0.3s linear 1s, height 0.3s linear 1s,
+    opacity 0.3s linear 1s;
+  opacity: 0;
+  z-index: 12;
+}
+.unusual-animation-border-top-purple {
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 0;
+  border-radius: 3px 3px 0 0;
+  background: #a259f7;
+}
+.unusual-animation-border-bottom-purple {
+  bottom: 0;
+  right: 0;
+  height: 4px;
+  width: 0;
+  border-radius: 0 0 3px 3px;
+  background: #a259f7;
+}
+.unusual-animation-border-left-purple {
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 0;
+  border-radius: 3px 0 0 3px;
+  background: #a259f7;
+}
+.unusual-animation-border-right-purple {
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 0;
+  border-radius: 0 3px 3px 0;
+  background: #a259f7;
+}
+
+.unusual-animation-glow-top-purple,
+.unusual-animation-glow-bottom-purple,
+.unusual-animation-glow-left-purple,
+.unusual-animation-glow-right-purple {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 13;
+  box-shadow: 0 0 12px 3px #a259f7;
+  transition: width 0.3s linear 1s, height 0.3s linear 1s,
+    opacity 0.3s linear 1s;
+}
+.unusual-animation-glow-top-purple {
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  border-radius: 3px 3px 0 0;
+}
+.unusual-animation-glow-bottom-purple {
+  bottom: 0;
+  right: 0;
+  height: 2px;
+  width: 0;
+  border-radius: 0 0 3px 3px;
+}
+.unusual-animation-glow-left-purple {
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 0;
+  border-radius: 3px 0 0 3px;
+}
+.unusual-animation-glow-right-purple {
+  top: 0;
+  right: 0;
+  width: 2px;
+  height: 0;
+  border-radius: 0 3px 3px 0;
+} */
+
+/* On hover: animate white borders/glow in instantly, purple after 1s */
+/* .unusual-animation-wrapper:hover .unusual-animation-border-top-white,
+.unusual-animation-wrapper:hover .unusual-animation-border-bottom-white {
+  width: 100%;
+  opacity: 1;
+}
+.unusual-animation-wrapper:hover .unusual-animation-border-left-white,
+.unusual-animation-wrapper:hover .unusual-animation-border-right-white {
+  height: 100%;
+  opacity: 1;
+}
+.unusual-animation-wrapper:hover .unusual-animation-glow-top-white,
+.unusual-animation-wrapper:hover .unusual-animation-glow-bottom-white {
+  width: 100%;
+  opacity: 0.7;
+}
+.unusual-animation-wrapper:hover .unusual-animation-glow-left-white,
+.unusual-animation-wrapper:hover .unusual-animation-glow-right-white {
+  height: 100%;
+  opacity: 0.7;
+}
+
+.unusual-animation-wrapper:hover .unusual-animation-border-top-purple,
+.unusual-animation-wrapper:hover .unusual-animation-border-bottom-purple {
+  width: 100%;
+  opacity: 1;
+}
+.unusual-animation-wrapper:hover .unusual-animation-border-left-purple,
+.unusual-animation-wrapper:hover .unusual-animation-border-right-purple {
+  height: 100%;
+  opacity: 1;
+}
+.unusual-animation-wrapper:hover .unusual-animation-glow-top-purple,
+.unusual-animation-wrapper:hover .unusual-animation-glow-bottom-purple {
+  width: 100%;
+  opacity: 0.7;
+}
+.unusual-animation-wrapper:hover .unusual-animation-glow-left-purple,
+.unusual-animation-wrapper:hover .unusual-animation-glow-right-purple {
+  height: 100%;
+  opacity: 0.7;
+} */
+
+/* Reset on mouse leave */
+/* .unusual-animation-border-top-white,
+.unusual-animation-border-bottom-white,
+.unusual-animation-border-left-white,
+.unusual-animation-border-right-white,
+.unusual-animation-glow-top-white,
+.unusual-animation-glow-bottom-white,
+.unusual-animation-glow-left-white,
+.unusual-animation-glow-right-white,
+.unusual-animation-border-top-purple,
+.unusual-animation-border-bottom-purple,
+.unusual-animation-border-left-purple,
+.unusual-animation-border-right-purple,
+.unusual-animation-glow-top-purple,
+.unusual-animation-glow-bottom-purple,
+.unusual-animation-glow-left-purple,
+.unusual-animation-glow-right-purple {
+  width: 0 !important;
+  height: 0 !important;
+} */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -20,24 +263,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Infinite scrolling animation */
-@keyframes scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
-}
-
-.whitespace-nowrap {
-  white-space: nowrap;
-  font-size: 3rem;
-  font-weight: bold;
-  color: white;
-  width: 200%; /* Extend width to ensure continuous animation */
-}
-
 .relative .absolute {
   position: absolute;
   display: flex;
@@ -56,271 +281,6 @@ body {
 .text-font {
   font-family: "Benzin-ExtraBold", sans-serif;
   font-weight: normal; /* or bold, if you have multiple weights */
-}
-
-.carousel-container {
-  overflow: hidden;
-  position: relative;
-  height: 100%;
-  border-color: #4b5563;
-  width: 100%;
-}
-
-.carousel-card {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  &:hover {
-    transform: scale(0.9);
-    box-shadow: 5px 5px 8px rgba(222, 222, 222, 0.362),
-      10px 10px 8px rgba(152, 133, 133, 0.392),
-      15px 15px 8px rgba(139, 154, 139, 0.303);
-  }
-  border-radius: 20%;
-  background: rgb(41, 40, 40);
-}
-
-.carousel-card > img {
-  height: 80%;
-  width: 80%;
-  border-radius: 10%;
-}
-
-.carousel-track {
-  display: flex;
-  position: absolute;
-  left: 0;
-  justify-content: center;
-  align-items: center;
-  height: 80px;
-  gap: 16px;
-  width: 200%;
-  height: 100%;
-  animation: slide 20s linear infinite;
-  &:hover {
-    animation-play-state: paused;
-  }
-}
-
-@keyframes slide {
-  0% {
-    left: 0;
-  }
-  100% {
-    left: -100%;
-  }
-}
-
-.animate-border {
-  position: relative;
-  overflow: hidden;
-}
-
-.animate-border::before,
-.animate-border::after {
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border: 2px solid transparent;
-  animation-duration: 1.5s;
-  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  animation-fill-mode: forwards;
-}
-
-.animate-border::before {
-  top: 0;
-  left: 0;
-  border-top: 2px solid white;
-  border-left: 2px solid white;
-  animation-name: border-top-left;
-}
-
-.animate-border::after {
-  bottom: 0;
-  right: 0;
-  border-bottom: 2px solid white;
-  border-right: 2px solid white;
-  animation-name: border-bottom-right;
-}
-
-@keyframes border-top-left {
-  0% {
-    transform: scaleX(0) scaleY(0);
-    opacity: 0;
-  }
-  100% {
-    transform: scaleX(1) scaleY(1);
-    opacity: 1;
-  }
-}
-
-@keyframes border-bottom-right {
-  0% {
-    transform: scaleX(0) scaleY(0);
-    opacity: 0;
-  }
-  50% {
-    opacity: 0;
-  }
-  100% {
-    transform: scaleX(1) scaleY(1);
-    opacity: 1;
-  }
-}
-
-.border-animation {
-  position: relative;
-  overflow: hidden;
-}
-
-.border-animation::before,
-.border-animation::after {
-  content: "";
-  position: absolute;
-  background: transparent;
-  transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.border-animation::before {
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
-  border-top: 4px solid white;
-  border-left: 4px solid white;
-}
-
-.border-animation::after {
-  bottom: 0;
-  right: 0;
-  width: 0;
-  height: 0;
-  border-bottom: 4px solid white;
-  border-right: 4px solid white;
-}
-
-.border-animation.animate-in::before {
-  width: 100%;
-  height: 100%;
-  transition-delay: 0s;
-}
-
-.border-animation.animate-in::after {
-  width: 100%;
-  height: 100%;
-  transition-delay: 0.3s;
-}
-
-.border-animation.animate-out::before {
-  width: 0;
-  height: 0;
-  transition-delay: 0.3s;
-}
-
-.border-animation.animate-out::after {
-  width: 0;
-  height: 0;
-  transition-delay: 0s;
-}
-
-@keyframes border-draw {
-  0% {
-    clip-path: polygon(50% 0%, 50% 0%, 50% 0%, 50% 0%);
-  }
-  25% {
-    clip-path: polygon(50% 0%, 100% 0%, 100% 50%, 50% 50%);
-  }
-  50% {
-    clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
-  }
-  75% {
-    clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%);
-  }
-  100% {
-    clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%);
-  }
-}
-/*   
-  .animate-border-draw {
-    animation: border-draw 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-  .clip-path-circle-0 {
-    clip-path: circle(0% at 50% 0%);
-  }
-  .clip-path-circle-100 {
-    clip-path: circle(150% at 50% 0%);
-  } */
-
-.custom-border-animation {
-  position: relative;
-  overflow: hidden;
-  padding: 0.5rem 1.5rem; /* padding to prevent text clipping */
-  z-index: 0;
-}
-
-/* BIAŁA FAZA */
-.custom-border-animation::before,
-.custom-border-animation::after {
-  content: "";
-  position: absolute;
-  width: 0;
-  height: 0;
-  z-index: 1;
-  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.custom-border-animation::before {
-  top: 0;
-  left: 0;
-  border-top: 2px solid white;
-  border-left: 2px solid white;
-}
-
-.custom-border-animation::after {
-  bottom: 0;
-  right: 0;
-  border-bottom: 2px solid white;
-  border-right: 2px solid white;
-  transition-delay: 0.2s;
-}
-
-/* FIOLETOWA FAZA */
-.custom-border-animation span::before,
-.custom-border-animation span::after {
-  content: "";
-  position: absolute;
-  width: 0;
-  height: 0;
-  z-index: 2;
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.custom-border-animation span::before {
-  top: 0;
-  left: 0;
-  border-top: 2px solid #6a00d1;
-  border-left: 2px solid #6a00d1;
-  transition-delay: 0.9s;
-}
-
-.custom-border-animation span::after {
-  bottom: 0;
-  right: 0;
-  border-bottom: 2px solid #6a00d1;
-  border-right: 2px solid #6a00d1;
-  transition-delay: 1.1s;
-}
-
-/* HOVER: animacja */
-.custom-border-animation:hover::before,
-.custom-border-animation:hover::after,
-.custom-border-animation:hover span::before,
-.custom-border-animation:hover span::after {
-  width: 100%;
-  height: 100%;
 }
 
 .button-border-wrapper {
@@ -377,29 +337,12 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   color: #fff !important;
 }
 
-/* Ogólne style dla borderów */
-/* .border-line {
-  border-radius: 3px;
-
-  position: absolute;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-  box-sizing: border-box;
-  border-style: solid;
-  border-color: transparent;
-  transition-property: width, height, border-color;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 0.6s, 0.6s, 0.3s;
-  z-index: 5;
-} */
-
 /* Białe krawędzie */
 .border-white-1 {
   top: 0;
   left: 0;
-  border-top: 2px solid transparent;
-  border-left: 2px solid transparent;
+  border-top: 4px solid transparent;
+  border-left: 4px solid transparent;
   transition-delay: 0s, 0s, 0s;
   z-index: 6;
 }
@@ -407,9 +350,9 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 .border-white-2 {
   bottom: 0;
   right: 0;
-  border-bottom: 2px solid transparent;
-  border-right: 2px solid transparent;
-  transition-delay: 0.15s, 0.15s, 0.15s;
+  border-bottom: 4px solid transparent;
+  border-right: 4px solid transparent;
+  transition-delay: 0s, 0s, 0s;
   z-index: 6;
 }
 
@@ -417,8 +360,8 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 .border-purple-1 {
   top: 0;
   left: 0;
-  border-top: 2px solid transparent;
-  border-left: 2px solid transparent;
+  border-top: 4px solid transparent;
+  border-left: 4px solid transparent;
   transition-delay: 0.6s, 0.6s, 0.6s;
   z-index: 7;
 }
@@ -426,8 +369,8 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 .border-purple-2 {
   bottom: 0;
   right: 0;
-  border-bottom: 2px solid transparent;
-  border-right: 2px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-right: 4px solid transparent;
   transition-delay: 0.75s, 0.75s, 0.75s;
   z-index: 7;
 }
@@ -480,121 +423,19 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   transition-timing-function: ease-out !important;
 }
 
-/* .glitch-text {
-  position: relative;
-  color: white;
-  font-weight: 500;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  background: transparent;
-  overflow: visible;
-  transition: color 0.3s ease;
-}
-
-.glitch-text:hover {
-  color: transparent;
-}
-
-.glitch-text::before,
-.glitch-text::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  color: white;
-  background: transparent;
-  white-space: nowrap;
-  font-weight: 500;
-  font-size: 0.9rem;
-  opacity: 0;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.2s ease;
-}
-
-.glitch-text:hover::before,
-.glitch-text:hover::after {
-  opacity: 1;
-  animation-duration: 0.8s;
-  animation-timing-function: linear;
-  animation-iteration-count: 1; 
-}
-
-.glitch-text:hover::before {
-  left: 0;
-  text-shadow: -2px 0 red;
-  animation-name: glitch-anim-left;
-}
-
-.glitch-text:hover::after {
-  left: 0;
-  text-shadow: -2px 0 cyan;
-  animation-name: glitch-anim-right;
-}
-
-@keyframes glitch-anim-left {
-  0% {
-    clip: rect(0, 9999px, 0, 0);
-    transform: translate(0);
-    opacity: 0;
-  }
-  20% {
-    clip: rect(10px, 9999px, 50px, 0);
-    transform: translate(-2px, -2px);
-    opacity: 1;
-  }
-  60% {
-    clip: rect(10px, 9999px, 40px, 0);
-    transform: translate(-3px, 2px);
-    opacity: 1;
-  }
-  100% {
-    clip: rect(0, 9999px, 0, 0);
-    transform: translate(0);
-    opacity: 0;
-  }
-}
-
-@keyframes glitch-anim-right {
-  0% {
-    clip: rect(0, 9999px, 0, 0);
-    transform: translate(0);
-    opacity: 0;
-  }
-  20% {
-    clip: rect(20px, 9999px, 60px, 0);
-    transform: translate(2px, 2px);
-    opacity: 1;
-  }
-  60% {
-    clip: rect(5px, 9999px, 35px, 0);
-    transform: translate(3px, -2px);
-    opacity: 1;
-  }
-  100% {
-    clip: rect(0, 9999px, 0, 0);
-    transform: translate(0);
-    opacity: 0;
-  }
-} */
-
 /* Normalny biały tekst */
 /* Normal white text */
 /* White text fades out on hover */
-.glitch-text-white {
+/* .glitch-text-white {
   color: white;
   opacity: 1;
   transition: opacity 0.1s;
   position: relative;
   z-index: 10;
-}
+} */
 
 /* Purple text on top, initially hidden */
-.glitch-text-purple {
+/* .glitch-text-purple {
   color: #6a00d1;
   position: absolute;
   top: 0;
@@ -609,15 +450,10 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   user-select: none;
   transition: opacity 0.3s ease;
   z-index: 15;
-}
-
-/* .glitch-text-purple:hover {
-  opacity: 0;
-  transition: opacity 0.6s ease;
 } */
 
 /* On hover: fade white out, purple in */
-.button-border-wrapper:hover .glitch-text-white {
+/* .button-border-wrapper:hover .glitch-text-white {
   opacity: 0;
   transition-delay: 0.6s !important;
   transition: opacity 1.8s ease;
@@ -627,19 +463,18 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   opacity: 1;
   transition-delay: 0.6s !important;
   transition: opacity 1.8s ease;
-  /* animation: none !important; */
-}
+} */
 
 /* On mouse leave: glitch purple out */
-.button-border-wrapper:not(:hover) .glitch-text-purple.glitch-out {
+/* .button-border-wrapper:not(:hover) .glitch-text-purple.glitch-out {
   animation: glitch-purple 1s linear forwards;
-}
+} */
 
 /* After glitch ends, hide purple again */
-.glitch-text-purple.glitch-done {
+/* .glitch-text-purple.glitch-done {
   opacity: 0;
   animation: none;
-}
+} */
 
 /* Glitch animation */
 @keyframes glitch-purple {
@@ -650,16 +485,16 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   }
   20% {
     clip: rect(20px, 9999px, 60px, 0);
-    transform: translate(2px, 2px);
+    transform: translate(4px, 4px);
   }
   60% {
-    clip: rect(5px, 9999px, 35px, 0);
-    transform: translate(3px, -2px);
+    clip: rect(10px, 9999px, 35px, 0);
+    transform: translate(6px, -4px);
   }
   100% {
     clip: rect(0, 9999px, 0, 0);
     transform: translate(0);
-    opacity: 0;
+    opacity: 0.9;
   }
 }
 
@@ -687,7 +522,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   border-radius: 1px;
   opacity: 1;
   left: 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s linear;
 }
 .hamburger-bar.top {
   top: 4px;
@@ -707,21 +542,6 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 .hamburger.open .hamburger-bar.bottom {
   transform: translateY(-7px) rotate(-45deg);
 }
-
-/* Trigger border growth when .animate-in is applied (like hover) */
-/* .button-border-wrapper.animate-in .border-white-1,
-.button-border-wrapper.animate-in .border-white-2 {
-  width: 100%;
-  height: 100%;
-  border-color: white;
-}
-
-.button-border-wrapper.animate-in .border-purple-1,
-.button-border-wrapper.animate-in .border-purple-2 {
-  width: 100%;
-  height: 100%;
-  border-color: #6a00d1;
-} */
 
 /* === Enable scroll-based activation (like hover) === */
 .button-border-wrapper.animate-in .border-white-1,
@@ -834,15 +654,6 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   vertical-align: top; /* żeby lepiej układały się obok siebie */
 }
 
-/* .button-border-content {
-  margin: 0;
-  padding: 2px;
-  display: block;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-} */
-
 /* Linie borderów */
 .border-line {
   position: absolute;
@@ -852,50 +663,30 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-sizing: border-box;
   border-style: solid;
   border-color: transparent;
-  border-radius: 4px;
+  border-radius: 3px;
   transition-property: width, height, border-color;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-timing-function: linear;
   transition-duration: 6s, 6s, 3s;
   z-index: 5;
 }
 
-/* Pozycjonowanie linii */
-
-/* Białe linie - góra-lewo i dół-prawo */
-/* .border-white-1 {
-  top: 0;
-  left: 0;
-  border-top: 2px solid transparent;
-  border-left: 2px solid transparent;
-  transition-delay: 0s, 0s, 0s;
-  z-index: 6;
-} */
-/* .border-white-2 {
-  bottom: 0;
-  right: 0;
-  border-bottom: 2px solid transparent;
-  border-right: 2px solid transparent;
-  transition-delay: 0.15s, 0.15s, 0.15s;
-  z-index: 6;
-} */
-
-/* Fioletowe linie - góra-lewo i dół-prawo */
-/* .border-purple-1 {
-  top: 0;
-  left: 0;
-  border-top: 2px solid transparent;
-  border-left: 2px solid transparent;
-  transition-delay: 0.6s, 0.6s, 0.6s;
-  z-index: 7;
-} */
-/* .border-purple-2 {
-  bottom: 0;
-  right: 0;
-  border-bottom: 2px solid transparent;
-  border-right: 2px solid transparent;
-  transition-delay: 0.75s, 0.75s, 0.75s;
-  z-index: 7;
-} */
+/* Szybkie animacje: width/height i opacity równo (dla glow) */
+.border-white-glow-top,
+.border-white-glow-bottom {
+  transition: width 0.6s linear, opacity 0.6s !important;
+}
+.border-white-glow-left,
+.border-white-glow-right {
+  transition: height 0.6s linear, opacity 0.6s !important;
+}
+.border-purple-glow-top,
+.border-purple-glow-bottom {
+  transition: width 0.6s linear, opacity 0.6s !important;
+}
+.border-purple-glow-left,
+.border-purple-glow-right {
+  transition: height 0.6s linear, opacity 0.6s !important;
+}
 
 /* Stan aktywny - pokazanie borderów */
 .button-border-scroll.active .border-white-1,
@@ -903,12 +694,14 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   width: 100%;
   height: 100%;
   border-color: white;
+  /* border-color: red; */
 }
 .button-border-scroll.active .border-purple-1,
 .button-border-scroll.active .border-purple-2 {
   width: 100%;
   height: 100%;
   border-color: #6a00d1;
+  /* border-color: green; */
 }
 
 /* Stan nieaktywny - schowanie borderów */
@@ -918,6 +711,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   border-color: transparent !important;
   width: 0 !important;
   height: 0 !important;
+  transition-property: width, height !important;
   transition-duration: 0.3s !important;
   transition-timing-function: ease-out !important;
 }
@@ -930,6 +724,34 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   height: 0 !important;
   transition-duration: 0.3s !important;
   transition-timing-function: ease-out !important;
+}
+
+/* Keyframes for purple border instant color switch after delay */
+@keyframes purple-border-color-in {
+  0% {
+    border-color: transparent;
+  }
+  99.9% {
+    border-color: transparent;
+  }
+  100% {
+    border-color: #6a00d1;
+  }
+}
+
+.button-border-scroll.active .border-purple-1,
+.button-border-scroll.active .border-purple-2 {
+  /* Start with transparent, then switch to purple after delay */
+  animation: purple-border-color-in 0.01s linear forwards;
+  animation-delay: 30s;
+  border-color: transparent; /* fallback, will be set by animation */
+  transition-property: width, height !important;
+}
+
+.button-border-scroll.active .border-white-1,
+.button-border-scroll.active .border-white-2 {
+  border-color: white !important;
+  transition-property: width, height !important;
 }
 
 @keyframes appear {
@@ -959,7 +781,8 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-shadow: 0 0 8px 2px white;
   opacity: 0.7;
   z-index: 5;
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+  transition: width 0.6s linear, opacity 0.3s;
+  transition-delay: 0s, 0s !important;
 }
 .border-white-glow-bottom {
   position: absolute;
@@ -972,7 +795,8 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-shadow: 0 0 8px 2px white;
   opacity: 0.7;
   z-index: 5;
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+  transition: width 0.6s linear, opacity 0.3s;
+  transition-delay: 0s, 0s !important;
 }
 .border-white-glow-left {
   position: absolute;
@@ -985,10 +809,12 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-shadow: 0 0 8px 2px white;
   opacity: 0.7;
   z-index: 5;
-  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+  transition: height 0.6s linear, opacity 0.3s;
+  transition-delay: 0s, 0s !important;
 }
 .border-white-glow-right {
   position: absolute;
+  top: auto;
   bottom: 0;
   right: 0;
   width: 2px;
@@ -998,7 +824,8 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-shadow: 0 0 8px 2px white;
   opacity: 0.7;
   z-index: 5;
-  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+  transition: height 30s linear, opacity 30s linear !important;
+  transition-delay: 0s, 0s !important;
 }
 
 .border-purple-glow-top {
@@ -1012,7 +839,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-shadow: 0 0 12px 3px #6a00d1;
   opacity: 0.7;
   z-index: 5;
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+  transition: width 0.6s linear, opacity 0.6s !important;
 }
 .border-purple-glow-bottom {
   position: absolute;
@@ -1025,7 +852,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-shadow: 0 0 12px 3px #6a00d1;
   opacity: 0.7;
   z-index: 5;
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+  transition: width 0.6s linear, opacity 0.6s !important;
 }
 .border-purple-glow-left {
   position: absolute;
@@ -1038,10 +865,11 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-shadow: 0 0 12px 3px #6a00d1;
   opacity: 0.7;
   z-index: 5;
-  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+  transition: height 0.6s linear, opacity 0.6s !important;
 }
 .border-purple-glow-right {
   position: absolute;
+  top: auto;
   bottom: 0;
   right: 0;
   width: 2px;
@@ -1051,7 +879,8 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-shadow: 0 0 12px 3px #6a00d1;
   opacity: 0.7;
   z-index: 5;
-  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+  transition: height 30s linear, opacity 30s linear !important;
+  transition-delay: 30s, 30s !important;
 }
 
 /* Animacja białego glow - hover i scroll-in-view */
@@ -1065,13 +894,13 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 .button-border-scroll.active .border-white-glow-right {
   height: 100%;
   opacity: 0.7;
-  transition-delay: 0.15s, 0.15s;
+  transition-delay: 0s, 0s;
 }
 .button-border-wrapper:hover .border-white-glow-bottom,
 .button-border-scroll.active .border-white-glow-bottom {
   width: 100%;
   opacity: 0.7;
-  transition-delay: 0.3s, 0.3s;
+  transition-delay: 0s, 0s;
 }
 .button-border-wrapper:hover .border-white-glow-left,
 .button-border-scroll.active .border-white-glow-left {
@@ -1090,30 +919,38 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   width: 0;
   height: 0;
   opacity: 0;
-  transition-delay: 0.3s, 0.3s;
+  transition-delay: 0, 0s;
 }
 
 /* Animacja fioletowego glow - hover i scroll-in-view */
-.button-border-wrapper:hover .border-purple-glow-top,
-.button-border-scroll.active .border-purple-glow-top {
+.button-border-wrapper:hover
+  .border-purple-glow-top:not(.border-3x-slow .border-purple-glow-top),
+.button-border-scroll.active
+  .border-purple-glow-top:not(.border-3x-slow .border-purple-glow-top) {
   width: 100%;
   opacity: 0.7;
   transition-delay: 0.6s, 0.6s !important;
 }
-.button-border-wrapper:hover .border-purple-glow-right,
-.button-border-scroll.active .border-purple-glow-right {
+.button-border-wrapper:hover
+  .border-purple-glow-right:not(.border-3x-slow .border-purple-glow-right),
+.button-border-scroll.active
+  .border-purple-glow-right:not(.border-3x-slow .border-purple-glow-right) {
   height: 100%;
   opacity: 0.7;
   transition-delay: 0.75s, 0.75s !important;
 }
-.button-border-wrapper:hover .border-purple-glow-bottom,
-.button-border-scroll.active .border-purple-glow-bottom {
+.button-border-wrapper:hover
+  .border-purple-glow-bottom:not(.border-3x-slow .border-purple-glow-bottom),
+.button-border-scroll.active
+  .border-purple-glow-bottom:not(.border-3x-slow .border-purple-glow-bottom) {
   width: 100%;
   opacity: 0.7;
   transition-delay: 0.9s, 0.9s !important;
 }
-.button-border-wrapper:hover .border-purple-glow-left,
-.button-border-scroll.active .border-purple-glow-left {
+.button-border-wrapper:hover
+  .border-purple-glow-left:not(.border-3x-slow .border-purple-glow-left),
+.button-border-scroll.active
+  .border-purple-glow-left:not(.border-3x-slow .border-purple-glow-left) {
   height: 100%;
   opacity: 0.7;
   transition-delay: 0.6s, 0.6s !important;
@@ -1137,53 +974,1121 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   transition-duration: 0.6s, 0.6s, 0.3s;
 }
 
-/* === 3x wolniejsze animacje borderów i glow dla dużych elementów (fala, białe i fioletowe width/opacity równo) === */
+/* === 50x wolniejsze animacje borderów i glow dla dużych elementów (debug) === */
+.border-3x-slow .border-line {
+  transition-duration: 30s, 30s !important;
+}
 .border-3x-slow .border-white-1,
 .border-3x-slow .border-white-2 {
   transition-delay: 0s !important;
-  transition-duration: 1.8s !important;
+  transition-duration: 30s !important;
 }
 .border-3x-slow .border-purple-1,
 .border-3x-slow .border-purple-2 {
-  transition-delay: 1.8s !important;
-  transition-duration: 1.8s !important;
+  transition-delay: 30s !important;
+  transition-duration: 30s !important;
 }
 /* Glow: width/height i opacity równo */
 .border-3x-slow .border-white-glow-top,
 .border-3x-slow .border-white-glow-bottom {
-  transition: width 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s !important;
+  transition: width 30s linear, opacity 30s linear !important;
   transition-delay: 0s, 0s !important;
 }
 .border-3x-slow .border-white-glow-left,
 .border-3x-slow .border-white-glow-right {
-  transition: height 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s !important;
+  transition: height 30s linear, opacity 30s linear !important;
   transition-delay: 0s, 0s !important;
 }
 .border-3x-slow .border-purple-glow-top,
 .border-3x-slow .border-purple-glow-bottom {
-  transition: width 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s !important;
-  transition-delay: 1.8s, 1.8s !important;
+  transition: width 30s linear, opacity 30s linear !important;
+  transition-delay: 30s, 30s !important;
 }
 .border-3x-slow .border-purple-glow-left,
 .border-3x-slow .border-purple-glow-right {
-  transition: height 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s !important;
-  transition-delay: 1.8s, 1.8s !important;
+  transition: height 30s linear, opacity 30s linear !important;
+  transition-delay: 30s, 30s !important;
 }
 
-/* Szybkie animacje: width/height i opacity równo (dla glow) */
-.border-white-glow-top,
-.border-white-glow-bottom {
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s !important;
+/* --- WHITE FADES OUT DURING PURPLE PHASE (po linii) --- */
+@keyframes border-white-fade-out-width {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
 }
-.border-white-glow-left,
-.border-white-glow-right {
-  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s !important;
+@keyframes border-white-fade-out-height {
+  0% {
+    height: 0%;
+  }
+  100% {
+    height: 100%;
+  }
 }
-.border-purple-glow-top,
-.border-purple-glow-bottom {
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s !important;
+@keyframes glow-white-fade-out-width {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
 }
-.border-purple-glow-left,
-.border-purple-glow-right {
-  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s !important;
+@keyframes glow-white-fade-out-height {
+  0% {
+    height: 0%;
+  }
+  100% {
+    height: 100%;
+  }
+}
+
+/*
+Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana przez klasę .border-3x-slow.active.fading na wrapperze
+*/
+.border-3x-slow.fading .border-white-1,
+.border-3x-slow.fading .border-white-2 {
+  animation: border-white-fade-out-width 30s linear forwards;
+}
+.border-3x-slow.fading .border-white-glow-top,
+.border-3x-slow.fading .border-white-glow-bottom {
+  animation: glow-white-fade-out-width 30s linear forwards;
+}
+.border-3x-slow.fading .border-white-glow-left,
+.border-3x-slow.fading .border-white-glow-right {
+  animation: glow-white-fade-out-height 30s linear forwards;
+}
+
+/* Białe bordery rozdzielone */
+.border-white-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-top: 4px solid white;
+  border-radius: 3px 3px 0 0;
+  transition: width 30s linear;
+  transition-delay: 0s !important;
+  z-index: 6;
+}
+.border-white-right {
+  position: absolute;
+  top: auto;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-right: 4px solid white;
+  border-radius: 0 3px 3px 0;
+  transition: height 30s linear;
+  transition-delay: 0s !important;
+  z-index: 6;
+}
+.border-white-bottom {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-bottom: 4px solid white;
+  border-radius: 0 0 3px 3px;
+  transition: width 30s linear;
+  transition-delay: 0s !important;
+  z-index: 6;
+}
+.border-white-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: auto;
+  width: 0;
+  height: 0;
+  border-left: 4px solid white;
+  border-radius: 3px 0 0 3px;
+  transition: height 30s linear;
+  transition-delay: 0s !important;
+  z-index: 6;
+}
+/* Fioletowe bordery rozdzielone */
+.border-purple-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-top: 4px solid #6a00d1;
+  border-radius: 3px 3px 0 0;
+  transition: width 30s linear;
+  transition-delay: 30s !important;
+  z-index: 7;
+}
+.border-purple-right {
+  position: absolute;
+  top: auto;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-right: 4px solid #6a00d1;
+  border-radius: 0 3px 3px 0;
+  transition: height 30s linear;
+  transition-delay: 30s !important;
+  z-index: 7;
+}
+.border-purple-bottom {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-bottom: 4px solid #6a00d1;
+  border-radius: 0 0 3px 3px;
+  transition: width 30s linear;
+  transition-delay: 30s !important;
+  z-index: 7;
+}
+.border-purple-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: auto;
+  width: 0;
+  height: 0;
+  border-left: 4px solid #6a00d1;
+  border-radius: 3px 0 0 3px;
+  transition: height 30s linear;
+  transition-delay: 30s !important;
+  z-index: 7;
+}
+/* Stan aktywny - pokazanie borderów */
+.button-border-scroll.active .border-white-top,
+.button-border-scroll.active .border-purple-top {
+  width: 100%;
+}
+.button-border-scroll.active .border-white-bottom,
+.button-border-scroll.active .border-purple-bottom {
+  width: 100%;
+}
+.button-border-scroll.active .border-white-right,
+.button-border-scroll.active .border-purple-right {
+  height: 100%;
+}
+.button-border-scroll.active .border-white-left,
+.button-border-scroll.active .border-purple-left {
+  height: 100%;
+}
+/* Stan nieaktywny - schowanie borderów */
+.button-border-scroll:not(.active) .border-white-top,
+.button-border-scroll:not(.active) .border-purple-top,
+.button-border-scroll:not(.active) .border-white-bottom,
+.button-border-scroll:not(.active) .border-purple-bottom {
+  width: 0;
+}
+.button-border-scroll:not(.active) .border-white-right,
+.button-border-scroll:not(.active) .border-purple-right,
+.button-border-scroll:not(.active) .border-white-left,
+.button-border-scroll:not(.active) .border-purple-left {
+  height: 0;
+}
+
+/* === EXTRAORDINARY ANIMATION (BORDER + GLOW) === */
+
+/* --- HARD RESET: natychmiastowe wyzerowanie animacji po wyjściu z view --- */
+.extraordinary-animation-reset .extraordinary-animation-border-top-white,
+.extraordinary-animation-reset .extraordinary-animation-border-bottom-white,
+.extraordinary-animation-reset .extraordinary-animation-border-left-white,
+.extraordinary-animation-reset .extraordinary-animation-border-right-white,
+.extraordinary-animation-reset .extraordinary-animation-border-top-purple,
+.extraordinary-animation-reset .extraordinary-animation-border-bottom-purple,
+.extraordinary-animation-reset .extraordinary-animation-border-left-purple,
+.extraordinary-animation-reset .extraordinary-animation-border-right-purple,
+.extraordinary-animation-reset .extraordinary-animation-glow-top-white,
+.extraordinary-animation-reset .extraordinary-animation-glow-bottom-white,
+.extraordinary-animation-reset .extraordinary-animation-glow-left-white,
+.extraordinary-animation-reset .extraordinary-animation-glow-right-white,
+.extraordinary-animation-reset .extraordinary-animation-glow-top-purple,
+.extraordinary-animation-reset .extraordinary-animation-glow-bottom-purple,
+.extraordinary-animation-reset .extraordinary-animation-glow-left-purple,
+.extraordinary-animation-reset .extraordinary-animation-glow-right-purple {
+  transition: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+}
+
+.extraordinary-animation-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* --- WHITE PHASE --- */
+.extraordinary-animation-border-top-white,
+.extraordinary-animation-glow-top-white {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 0%;
+  opacity: 0;
+  border-top: 4px solid white;
+  border-radius: 3px 3px 0 0;
+  box-shadow: none;
+  z-index: 10;
+  transition: width 3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s !important;
+  transition-delay: 0s !important;
+}
+.extraordinary-animation-glow-top-white {
+  border: none;
+  box-shadow: 0 0 12px 3px white;
+  opacity: 0.5;
+}
+
+.extraordinary-animation-border-bottom-white,
+.extraordinary-animation-glow-bottom-white {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 4px;
+  width: 0%;
+  opacity: 0;
+  border-bottom: 4px solid white;
+  border-radius: 0 0 3px 3px;
+  box-shadow: none;
+  z-index: 10;
+  transition: width 3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s !important;
+  transition-delay: 0s !important;
+}
+.extraordinary-animation-glow-bottom-white {
+  border: none;
+  box-shadow: 0 0 12px 3px white;
+  opacity: 0.5;
+}
+
+.extraordinary-animation-border-left-white,
+.extraordinary-animation-glow-left-white {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  opacity: 0;
+  height: 0%;
+  border-left: 4px solid white;
+  border-radius: 3px 0 0 3px;
+  box-shadow: none;
+  z-index: 10;
+  transition: height 3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s !important;
+  transition-delay: 0s !important;
+}
+.extraordinary-animation-glow-left-white {
+  border: none;
+  box-shadow: 0 0 12px 3px white;
+  opacity: 0.5;
+}
+
+.extraordinary-animation-border-right-white,
+.extraordinary-animation-glow-right-white {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 4px;
+  height: 0%;
+  opacity: 0;
+  border-right: 4px solid white;
+  border-radius: 0 3px 3px 0;
+  box-shadow: none;
+  z-index: 10;
+  transition: height 3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s !important;
+  transition-delay: 0s !important;
+}
+.extraordinary-animation-glow-right-white {
+  border: none;
+  box-shadow: 0 0 12px 3px white;
+  opacity: 0.5;
+}
+
+/* --- PURPLE PHASE --- */
+.extraordinary-animation-border-top-purple,
+.extraordinary-animation-glow-top-purple {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  opacity: 0;
+  width: 0%;
+  border-top: 4px solid #6a00d1;
+  border-radius: 3px 3px 0 0;
+  box-shadow: none;
+  z-index: 11;
+  transition: width 3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s !important;
+  transition-delay: 0s !important;
+}
+.extraordinary-animation-glow-top-purple {
+  border: none;
+  box-shadow: 0 0 16px 4px #6a00d1;
+  opacity: 1;
+}
+
+.extraordinary-animation-border-bottom-purple,
+.extraordinary-animation-glow-bottom-purple {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 4px;
+  opacity: 0;
+  width: 0%;
+  border-bottom: 4px solid #6a00d1;
+  border-radius: 0 0 3px 3px;
+  box-shadow: none;
+  z-index: 11;
+  transition: width 3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s !important;
+  transition-delay: 0s !important;
+}
+.extraordinary-animation-glow-bottom-purple {
+  border: none;
+  box-shadow: 0 0 16px 4px #6a00d1;
+  opacity: 1;
+}
+
+.extraordinary-animation-border-left-purple,
+.extraordinary-animation-glow-left-purple {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 0%;
+  opacity: 0;
+  border-left: 4px solid #6a00d1;
+  border-radius: 3px 0 0 3px;
+  box-shadow: none;
+  z-index: 11;
+  transition: height 3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s !important;
+  transition-delay: 0s !important;
+}
+.extraordinary-animation-glow-left-purple {
+  border: none;
+  box-shadow: 0 0 16px 4px #6a00d1;
+  opacity: 1;
+}
+
+.extraordinary-animation-border-right-purple,
+.extraordinary-animation-glow-right-purple {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 4px;
+  height: 0%;
+  opacity: 0;
+  border-right: 4px solid #6a00d1;
+  border-radius: 0 3px 3px 0;
+  box-shadow: none;
+  z-index: 11;
+  transition: height 3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s !important;
+  transition-delay: 0s !important;
+}
+.extraordinary-animation-glow-right-purple {
+  border: none;
+  box-shadow: 0 0 16px 4px #6a00d1;
+  opacity: 1;
+}
+
+/* --- ACTIVE STATES --- */
+.extraordinary-animation-active .extraordinary-animation-border-top-white,
+.extraordinary-animation-active .extraordinary-animation-glow-top-white {
+  opacity: 1;
+  width: 100% !important;
+}
+.extraordinary-animation-active .extraordinary-animation-border-bottom-white,
+.extraordinary-animation-active .extraordinary-animation-glow-bottom-white {
+  opacity: 1;
+  width: 100% !important;
+  right: 0;
+  left: auto;
+  transform: scaleX(-1);
+}
+.extraordinary-animation-active .extraordinary-animation-border-left-white,
+.extraordinary-animation-active .extraordinary-animation-glow-left-white {
+  opacity: 1;
+  height: 100% !important;
+}
+.extraordinary-animation-active .extraordinary-animation-border-right-white,
+.extraordinary-animation-active .extraordinary-animation-glow-right-white {
+  opacity: 1;
+  height: 100% !important;
+  bottom: 0;
+  top: auto;
+  transform: scaleY(-1);
+}
+
+.extraordinary-animation-active-purple
+  .extraordinary-animation-border-top-purple,
+.extraordinary-animation-active-purple
+  .extraordinary-animation-glow-top-purple {
+  opacity: 1;
+  width: 100% !important;
+}
+.extraordinary-animation-active-purple
+  .extraordinary-animation-border-bottom-purple,
+.extraordinary-animation-active-purple
+  .extraordinary-animation-glow-bottom-purple {
+  opacity: 1;
+  width: 100% !important;
+  right: 0;
+  left: auto;
+  transform: scaleX(-1);
+}
+.extraordinary-animation-active-purple
+  .extraordinary-animation-border-left-purple,
+.extraordinary-animation-active-purple
+  .extraordinary-animation-glow-left-purple {
+  opacity: 1;
+  height: 100% !important;
+}
+.extraordinary-animation-active-purple
+  .extraordinary-animation-border-right-purple,
+.extraordinary-animation-active-purple
+  .extraordinary-animation-glow-right-purple {
+  opacity: 1;
+  height: 100% !important;
+  bottom: 0;
+  top: auto;
+  transform: scaleY(-1);
+}
+
+/* Stan początkowy (reset) - białe i fioletowe zawsze width/height 0 bez .active */
+.extraordinary-animation-border-top-white,
+.extraordinary-animation-glow-top-white,
+.extraordinary-animation-border-bottom-white,
+.extraordinary-animation-glow-bottom-white,
+.extraordinary-animation-border-left-white,
+.extraordinary-animation-glow-left-white,
+.extraordinary-animation-border-right-white,
+.extraordinary-animation-glow-right-white,
+.extraordinary-animation-border-top-purple,
+.extraordinary-animation-glow-top-purple,
+.extraordinary-animation-border-bottom-purple,
+.extraordinary-animation-glow-bottom-purple,
+.extraordinary-animation-border-left-purple,
+.extraordinary-animation-glow-left-purple,
+.extraordinary-animation-border-right-purple,
+.extraordinary-animation-glow-right-purple {
+  opacity: 0;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* --- WHITE GLOW SHRINK ANIMATION (reverse, from the same side) --- */
+@keyframes extraordinary-glow-shrink-width {
+  from {
+    transform: scaleX(1);
+    left: 0;
+    right: auto;
+  }
+  to {
+    transform: scaleX(0);
+    left: 0;
+    right: auto;
+  }
+}
+@keyframes extraordinary-glow-shrink-width-bottom {
+  from {
+    transform: scaleX(1);
+    right: 0;
+    left: auto;
+  }
+  to {
+    transform: scaleX(0);
+    right: 0;
+    left: auto;
+  }
+}
+@keyframes extraordinary-glow-shrink-height {
+  from {
+    transform: scaleY(1);
+    top: 0;
+    bottom: auto;
+  }
+  to {
+    transform: scaleY(0);
+    top: 0;
+    bottom: auto;
+  }
+}
+@keyframes extraordinary-glow-shrink-height-right {
+  from {
+    transform: scaleY(1);
+    bottom: 0;
+    top: auto;
+  }
+  to {
+    transform: scaleY(0);
+    bottom: 0;
+    top: auto;
+  }
+}
+
+.extraordinary-animation-active-purple .extraordinary-animation-glow-top-white {
+  width: 100%;
+  opacity: 1;
+  transform-origin: right;
+  animation: extraordinary-glow-shrink-width 3s cubic-bezier(0.19, 1, 0.22, 1)
+    forwards;
+  animation-fill-mode: forwards;
+}
+.extraordinary-animation-active-purple
+  .extraordinary-animation-glow-bottom-white {
+  width: 100%;
+  opacity: 1;
+  transform-origin: left;
+  animation: extraordinary-glow-shrink-width-bottom 3s
+    cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  animation-fill-mode: forwards;
+}
+.extraordinary-animation-active-purple
+  .extraordinary-animation-glow-left-white {
+  height: 100%;
+  opacity: 1;
+  transform-origin: bottom;
+  animation: extraordinary-glow-shrink-height 3s cubic-bezier(0.19, 1, 0.22, 1)
+    forwards;
+  animation-fill-mode: forwards;
+}
+.extraordinary-animation-active-purple
+  .extraordinary-animation-glow-right-white {
+  height: 100%;
+  opacity: 1;
+  transform-origin: top;
+  animation: extraordinary-glow-shrink-height-right 3s
+    cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  animation-fill-mode: forwards;
+}
+
+/* === UNUSUAL ANIMATION (BORDER + GLOW) === */
+
+/* --- HARD RESET: natychmiastowe wyzerowanie animacji po wyjściu z view --- */
+.unusual-animation-reset .unusual-animation-border-top-white,
+.unusual-animation-reset .unusual-animation-border-bottom-white,
+.unusual-animation-reset .unusual-animation-border-left-white,
+.unusual-animation-reset .unusual-animation-border-right-white,
+.unusual-animation-reset .unusual-animation-border-top-purple,
+.unusual-animation-reset .unusual-animation-border-bottom-purple,
+.unusual-animation-reset .unusual-animation-border-left-purple,
+.unusual-animation-reset .unusual-animation-border-right-purple,
+.unusual-animation-reset .unusual-animation-glow-top-white,
+.unusual-animation-reset .unusual-animation-glow-bottom-white,
+.unusual-animation-reset .unusual-animation-glow-left-white,
+.unusual-animation-reset .unusual-animation-glow-right-white,
+.unusual-animation-reset .unusual-animation-glow-top-purple,
+.unusual-animation-reset .unusual-animation-glow-bottom-purple,
+.unusual-animation-reset .unusual-animation-glow-left-purple,
+.unusual-animation-reset .unusual-animation-glow-right-purple {
+  transition: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+}
+
+.unusual-animation-wrapper {
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+/* --- WHITE PHASE --- */
+.unusual-animation-border-top-white,
+.unusual-animation-glow-top-white {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 0%;
+  opacity: 0;
+  border-top: 4px solid white;
+  border-radius: 3px 3px 0 0;
+  box-shadow: none;
+  z-index: 10;
+  transition: width 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
+  transition-delay: 0s;
+}
+.unusual-animation-glow-top-white {
+  border: none;
+  box-shadow: 0 0 12px 3px white;
+  opacity: 0.5;
+}
+
+.unusual-animation-border-bottom-white,
+.unusual-animation-glow-bottom-white {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 4px;
+  width: 0%;
+  opacity: 0;
+  border-bottom: 4px solid white;
+  border-radius: 0 0 3px 3px;
+  box-shadow: none;
+  z-index: 10;
+  transition: width 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
+  transition-delay: 0s;
+}
+.unusual-animation-glow-bottom-white {
+  border: none;
+  box-shadow: 0 0 12px 3px white;
+  opacity: 0.5;
+}
+
+.unusual-animation-border-left-white,
+.unusual-animation-glow-left-white {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  opacity: 0;
+  height: 0%;
+  border-left: 4px solid white;
+  border-radius: 3px 0 0 3px;
+  box-shadow: none;
+  z-index: 10;
+  transition: height 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
+  transition-delay: 0s;
+}
+.unusual-animation-glow-left-white {
+  border: none;
+  box-shadow: 0 0 12px 3px white;
+  opacity: 0.5;
+}
+
+.unusual-animation-border-right-white,
+.unusual-animation-glow-right-white {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 4px;
+  height: 0%;
+  opacity: 0;
+  border-right: 4px solid white;
+  border-radius: 0 3px 3px 0;
+  box-shadow: none;
+  z-index: 10;
+  transition: height 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
+  transition-delay: 0s;
+}
+.unusual-animation-glow-right-white {
+  border: none;
+  box-shadow: 0 0 12px 3px white;
+  opacity: 0.5;
+}
+
+/* --- PURPLE PHASE --- */
+.unusual-animation-border-top-purple,
+.unusual-animation-glow-top-purple {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  opacity: 0;
+  width: 0%;
+  border-top: 4px solid #6a00d1;
+  border-radius: 3px 3px 0 0;
+  box-shadow: none;
+  z-index: 11;
+  transition: width 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
+  transition-delay: 1s;
+}
+.unusual-animation-glow-top-purple {
+  border: none;
+  box-shadow: 0 0 16px 4px #6a00d1;
+  opacity: 1;
+}
+
+.unusual-animation-border-bottom-purple,
+.unusual-animation-glow-bottom-purple {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 4px;
+  opacity: 0;
+  width: 0%;
+  border-bottom: 4px solid #6a00d1;
+  border-radius: 0 0 3px 3px;
+  box-shadow: none;
+  z-index: 11;
+  transition: width 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
+  transition-delay: 1s;
+}
+.unusual-animation-glow-bottom-purple {
+  border: none;
+  box-shadow: 0 0 16px 4px #6a00d1;
+  opacity: 1;
+}
+
+.unusual-animation-border-left-purple,
+.unusual-animation-glow-left-purple {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 0%;
+  opacity: 0;
+  border-left: 4px solid #6a00d1;
+  border-radius: 3px 0 0 3px;
+  box-shadow: none;
+  z-index: 11;
+  transition: height 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
+  transition-delay: 1s;
+}
+.unusual-animation-glow-left-purple {
+  border: none;
+  box-shadow: 0 0 16px 4px #6a00d1;
+  opacity: 1;
+}
+
+.unusual-animation-border-right-purple,
+.unusual-animation-glow-right-purple {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 4px;
+  height: 0%;
+  opacity: 0;
+  border-right: 4px solid #6a00d1;
+  border-radius: 0 3px 3px 0;
+  box-shadow: none;
+  z-index: 11;
+  transition: height 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
+  transition-delay: 1s;
+}
+.unusual-animation-glow-right-purple {
+  border: none;
+  box-shadow: 0 0 16px 4px #6a00d1;
+  opacity: 1;
+}
+
+/* --- ACTIVE STATES --- */
+.unusual-animation-wrapper:hover .unusual-animation-border-top-white,
+.unusual-animation-wrapper:hover .unusual-animation-glow-top-white {
+  opacity: 1;
+  width: 100%;
+}
+.unusual-animation-wrapper:hover .unusual-animation-border-bottom-white,
+.unusual-animation-wrapper:hover .unusual-animation-glow-bottom-white {
+  opacity: 1;
+  width: 100%;
+  right: 0;
+  left: auto;
+  /* transform: scaleX(-1); */
+}
+.unusual-animation-wrapper:hover .unusual-animation-border-left-white,
+.unusual-animation-wrapper:hover .unusual-animation-glow-left-white {
+  opacity: 1;
+  height: 100%;
+}
+.unusual-animation-wrapper:hover .unusual-animation-border-right-white,
+.unusual-animation-wrapper:hover .unusual-animation-glow-right-white {
+  opacity: 1;
+  height: 100%;
+  bottom: 0;
+  top: auto;
+  /* transform: scaleY(-1); */
+}
+
+.unusual-animation-wrapper:hover .unusual-animation-border-top-purple,
+.unusual-animation-wrapper:hover .unusual-animation-glow-top-purple {
+  opacity: 1;
+  width: 100%;
+}
+.unusual-animation-wrapper:hover .unusual-animation-border-bottom-purple,
+.unusual-animation-wrapper:hover .unusual-animation-glow-bottom-purple {
+  opacity: 1;
+  width: 100%;
+  right: 0;
+  left: auto;
+  transform: scaleX(-1);
+}
+.unusual-animation-wrapper:hover .unusual-animation-border-left-purple,
+.unusual-animation-wrapper:hover .unusual-animation-glow-left-purple {
+  opacity: 1;
+  height: 100%;
+}
+.unusual-animation-wrapper:hover .unusual-animation-border-right-purple,
+.unusual-animation-wrapper:hover .unusual-animation-glow-right-purple {
+  opacity: 1;
+  height: 100%;
+  bottom: 0;
+  top: auto;
+  transform: scaleY(-1);
+}
+
+/* Stan początkowy (reset) - białe i fioletowe zawsze width/height 0 bez .active */
+.unusual-animation-border-top-white,
+.unusual-animation-glow-top-white,
+.unusual-animation-border-bottom-white,
+.unusual-animation-glow-bottom-white,
+.unusual-animation-border-left-white,
+.unusual-animation-glow-left-white,
+.unusual-animation-border-right-white,
+.unusual-animation-glow-right-white,
+.unusual-animation-border-top-purple,
+.unusual-animation-glow-top-purple,
+.unusual-animation-border-bottom-purple,
+.unusual-animation-glow-bottom-purple,
+.unusual-animation-border-left-purple,
+.unusual-animation-glow-left-purple,
+.unusual-animation-border-right-purple,
+.unusual-animation-glow-right-purple {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* --- WHITE GLOW SHRINK ANIMATION (reverse, from the same side) --- */
+@keyframes unusual-glow-shrink-width {
+  from {
+    transform: scaleX(1);
+    left: 0;
+    right: auto;
+  }
+  to {
+    transform: scaleX(0);
+    left: 0;
+    right: auto;
+  }
+}
+@keyframes unusual-glow-shrink-width-bottom {
+  from {
+    transform: scaleX(1);
+    right: 0;
+    left: auto;
+  }
+  to {
+    transform: scaleX(0);
+    right: 0;
+    left: auto;
+  }
+}
+@keyframes unusual-glow-shrink-height {
+  from {
+    transform: scaleY(1);
+    top: 0;
+    bottom: auto;
+  }
+  to {
+    transform: scaleY(0);
+    top: 0;
+    bottom: auto;
+  }
+}
+@keyframes unusual-glow-shrink-height-right {
+  from {
+    transform: scaleY(1);
+    bottom: 0;
+    top: auto;
+  }
+  to {
+    transform: scaleY(0);
+    bottom: 0;
+    top: auto;
+  }
+}
+
+.unusual-animation-wrapper:hover .unusual-animation-glow-top-white {
+  animation-delay: 1s !important;
+  width: 100%;
+  opacity: 1;
+  transform-origin: right;
+  animation: unusual-glow-shrink-width 1s cubic-bezier(0.19, 1, 0.22, 1)
+    forwards;
+  animation-fill-mode: forwards;
+}
+.unusual-animation-wrapper:hover .unusual-animation-glow-bottom-white {
+  animation-delay: 1s !important;
+  width: 100%;
+  opacity: 1;
+  transform-origin: left;
+  animation: unusual-glow-shrink-width-bottom 1s cubic-bezier(0.19, 1, 0.22, 1)
+    forwards;
+  animation-fill-mode: forwards;
+}
+.unusual-animation-wrapper:hover .unusual-animation-glow-left-white {
+  animation-delay: 1s !important;
+  height: 100%;
+  opacity: 1;
+  transform-origin: bottom;
+  animation: unusual-glow-shrink-height 1s cubic-bezier(0.19, 1, 0.22, 1)
+    forwards;
+  animation-fill-mode: forwards;
+}
+.unusual-animation-wrapper:hover .unusual-animation-glow-right-white {
+  animation-delay: 1s !important;
+  height: 100%;
+  opacity: 1;
+  transform-origin: top;
+  animation: unusual-glow-shrink-height-right 1s cubic-bezier(0.19, 1, 0.22, 1)
+    forwards;
+  animation-fill-mode: forwards;
+}
+
+/* --- UNUSUAL ANIMATION: animate out on mouse leave (not hover) --- */
+.unusual-animation-wrapper:not(:hover) .unusual-animation-border-top-purple,
+.unusual-animation-wrapper:not(:hover) .unusual-animation-border-bottom-purple,
+.unusual-animation-wrapper:not(:hover) .unusual-animation-border-left-purple,
+.unusual-animation-wrapper:not(:hover) .unusual-animation-border-right-purple,
+.unusual-animation-wrapper:not(:hover) .unusual-animation-glow-top-purple,
+.unusual-animation-wrapper:not(:hover) .unusual-animation-glow-bottom-purple,
+.unusual-animation-wrapper:not(:hover) .unusual-animation-glow-left-purple,
+.unusual-animation-wrapper:not(:hover) .unusual-animation-glow-right-purple {
+  transition: width 0.3s cubic-bezier(0.39, 0.575, 0.565, 1),
+    height 0.3s cubic-bezier(0.39, 0.575, 0.565, 1),
+    opacity 0.3s cubic-bezier(0.39, 0.575, 0.565, 1);
+  width: 0;
+  height: 0;
+  opacity: 0;
+  transition-delay: 0s, 0s, 0s;
+}
+
+.unusual-animation-wrapper:not(:hover) .unusual-animation-border-top-white,
+.unusual-animation-wrapper:not(:hover) .unusual-animation-border-bottom-white,
+.unusual-animation-wrapper:not(:hover) .unusual-animation-border-left-white,
+.unusual-animation-wrapper:not(:hover) .unusual-animation-border-right-white,
+.unusual-animation-wrapper:not(:hover) .unusual-animation-glow-top-white,
+.unusual-animation-wrapper:not(:hover) .unusual-animation-glow-bottom-white,
+.unusual-animation-wrapper:not(:hover) .unusual-animation-glow-left-white,
+.unusual-animation-wrapper:not(:hover) .unusual-animation-glow-right-white {
+  transition: width 0.3s cubic-bezier(0.39, 0.575, 0.565, 1),
+    height 0.3s cubic-bezier(0.39, 0.575, 0.565, 1),
+    opacity 0.3s cubic-bezier(0.39, 0.575, 0.565, 1);
+  width: 0;
+  height: 0;
+  opacity: 0;
+  transition-delay: 0.3s, 0.3s, 0.3s;
+}
+
+/* Normalny biały tekst */
+/* Normal white text */
+/* White text fades out on hover */
+.glitch-text-white {
+  color: white;
+  opacity: 1;
+  position: relative;
+  z-index: 10;
+}
+
+/* Purple text on top, initially hidden */
+.glitch-text-purple {
+  color: #6a00d1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 1.5s linear;
+  z-index: 15;
+}
+
+/* On hover: fade white out, purple in */
+/* .unusual-animation-wrapper:hover .glitch-text-white {
+  opacity: 0;
+  transition-delay: 1s;
+  transition: opacity 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+} */
+
+/* .unusual-animation-wrapper:hover .glitch-text-purple {
+  opacity: 1;
+  transition-delay: 1s !important;
+  transition: opacity 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+  
+} */
+
+/* On mouse leave: glitch purple out */
+.unusual-animation-wrapper:not(:hover) .glitch-text-purple {
+  animation: glitch-purple 1s ease-in-out forwards;
+}
+
+/* After glitch ends, hide purple again */
+.glitch-text-purple.glitch-done {
+  opacity: 0;
+  animation: none;
+}
+
+/* === GLITCH STACK ANIMATION FOR GLITCHBUTTON === */
+
+.glitch-stack {
+  color: white;
+  display: grid;
+  grid-template-columns: 1fr;
+  position: relative;
+}
+
+.glitch-stack span {
+  grid-row-start: 1;
+  grid-column-start: 1;
+  --stack-height: calc(100% / var(--stacks) - 1px);
+  --inverse-index: calc(calc(var(--stacks) - 1) - var(--index));
+  --clip-top: calc(var(--stack-height) * var(--index));
+  --clip-bottom: calc(var(--stack-height) * var(--inverse-index));
+  clip-path: inset(var(--clip-top) 0 var(--clip-bottom) 0);
+  position: relative;
+}
+
+.unusual-animation-wrapper:hover .glitch-stack span {
+  color: #6a00d1 !important;
+  transition: color 1.5s ease-in-out;
+  animation: glitch-stack 1s cubic-bezier(0.46, 0.29, 0, 1.24) 1 backwards
+      calc(var(--index) * 120ms),
+    glitch-stack-glitch 1s ease infinite 3s alternate-reverse;
+}
+/* 
+.unusual-animation-wrapper:not(:hover) .glitch-stack span {
+  animation: glitch-stack 1s cubic-bezier(0.46, 0.29, 0, 1.24) 1 backwards
+    calc(var(--index) * 120ms);
+} */
+
+.glitch-stack span:nth-child(odd) {
+  --glitch-translate: 10px;
+}
+.glitch-stack span:nth-child(even) {
+  --glitch-translate: -10px;
+}
+
+@keyframes glitch-stack {
+  0% {
+    opacity: 0;
+    transform: translateX(-30px);
+    text-shadow: -2px 3px 0 white, 2px -3px 0 #6a00d1;
+  }
+  60% {
+    opacity: 0.5;
+    transform: translateX(20px);
+  }
+  80% {
+    transform: none;
+    opacity: 1;
+    text-shadow: 2px -3px 0 white, -2px 3px 0 #6a00d1;
+  }
+  100% {
+    text-shadow: none;
+  }
+}
+
+@keyframes glitch-stack-glitch {
+  0% {
+    text-shadow: -2px 3px 0 #6a00d1, 2px -3px 0 white;
+    transform: translate(var(--glitch-translate));
+  }
+  2% {
+    text-shadow: 2px -3px 0 #6a00d1, -2px 3px 0 white;
+  }
+  10%,
+  100% {
+    text-shadow: none;
+    transform: none;
+  }
 }

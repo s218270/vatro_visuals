@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import AnimatedText from "./AnimatedText";
+import GlitchButton from "./GlitchButton";
 
 function useInView(ref, offset = 200) {
   const [inView, setInView] = useState(false);
@@ -20,6 +21,15 @@ function useInView(ref, offset = 200) {
 }
 
 export default function Section5() {
+  const [whiteActive, setWhiteActive] = useState(false);
+  const [purpleActive, setPurpleActive] = useState(false);
+  const [hideWhite, setHideWhite] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [isHardReset, setIsHardReset] = useState(false);
+  const purpleTimeout = useRef();
+  const resetTimeout = useRef();
+  const hardResetTimeout = useRef();
+
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
   const formRef = useRef(null);
@@ -57,6 +67,40 @@ export default function Section5() {
     }
   };
 
+  useEffect(() => {
+    if (inViewForm) {
+      setIsResetting(false);
+      setIsHardReset(false);
+      setWhiteActive(true);
+      setHideWhite(false);
+      setPurpleActive(false);
+      purpleTimeout.current = setTimeout(() => {
+        setHideWhite(true);
+        setPurpleActive(true);
+      }, 3000);
+    } else {
+      setIsResetting(true);
+      setIsHardReset(true);
+      setWhiteActive(false);
+      setPurpleActive(false);
+      setHideWhite(false);
+      clearTimeout(purpleTimeout.current);
+      clearTimeout(resetTimeout.current);
+      clearTimeout(hardResetTimeout.current);
+      resetTimeout.current = setTimeout(() => {
+        setIsResetting(false);
+      }, 50);
+      hardResetTimeout.current = setTimeout(() => {
+        setIsHardReset(false);
+      }, 30);
+    }
+    return () => {
+      clearTimeout(purpleTimeout.current);
+      clearTimeout(resetTimeout.current);
+      clearTimeout(hardResetTimeout.current);
+    };
+  }, [inViewForm]);
+
   return (
     <section
       id="section5"
@@ -68,9 +112,15 @@ export default function Section5() {
 
       <div
         ref={formRef}
-        className={`button-border-scroll border-3x-slow glassmorphism w-full max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl relative ${
-          inViewForm ? "active appear" : ""
-        }`}
+        className={`extraordinary-animation-wrapper${
+          isHardReset
+            ? " extraordinary-animation-reset"
+            : isResetting
+            ? ""
+            : `${whiteActive ? " extraordinary-animation-active" : ""}${
+                purpleActive ? " extraordinary-animation-active-purple" : ""
+              }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
+        } glassmorphism w-full max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl relative`}
         style={{
           opacity: inViewForm ? 1 : 0,
           transform: inViewForm ? "translateY(0)" : "translateY(60px)",
@@ -100,9 +150,17 @@ export default function Section5() {
             )}
             {/* Email field */}
             <div
-              className={`button-border-scroll border-3x-slow relative ${
-                inViewForm ? "active appear" : ""
-              }`}
+              className={`extraordinary-animation-wrapper${
+                isHardReset
+                  ? " extraordinary-animation-reset"
+                  : isResetting
+                  ? ""
+                  : `${whiteActive ? " extraordinary-animation-active" : ""}${
+                      purpleActive
+                        ? " extraordinary-animation-active-purple"
+                        : ""
+                    }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
+              } relative ${inViewForm ? "appear" : ""}`}
               style={{ borderRadius: 3, padding: 0 }}
             >
               <label
@@ -141,63 +199,38 @@ export default function Section5() {
                 onBlur={(e) => (e.target.style.background = "rgba(20,20,20,1)")}
                 required
               />
-              {/* Border lines below input */}
-              <div
-                className="border-line border-white-1"
-                style={{ borderTopWidth: "4px", borderLeftWidth: "4px" }}
-              ></div>
-              <div
-                className="border-line border-white-2"
-                style={{ borderBottomWidth: "4px", borderRightWidth: "4px" }}
-              ></div>
-              {/* White Glow */}
-              <div
-                className="border-white-glow-top"
-                style={{ height: "4px" }}
-              ></div>
-              <div
-                className="border-white-glow-right"
-                style={{ width: "4px" }}
-              ></div>
-              <div
-                className="border-white-glow-bottom"
-                style={{ height: "4px" }}
-              ></div>
-              <div
-                className="border-white-glow-left"
-                style={{ width: "4px" }}
-              ></div>
-              <div
-                className="border-line border-purple-1"
-                style={{ borderTopWidth: "4px", borderLeftWidth: "4px" }}
-              ></div>
-              <div
-                className="border-line border-purple-2"
-                style={{ borderBottomWidth: "4px", borderRightWidth: "4px" }}
-              ></div>
-              {/* Purple Glow */}
-              <div
-                className="border-purple-glow-top"
-                style={{ height: "4px" }}
-              ></div>
-              <div
-                className="border-purple-glow-right"
-                style={{ width: "4px" }}
-              ></div>
-              <div
-                className="border-purple-glow-bottom"
-                style={{ height: "4px" }}
-              ></div>
-              <div
-                className="border-purple-glow-left"
-                style={{ width: "4px" }}
-              ></div>
+              {/* WHITE PHASE: 4 borders + 4 glow (should be under purple) */}
+              <div className="extraordinary-animation-border-top-white" />
+              <div className="extraordinary-animation-border-bottom-white" />
+              <div className="extraordinary-animation-border-left-white" />
+              <div className="extraordinary-animation-border-right-white" />
+              <div className="extraordinary-animation-glow-top-white" />
+              <div className="extraordinary-animation-glow-bottom-white" />
+              <div className="extraordinary-animation-glow-left-white" />
+              <div className="extraordinary-animation-glow-right-white" />
+              {/* PURPLE PHASE: 4 borders + 4 glow (should be above white) */}
+              <div className="extraordinary-animation-border-top-purple" />
+              <div className="extraordinary-animation-border-bottom-purple" />
+              <div className="extraordinary-animation-border-left-purple" />
+              <div className="extraordinary-animation-border-right-purple" />
+              <div className="extraordinary-animation-glow-top-purple" />
+              <div className="extraordinary-animation-glow-bottom-purple" />
+              <div className="extraordinary-animation-glow-left-purple" />
+              <div className="extraordinary-animation-glow-right-purple" />
             </div>
             {/* Message field */}
             <div
-              className={`button-border-scroll border-3x-slow relative ${
-                inViewForm ? "active appear" : ""
-              }`}
+              className={`extraordinary-animation-wrapper${
+                isHardReset
+                  ? " extraordinary-animation-reset"
+                  : isResetting
+                  ? ""
+                  : `${whiteActive ? " extraordinary-animation-active" : ""}${
+                      purpleActive
+                        ? " extraordinary-animation-active-purple"
+                        : ""
+                    }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
+              } relative ${inViewForm ? "appear" : ""}`}
               style={{ borderRadius: 3, padding: 0 }}
             >
               <label
@@ -235,142 +268,52 @@ export default function Section5() {
                 onBlur={(e) => (e.target.style.background = "rgba(20,20,20,1)")}
                 required
               ></textarea>
-              {/* Border lines below textarea */}
-              <div
-                className="border-line border-white-1"
-                style={{ borderTopWidth: "4px", borderLeftWidth: "4px" }}
-              ></div>
-              <div
-                className="border-line border-white-2"
-                style={{ borderBottomWidth: "4px", borderRightWidth: "4px" }}
-              ></div>
-              {/* White Glow */}
-              <div
-                className="border-white-glow-top"
-                style={{ height: "4px" }}
-              ></div>
-              <div
-                className="border-white-glow-right"
-                style={{ width: "4px" }}
-              ></div>
-              <div
-                className="border-white-glow-bottom"
-                style={{ height: "4px" }}
-              ></div>
-              <div
-                className="border-white-glow-left"
-                style={{ width: "4px" }}
-              ></div>
-              <div
-                className="border-line border-purple-1"
-                style={{ borderTopWidth: "4px", borderLeftWidth: "4px" }}
-              ></div>
-              <div
-                className="border-line border-purple-2"
-                style={{ borderBottomWidth: "4px", borderRightWidth: "4px" }}
-              ></div>
-              {/* Purple Glow */}
-              <div
-                className="border-purple-glow-top"
-                style={{ height: "4px" }}
-              ></div>
-              <div
-                className="border-purple-glow-right"
-                style={{ width: "4px" }}
-              ></div>
-              <div
-                className="border-purple-glow-bottom"
-                style={{ height: "4px" }}
-              ></div>
-              <div
-                className="border-purple-glow-left"
-                style={{ width: "4px" }}
-              ></div>
+              {/* WHITE PHASE: 4 borders + 4 glow (should be under purple) */}
+              <div className="extraordinary-animation-border-top-white" />
+              <div className="extraordinary-animation-border-bottom-white" />
+              <div className="extraordinary-animation-border-left-white" />
+              <div className="extraordinary-animation-border-right-white" />
+              <div className="extraordinary-animation-glow-top-white" />
+              <div className="extraordinary-animation-glow-bottom-white" />
+              <div className="extraordinary-animation-glow-left-white" />
+              <div className="extraordinary-animation-glow-right-white" />
+              {/* PURPLE PHASE: 4 borders + 4 glow (should be above white) */}
+              <div className="extraordinary-animation-border-top-purple" />
+              <div className="extraordinary-animation-border-bottom-purple" />
+              <div className="extraordinary-animation-border-left-purple" />
+              <div className="extraordinary-animation-border-right-purple" />
+              <div className="extraordinary-animation-glow-top-purple" />
+              <div className="extraordinary-animation-glow-bottom-purple" />
+              <div className="extraordinary-animation-glow-left-purple" />
+              <div className="extraordinary-animation-glow-right-purple" />
             </div>
             {/* Submit button */}
-            <div className="button-border-wrapper mt-6 md:mt-8">
-              <button
-                type="submit"
-                className="button-border-content bg-black p-4 sm:p-5 md:p-6 rounded-full text-base sm:text-lg md:text-xl lg:text-2xl"
-                style={{
-                  position: "relative",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "100%",
-                  minHeight: 56,
-                  fontSize: "1.2rem",
-                }}
-                onMouseLeave={(e) => {
-                  const purple = e.currentTarget.querySelector(
-                    ".glitch-text-purple"
-                  );
-                  if (!purple) return;
-                  purple.classList.remove("glitch-done");
-                  purple.classList.add("glitch-out");
-                  purple.addEventListener(
-                    "animationend",
-                    () => {
-                      purple.classList.remove("glitch-out");
-                      purple.classList.add("glitch-done");
-                    },
-                    { once: true }
-                  );
-                }}
-              >
-                <span
-                  className="glitch-text-white"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                  }}
-                >
-                  <AnimatedText text="Wyślij" inView={inViewForm} as="span" />
-                </span>
-                <span
-                  className="glitch-text-purple"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                  }}
-                >
-                  <AnimatedText text="Wyślij" inView={inViewForm} as="span" />
-                </span>
-              </button>
-              <div className="border-line border-white-1"></div>
-              <div className="border-line border-white-2"></div>
-              {/* White Glow */}
-              <div className="border-white-glow-top"></div>
-              <div className="border-white-glow-right"></div>
-              <div className="border-white-glow-bottom"></div>
-              <div className="border-white-glow-left"></div>
-              <div className="border-line border-purple-1"></div>
-              <div className="border-line border-purple-2"></div>
-              {/* Purple Glow */}
-              <div className="border-purple-glow-top"></div>
-              <div className="border-purple-glow-right"></div>
-              <div className="border-purple-glow-bottom"></div>
-              <div className="border-purple-glow-left"></div>
+            <div className="mt-6 md:mt-8 justify-center flex items-center">
+              <GlitchButton
+                style={{ width: "100%" }}
+                text={<button type="submit">Wyślij</button>}
+              />
             </div>
           </form>
         )}
-        {/* Border lines for the whole form */}
-        <div className="border-line border-white-1"></div>
-        <div className="border-line border-white-2"></div>
-        {/* White Glow */}
-        <div className="border-white-glow-top"></div>
-        <div className="border-white-glow-right"></div>
-        <div className="border-white-glow-bottom"></div>
-        <div className="border-white-glow-left"></div>
-        <div className="border-line border-purple-1"></div>
-        <div className="border-line border-purple-2"></div>
-        {/* Purple Glow */}
-        <div className="border-purple-glow-top"></div>
-        <div className="border-purple-glow-right"></div>
-        <div className="border-purple-glow-bottom"></div>
-        <div className="border-purple-glow-left"></div>
+        {/* WHITE PHASE: 4 borders + 4 glow (should be under purple) */}
+        <div className="extraordinary-animation-border-top-white" />
+        <div className="extraordinary-animation-border-bottom-white" />
+        <div className="extraordinary-animation-border-left-white" />
+        <div className="extraordinary-animation-border-right-white" />
+        <div className="extraordinary-animation-glow-top-white" />
+        <div className="extraordinary-animation-glow-bottom-white" />
+        <div className="extraordinary-animation-glow-left-white" />
+        <div className="extraordinary-animation-glow-right-white" />
+        {/* PURPLE PHASE: 4 borders + 4 glow (should be above white) */}
+        <div className="extraordinary-animation-border-top-purple" />
+        <div className="extraordinary-animation-border-bottom-purple" />
+        <div className="extraordinary-animation-border-left-purple" />
+        <div className="extraordinary-animation-border-right-purple" />
+        <div className="extraordinary-animation-glow-top-purple" />
+        <div className="extraordinary-animation-glow-bottom-purple" />
+        <div className="extraordinary-animation-glow-left-purple" />
+        <div className="extraordinary-animation-glow-right-purple" />
       </div>
 
       {/* Social media icons remain the same */}
@@ -407,8 +350,8 @@ export default function Section5() {
         </a>
       </div>
       {/* Scroll to LogoAnimation button */}
+
       <div
-        className="button-border-wrapper"
         style={{
           position: "absolute",
           zIndex: 30,
@@ -417,36 +360,11 @@ export default function Section5() {
           transform: "translateX(-50%)",
         }}
       >
-        <button
+        <GlitchButton
           onClick={() => {
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
-          className="button-border-content bg-black p-4 rounded-full"
-          style={{
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onMouseLeave={(e) => {
-            const purple = e.currentTarget.querySelector(".glitch-text-purple");
-            if (!purple) return;
-            purple.classList.remove("glitch-done");
-            purple.classList.add("glitch-out");
-            purple.addEventListener(
-              "animationend",
-              () => {
-                purple.classList.remove("glitch-out");
-                purple.classList.add("glitch-done");
-              },
-              { once: true }
-            );
-          }}
-        >
-          <span
-            className="glitch-text-white"
-            style={{ display: "flex", alignItems: "center", gap: 8 }}
-          >
+          text={
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -462,42 +380,8 @@ export default function Section5() {
                 d="M19 9l-7 7-7-7"
               />
             </svg>
-          </span>
-          <span
-            className="glitch-text-purple"
-            style={{ display: "flex", alignItems: "center", gap: 8 }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-              stroke="currentColor"
-              className="w-6 h-6 text-[#a259f7]"
-              style={{ transform: "rotate(180deg)" }}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </span>
-        </button>
-        <div className="border-line border-white-1"></div>
-        <div className="border-line border-white-2"></div>
-        {/* White Glow */}
-        <div className="border-white-glow-top"></div>
-        <div className="border-white-glow-right"></div>
-        <div className="border-white-glow-bottom"></div>
-        <div className="border-white-glow-left"></div>
-        <div className="border-line border-purple-1"></div>
-        <div className="border-line border-purple-2"></div>
-        {/* Purple Glow */}
-        <div className="border-purple-glow-top"></div>
-        <div className="border-purple-glow-right"></div>
-        <div className="border-purple-glow-bottom"></div>
-        <div className="border-purple-glow-left"></div>
+          }
+        />
       </div>
     </section>
   );

@@ -1,7 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import PropTypes from "prop-types";
+import GlitchButton from "./GlitchButton";
 
 export default function Navbar({ scrollToSection }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -10,6 +11,8 @@ export default function Navbar({ scrollToSection }) {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isIOS, setIsIOS] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const videoRef = useRef(null);
   const router = useRouter();
   const pathname =
     typeof window !== "undefined" ? window.location.pathname : "/";
@@ -142,6 +145,13 @@ export default function Navbar({ scrollToSection }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
+  // Ensure videoLoaded is set if video is already loaded (e.g. from cache)
+  useEffect(() => {
+    if (!videoLoaded && videoRef.current && videoRef.current.readyState >= 3) {
+      setVideoLoaded(true);
+    }
+  }, [videoLoaded]);
+
   return (
     <nav
       className={`fixed z-50 top-0 w-screen h-24 text-white text-lg flex items-center flex-row justify-between md:justify-evenly text-nowrap glassmorphism transition-transform duration-300${
@@ -150,138 +160,138 @@ export default function Navbar({ scrollToSection }) {
       style={{ border: "none" }}
     >
       <div className="h-full px-2 hidden md:flex items-center justify-center">
-        <div className="button-border-wrapper">
-          <button
-            onClick={() => handleNav(null)}
-            className="button-border-content"
-            style={{ position: "relative" }}
-          >
-            <span className="glitch-text-white">HOME</span>
-            <span className="glitch-text-purple">HOME</span>
-          </button>
-          <div className="border-line border-white-1"></div>
-          <div className="border-line border-white-2"></div>
-          {/* White Glow */}
-          <div className="border-white-glow-top"></div>
-          <div className="border-white-glow-right"></div>
-          <div className="border-white-glow-bottom"></div>
-          <div className="border-white-glow-left"></div>
-          <div className="border-line border-purple-1"></div>
-          <div className="border-line border-purple-2"></div>
-          {/* Purple Glow */}
-          <div className="border-purple-glow-top"></div>
-          <div className="border-purple-glow-right"></div>
-          <div className="border-purple-glow-bottom"></div>
-          <div className="border-purple-glow-left"></div>
-        </div>
+        <GlitchButton onClick={() => handleNav(null)} text={"HOME"} />
       </div>
       <div className="h-full px-2 hidden md:flex items-center justify-center">
-        <div className="button-border-wrapper">
-          <button
-            onClick={() => handleNav("section3")}
-            className="button-border-content"
-            style={{ position: "relative" }}
-          >
-            <span className="glitch-text-white">O MNIE</span>
-            <span className="glitch-text-purple">O MNIE</span>
-          </button>
-          <div className="border-line border-white-1"></div>
-          <div className="border-line border-white-2"></div>
-          {/* White Glow */}
-          <div className="border-white-glow-top"></div>
-          <div className="border-white-glow-right"></div>
-          <div className="border-white-glow-bottom"></div>
-          <div className="border-white-glow-left"></div>
-          <div className="border-line border-purple-1"></div>
-          <div className="border-line border-purple-2"></div>
-          {/* Purple Glow */}
-          <div className="border-purple-glow-top"></div>
-          <div className="border-purple-glow-right"></div>
-          <div className="border-purple-glow-bottom"></div>
-          <div className="border-purple-glow-left"></div>
-        </div>
+        <GlitchButton onClick={() => handleNav("section3")} text={"O MNIE"} />
       </div>
       {/* Video background z fallbackiem na iOS */}
-      {hasMounted ? (
-        isIOS ? (
-          <img
-            src="/Logo%20Merged.svg"
-            alt="Logo"
-            className="w-24 h-full object-cover left-auto right-auto ml-4 cursor-pointer bg-transparent"
-            style={{ display: "block" }}
-            onClick={() => handleNav("section1")}
-          />
-        ) : (
+      {isIOS ? (
+        <span
+          className="w-24 h-full ml-4 cursor-pointer bg-transparent"
+          style={{ display: "block" }}
+          onClick={() => handleNav("section1")}
+          role="img"
+          aria-label="Logo"
+          tabIndex={0}
+        >
+          {/* Inline SVG */}
+          <svg
+            version="1.1"
+            id="Logo_Merged"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlnsXlink="http://www.w3.org/1999/xlink"
+            x="0px"
+            y="0px"
+            viewBox="0 0 2000 2000"
+            style={{
+              enableBackground: "new 0 0 2000 2000",
+              width: "100%",
+              height: "100%",
+            }}
+            xmlSpace="preserve"
+          >
+            <style type="text/css">{`.st0{fill:#F2F2F2;}`}</style>
+            <path
+              className="st0"
+              d="M1237.5,1512.32l95-54.85v-109.7l-95,54.85V1512.32z M1427.5,1402.62l483.61-279.21L1047.5,624.8v997.22 l95-54.85V789.35l578.61,334.06l-293.61,169.52V1402.62z M857.5,1457.47l-578.61-334.06l110.02-63.52v-109.7L88.89,1123.41 l863.61,498.61V624.8l-95,54.85V1457.47z M1721.11,794.32L1000,377.98L278.89,794.32v109.7L952.5,515.11l47.5-27.43l47.5,27.43 l673.61,388.91V794.32z"
+            />
+          </svg>
+        </span>
+      ) : (
+        <div style={{ position: "relative", width: "6rem", height: "100%" }}>
+          {/* Always render video, but hide it until loaded. Show SVG only if not loaded. */}
           <video
+            ref={videoRef}
             autoPlay
             loop
             muted
             className="w-24 h-full object-cover ml-4 md:ml-0 left-auto right-auto cursor-pointer bg-transparent"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              zIndex: 2,
+              display: videoLoaded ? "block" : "none",
+            }}
             onClick={() => handleNav("section1")}
+            onLoadedData={() => setVideoLoaded(true)}
+            onError={() => setVideoLoaded(true)}
           >
             <source src="/Logo_WWW_2.webm" type="video/webm" />
-            <img
-              src="/Logo%20Merged.svg"
-              alt="Logo"
-              className="w-24 h-full object-cover ml-4 left-auto right-auto cursor-pointer bg-transparent"
-              style={{ display: "block" }}
-            />
+            {/* Inline SVG fallback for video (for browsers that don't support webm) */}
+            <svg
+              version="1.1"
+              id="Logo_Merged"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+              x="0px"
+              y="0px"
+              viewBox="0 0 2000 2000"
+              style={{
+                enableBackground: "new 0 0 2000 2000",
+                width: "100%",
+                height: "100%",
+              }}
+              xmlSpace="preserve"
+            >
+              <style type="text/css">{`.st0{fill:#F2F2F2;}`}</style>
+              <path
+                className="st0"
+                d="M1237.5,1512.32l95-54.85v-109.7l-95,54.85V1512.32z M1427.5,1402.62l483.61-279.21L1047.5,624.8v997.22 l95-54.85V789.35l578.61,334.06l-293.61,169.52V1402.62z M857.5,1457.47l-578.61-334.06l110.02-63.52v-109.7L88.89,1123.41 l863.61,498.61V624.8l-95,54.85V1457.47z M1721.11,794.32L1000,377.98L278.89,794.32v109.7L952.5,515.11l47.5-27.43l47.5,27.43 l673.61,388.91V794.32z"
+              />
+            </svg>
           </video>
-        )
-      ) : (
-        <div style={{ width: "6rem", height: "100%" }} />
+          {!videoLoaded && (
+            <span
+              className="w-24 h-full ml-4 left-auto right-auto cursor-pointer bg-transparent"
+              style={{
+                display: "block",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                zIndex: 1,
+                width: "100%",
+                height: "100%",
+              }}
+              onClick={() => handleNav("section1")}
+              role="img"
+              aria-label="Logo"
+              tabIndex={0}
+            >
+              <svg
+                version="1.1"
+                id="Logo_Merged"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+                x="0px"
+                y="0px"
+                viewBox="0 0 2000 2000"
+                style={{
+                  enableBackground: "new 0 0 2000 2000",
+                  width: "100%",
+                  height: "100%",
+                }}
+                xmlSpace="preserve"
+              >
+                <style type="text/css">{`.st0{fill:#F2F2F2;}`}</style>
+                <path
+                  className="st0"
+                  d="M1237.5,1512.32l95-54.85v-109.7l-95,54.85V1512.32z M1427.5,1402.62l483.61-279.21L1047.5,624.8v997.22 l95-54.85V789.35l578.61,334.06l-293.61,169.52V1402.62z M857.5,1457.47l-578.61-334.06l110.02-63.52v-109.7L88.89,1123.41 l863.61,498.61V624.8l-95,54.85V1457.47z M1721.11,794.32L1000,377.98L278.89,794.32v109.7L952.5,515.11l47.5-27.43l47.5,27.43 l673.61,388.91V794.32z"
+                />
+              </svg>
+            </span>
+          )}
+        </div>
       )}
       <div className="h-full px-2 hidden md:flex items-center justify-center">
-        <div className="button-border-wrapper">
-          <button
-            onClick={() => handleNav("section4")}
-            className="button-border-content"
-            style={{ position: "relative" }}
-          >
-            <span className="glitch-text-white">PORTFOLIO</span>
-            <span className="glitch-text-purple">PORTFOLIO</span>
-          </button>
-          <div className="border-line border-white-1"></div>
-          <div className="border-line border-white-2"></div>
-          {/* White Glow */}
-          <div className="border-white-glow-top"></div>
-          <div className="border-white-glow-right"></div>
-          <div className="border-white-glow-bottom"></div>
-          <div className="border-white-glow-left"></div>
-          <div className="border-line border-purple-1"></div>
-          <div className="border-line border-purple-2"></div>
-          {/* Purple Glow */}
-          <div className="border-purple-glow-top"></div>
-          <div className="border-purple-glow-right"></div>
-          <div className="border-purple-glow-bottom"></div>
-          <div className="border-purple-glow-left"></div>
-        </div>
+        <GlitchButton
+          onClick={() => handleNav("section4")}
+          text={"PORTFOLIO"}
+        />
       </div>
       <div className="h-full px-2 hidden md:flex items-center justify-center">
-        <div className="button-border-wrapper">
-          <button
-            onClick={() => handleNav("section5")}
-            className="button-border-content"
-            style={{ position: "relative" }}
-          >
-            <span className="glitch-text-white">KONTAKT</span>
-            <span className="glitch-text-purple">KONTAKT</span>
-          </button>
-          <div className="border-line border-white-1"></div>
-          <div className="border-line border-white-2"></div>
-          {/* White Glow */}
-          <div className="border-white-glow-top"></div>
-          <div className="border-white-glow-right"></div>
-          <div className="border-white-glow-bottom"></div>
-          <div className="border-white-glow-left"></div>
-          <div className="border-line border-purple-1"></div>
-          <div className="border-line border-purple-2"></div>
-          {/* Purple Glow */}
-          <div className="border-purple-glow-top"></div>
-          <div className="border-purple-glow-right"></div>
-          <div className="border-purple-glow-bottom"></div>
-          <div className="border-purple-glow-left"></div>
-        </div>
+        <GlitchButton onClick={() => handleNav("section5")} text={"KONTAKT"} />
       </div>
       {/* Hamburger Menu (mobile only) */}
       <div className="md:hidden mr-6">
@@ -311,14 +321,16 @@ export default function Navbar({ scrollToSection }) {
       {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
         <div
-          className="mobile-sidebar glassmorphism fixed right-0 w-1/2 h-screen md:hidden z-50 open"
+          className="mobile-sidebar glassmorphism fixed right-0 h-screen md:hidden z-50 open"
           style={{
             border: "none",
             top: "6rem", // ustawione na wysokość navbaru (h-24 = 6rem = 96px)
             borderRadius: 0,
+            width: "80vw", // zwiększona szerokość sidebaru na mobile
+            maxWidth: "400px", // opcjonalnie ograniczenie szerokości
           }}
         >
-          <div className="flex flex-col pt-8 gap-8 h-full items-start pl-8">
+          <div className="flex flex-col pt-8 gap-8 h-full items-center w-full pl-0">
             {/*
               { label: "HOME", section: null },
               { label: "O MNIE", section: "section3" },
@@ -328,46 +340,7 @@ export default function Navbar({ scrollToSection }) {
             {["HOME", "O MNIE", "PORTFOLIO", "KONTAKT"].map((label, idx) => {
               const section = idx === 0 ? null : `section${idx + 2}`;
               return (
-                <div className="button-border-wrapper" key={label}>
-                  <button
-                    onClick={() => handleNav(section)}
-                    className="button-border-content"
-                    style={{ position: "relative" }}
-                    onMouseLeave={(e) => {
-                      const purple = e.currentTarget.querySelector(
-                        ".glitch-text-purple"
-                      );
-                      if (!purple) return;
-                      purple.classList.remove("glitch-done");
-                      purple.classList.add("glitch-out");
-                      purple.addEventListener(
-                        "animationend",
-                        () => {
-                          purple.classList.remove("glitch-out");
-                          purple.classList.add("glitch-done");
-                        },
-                        { once: true }
-                      );
-                    }}
-                  >
-                    <span className="glitch-text-white">{label}</span>
-                    <span className="glitch-text-purple">{label}</span>
-                  </button>
-                  <div className="border-line border-white-1"></div>
-                  <div className="border-line border-white-2"></div>
-                  {/* White Glow */}
-                  <div className="border-white-glow-top"></div>
-                  <div className="border-white-glow-right"></div>
-                  <div className="border-white-glow-bottom"></div>
-                  <div className="border-white-glow-left"></div>
-                  <div className="border-line border-purple-1"></div>
-                  <div className="border-line border-purple-2"></div>
-                  {/* Purple Glow */}
-                  <div className="border-purple-glow-top"></div>
-                  <div className="border-purple-glow-right"></div>
-                  <div className="border-purple-glow-bottom"></div>
-                  <div className="border-purple-glow-left"></div>
-                </div>
+                <GlitchButton onClick={() => handleNav(section)} text={label} />
               );
             })}
           </div>

@@ -21,6 +21,19 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="Vatro Visuals" />
+        {/* Preload SVG logo for instant display */}
+        <link
+          rel="preload"
+          as="image"
+          href="/Logo%20Merged.svg"
+          type="image/svg+xml"
+        />
+        {/* ...other meta tags... */}
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-font`}
       >

@@ -5,7 +5,7 @@ export default function AnimatedText({
   style = {},
   inView,
   as = "span",
-  letterDelay = 0.04,
+  letterDelay = 0.1,
   breakWords = false,
 }) {
   const Tag = as;

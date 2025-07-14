@@ -202,7 +202,7 @@ export default function Home() {
 
   return (
     <div>
-      <Navbar scrollToSection={scrollToSection} />
+      {/* <Navbar scrollToSection={scrollToSection} /> */}
       {/* <Section1 scrollToSection={scrollToSection} /> */}
       {/* Przywrócono LogoAnimation */}
       <LogoAnimation scrollToSection={scrollToSection} />
