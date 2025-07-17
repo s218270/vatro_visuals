@@ -1,6 +1,7 @@
 // components/InfiniteScrollSVGLine.js
 // Seamless, infinite scrolling SVG line for backgrounds
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 /**
  * InfiniteScrollSVGLine
@@ -127,7 +128,7 @@ export default function InfiniteScrollSVGLine({
         }}
       >
         {Array.from({ length: numSVGs }).map((_, i) => (
-          <img
+          <Image
             key={i}
             src={src}
             alt="scrolling-svg"

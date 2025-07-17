@@ -70,9 +70,11 @@ const ImageCard = ({ inView, imageRef }) => {
             : "translateX(-60px)",
       }}
     >
-      <img
-        src="Andrew.webp"
+      <Image
+        src="/Andrew.webp"
         alt="Andrew"
+        width={600}
+        height={800}
         className="w-full object-cover"
         style={{
           objectFit: "cover",
