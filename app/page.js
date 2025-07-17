@@ -27,10 +27,7 @@ export default function Home() {
       ? new URLSearchParams(window.location.search)
       : null;
 
-  let params =
-    typeof window !== "undefined"
-      ? new URLSearchParams(window.location.search)
-      : null;
+  // Usunięto params z zewnętrznego scope
 
   // Toggle menu function
   const toggleMenu = () => {
@@ -117,7 +114,7 @@ export default function Home() {
   useEffect(() => {
     // Scroll to section if scrollTo param exists
     if (typeof window !== "undefined") {
-      params = new URLSearchParams(window.location.search);
+      const params = new URLSearchParams(window.location.search);
       const scrollTo = params.get("scrollTo");
       if (scrollTo !== null) {
         let attempts = 0;
@@ -168,7 +165,7 @@ export default function Home() {
         setTimeout(tryScroll, 200); // Initial delay to allow DOM to render
       }
     }
-  }, [params]);
+  }, []);
 
   // Helper: check if mobile
   useEffect(() => {
