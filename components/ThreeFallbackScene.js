@@ -40,7 +40,7 @@ export default function ThreeFallbackScene({
     });
     renderer.setSize(mount.clientWidth, mount.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.colorSpace = "srgb";
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     // Usuń wszystkie dzieci mount przed dodaniem canvas
     while (mount.firstChild) {
