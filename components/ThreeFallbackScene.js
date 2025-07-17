@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { sRGBEncoding } from "three";
+// import { sRGBEncoding } from "three"; // Usunięte, używaj THREE.sRGBEncoding
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -40,7 +40,7 @@ export default function ThreeFallbackScene({
     });
     renderer.setSize(mount.clientWidth, mount.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.outputEncoding = sRGBEncoding;
+    renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     // Usuń wszystkie dzieci mount przed dodaniem canvas
     while (mount.firstChild) {
