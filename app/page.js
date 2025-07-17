@@ -21,7 +21,13 @@ export default function Home() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isIOS, setIsIOS] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
+
   const searchParams =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search)
+      : null;
+
+  let params =
     typeof window !== "undefined"
       ? new URLSearchParams(window.location.search)
       : null;
@@ -111,47 +117,58 @@ export default function Home() {
   useEffect(() => {
     // Scroll to section if scrollTo param exists
     if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
+      params = new URLSearchParams(window.location.search);
       const scrollTo = params.get("scrollTo");
-      if (scrollTo) {
+      if (scrollTo !== null) {
         let attempts = 0;
-        const maxAttempts = 40; // up to 4s
-        let scrollEndTimeout;
+        const maxAttempts = 60; // up to 6s
         function removeParam() {
           const url = new URL(window.location);
           url.searchParams.delete("scrollTo");
           window.history.replaceState({}, document.title, url.pathname);
         }
-        function onScrollEnd() {
-          window.removeEventListener("scroll", onScrollEndHandler);
-          removeParam();
+        function checkSectionInView(section) {
+          const rect = section.getBoundingClientRect();
+          return (
+            rect.top >= 0 &&
+            rect.bottom <=
+              (window.innerHeight || document.documentElement.clientHeight)
+          );
         }
-        function onScrollEndHandler() {
-          clearTimeout(scrollEndTimeout);
-          scrollEndTimeout = setTimeout(onScrollEnd, 150);
-        }
+        // Import scrollWithRAF
+        const { scrollWithRAF } = require("../utils/scrollWithRAF");
         function tryScroll() {
+          if (scrollTo === "null") {
+            // Scrolluj na górę strony z animacją
+            scrollWithRAF(null);
+            // Resetuj scrollTo param po animacji (timeout na 1s)
+            setTimeout(removeParam, 1000);
+            return;
+          }
           const section = document.getElementById(scrollTo);
           if (section) {
-            section.scrollIntoView({ behavior: "smooth", block: "start" });
-            // Listen for scroll end
-            window.addEventListener("scroll", onScrollEndHandler);
-            // Fallback: remove param after 4s if scroll event never fires
+            scrollWithRAF(scrollTo);
+            // Czekaj aż sekcja będzie w widoku
+            const interval = setInterval(() => {
+              if (checkSectionInView(section)) {
+                clearInterval(interval);
+                removeParam();
+              }
+            }, 100);
+            // Fallback: po 6s przestań próbować, ale NIE usuwaj parametru jeśli sekcja nie istnieje
             setTimeout(() => {
-              window.removeEventListener("scroll", onScrollEndHandler);
-              removeParam();
-            }, 4000);
+              clearInterval(interval);
+              // Jeśli sekcja nie jest w widoku, nie usuwaj parametru
+            }, 6000);
           } else if (attempts < maxAttempts) {
             attempts++;
             setTimeout(tryScroll, 100);
-          } else {
-            removeParam();
-          }
+          } // NIE usuwaj parametru jeśli sekcja nie istnieje
         }
         setTimeout(tryScroll, 200); // Initial delay to allow DOM to render
       }
     }
-  }, []);
+  }, [params]);
 
   // Helper: check if mobile
   useEffect(() => {
@@ -207,6 +224,8 @@ export default function Home() {
       {/* Przywrócono LogoAnimation */}
       <LogoAnimation scrollToSection={scrollToSection} />
       {/* <Section2 scrollToSection={scrollToSection} /> */}
+      {/* <div className="h-screen bg-red-700"></div> */}
+      {/* <div className="h-screen bg-blue-500"></div> */}
       <Section3 speed={speed} scrollToSection={scrollToSection} />
       <Section4 scrollToSection={scrollToSection} />
       <Section5 />

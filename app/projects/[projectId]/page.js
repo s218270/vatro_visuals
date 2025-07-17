@@ -70,7 +70,7 @@ export default function ProjectPage({ params }) {
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-[#292929] text-[#f2f2f2] flex flex-col items-center justify-center">
         <h1 className="text-3xl font-bold mb-4">Projekt nie znaleziony</h1>
         <Link href="/projects" className="text-[#6a00d1]">
           Powrót do projektów
@@ -80,7 +80,7 @@ export default function ProjectPage({ params }) {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-0 pt-0 w-full">
+    <div className="min-h-screen bg-[#292929] text-[#f2f2f2] p-0 pt-0 w-full">
       <div className="w-full flex items-start mt-4" style={{ height: 56 }}>
         <div className="fixed top-28 left-4 z-40">
           <GlitchButton
@@ -104,7 +104,7 @@ export default function ProjectPage({ params }) {
                   viewBox="0 0 24 24"
                   strokeWidth="2"
                   stroke="currentColor"
-                  className="w-6 h-6 text-white"
+                  className="w-6 h-6 text-[#f2f2f2]"
                   style={{ transform: "rotate(90deg)" }}
                 >
                   <path
@@ -124,14 +124,14 @@ export default function ProjectPage({ params }) {
           style={{ minHeight: "50vh", height: "50vh", maxHeight: "80vh" }}
         >
           {!loaded.main && (
-            <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-black/60">
+            <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-[#292929]/60">
               {typeof window !== "undefined" && isIOS() ? (
                 <div
                   style={{
                     width: 48,
                     height: 48,
                     border: "6px solid #6a00d1",
-                    borderTop: "6px solid #fff",
+                    borderTop: "6px solid #f2f2f2",
                     borderRadius: "50%",
                     animation: "spin 1.2s linear infinite",
                   }}
@@ -197,7 +197,7 @@ export default function ProjectPage({ params }) {
         <div className="mb-4 text-sm text-gray-400 font-semibold">
           Klient: {project.client || "-"}
         </div>
-        <div className="whitespace-pre-line text-base text-white">
+        <div className="whitespace-pre-line text-base text-[#f2f2f2]">
           {project.fullDescription || project.fullDesctiption || "-"}
         </div>
       </div>
@@ -252,20 +252,20 @@ export default function ProjectPage({ params }) {
                     animationFillMode: "both",
                   }}
                 >
-                  <div className="mb-4 text-center text-base text-white">
+                  <div className="mb-4 text-center text-base text-[#f2f2f2]">
                     {file.description || ""}
                   </div>
                   {imgUrl && (
                     <div className="mt-4 w-full rounded-[3px] relative flex flex-col items-center">
                       {!loaded.files[idx] && (
-                        <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-black/60">
+                        <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-[#292929]/60">
                           {typeof window !== "undefined" && isIOS() ? (
                             <div
                               style={{
                                 width: 48,
                                 height: 48,
                                 border: "6px solid #6a00d1",
-                                borderTop: "6px solid #fff",
+                                borderTop: "6px solid #f2f2f2",
                                 borderRadius: "50%",
                                 animation: "spin 1.2s linear infinite",
                               }}

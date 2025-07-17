@@ -83,7 +83,7 @@ export default function Section3({ speed, scrollToSection }) {
   return (
     <section
       id="section3"
-      className="min-h-[1000px] w-full bg-black flex flex-col items-center justify-center relative overflow-hidden h-auto lg:h-screen"
+      className="min-h-screen w-full bg-[#292929] flex flex-col items-center justify-center relative overflow-hidden z-10"
       ref={containerRef}
     >
       {/* Gradient overlays for top/bottom fade */}
@@ -92,7 +92,7 @@ export default function Section3({ speed, scrollToSection }) {
           position: "absolute",
           top: 0,
           left: 0,
-          width: "100vw",
+          width: "100%",
           height: "30vh",
           zIndex: 1,
           pointerEvents: "none",
@@ -104,16 +104,16 @@ export default function Section3({ speed, scrollToSection }) {
           position: "absolute",
           bottom: 0,
           left: 0,
-          width: "100vw",
+          width: "100%",
           height: "30vh",
-          zIndex: 0,
+          zIndex: 1,
           pointerEvents: "none",
           background: "linear-gradient(to top, #000 0%, transparent 100%)",
         }}
       />
       {/* Top set of animated background SVG lines */}
       <InfiniteScrollSVGLine
-        src="/WWW Text_Fill.svg"
+        src="/WWW Text_Fill (1).svg"
         className="vatro-bg-svg vatroline"
         direction="left" // Opposite direction from first set
         svgWidth={9500}
@@ -129,7 +129,7 @@ export default function Section3({ speed, scrollToSection }) {
         isScrolling={isScrolling}
       />
       <InfiniteScrollSVGLine
-        src="/vatro_visuals_outline.svg"
+        src="/WWW Text_Outlines (2).svg"
         className="vatro-bg-svg visualsline"
         direction="right" // Opposite direction from first set
         svgWidth={9500}
@@ -147,7 +147,7 @@ export default function Section3({ speed, scrollToSection }) {
       {/* Animated background SVG lines (bottom set) */}
       {/* Top line: center SVG at left: 0, scrolls right */}
       <InfiniteScrollSVGLine
-        src="/WWW Text_Fill.svg"
+        src="/WWW Text_Fill (1).svg"
         className="vatro-bg-svg vatroline"
         direction="right"
         svgWidth={9500}
@@ -164,7 +164,7 @@ export default function Section3({ speed, scrollToSection }) {
       />
       {/* Bottom line: center SVG at right: 0, scrolls left */}
       <InfiniteScrollSVGLine
-        src="/vatro_visuals_outline.svg"
+        src="/WWW Text_Outlines (2).svg"
         className="vatro-bg-svg visualsline"
         direction="left"
         svgWidth={9500}
@@ -182,13 +182,8 @@ export default function Section3({ speed, scrollToSection }) {
 
       {/* Responsive Grid Layout */}
       <div
-        className="w-full max-w-[80%] mx-auto grid grid-cols-1 grid-rows-[1fr_1fr_1fr] gap-8 lg:grid-cols-3 lg:grid-rows-2 lg:gap-8 items-stretch py-[50px]"
-        style={{
-          // On large screens, max height is 80vh
-          ...(typeof window !== "undefined" && window.innerWidth >= 1024
-            ? { maxHeight: "90vh" }
-            : {}),
-        }}
+        className="w-full max-w-[80%] mx-auto flex flex-col lg:grid gap-8 lg:grid-cols-3 lg:grid-rows-2 lg:gap-8 py-[120px]"
+        style={{}}
       >
         {/* Image: col 1, row 1-2 on lg, row 1 on mobile */}
         <ImageCard inView={inViewImage} imageRef={imageRef} />
@@ -217,7 +212,7 @@ export default function Section3({ speed, scrollToSection }) {
               viewBox="0 0 24 24"
               strokeWidth="2"
               stroke="currentColor"
-              className="w-6 h-6 text-white"
+              className="w-6 h-6 text-[#f2f2f2]"
             >
               <path
                 strokeLinecap="round"
@@ -236,7 +231,7 @@ export default function Section3({ speed, scrollToSection }) {
           left: "50%",
           bottom: "-60vh", // Place below the bottom of the section
           transform: "translateX(-50%)",
-          width: "100vw",
+          width: "100%",
           height: "100vh",
           pointerEvents: "none",
           zIndex: 0,

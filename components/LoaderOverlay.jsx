@@ -13,7 +13,7 @@ export default function LoaderOverlay() {
   }, []);
 
   return (
-    <div className="absolute inset-0 z-20 flex items-center justify-center bg-black bg-opacity-90 pointer-events-auto">
+    <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#292929] bg-opacity-90 pointer-events-auto">
       {isClient ? (
         isIos ? (
           <div
@@ -21,7 +21,7 @@ export default function LoaderOverlay() {
               width: 48,
               height: 48,
               border: "6px solid #6a00d1",
-              borderTop: "6px solid #fff",
+              borderTop: "6px solid #f2f2f2",
               borderRadius: "50%",
               animation: "spin 1.2s linear infinite",
             }}

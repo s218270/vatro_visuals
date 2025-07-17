@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import PropTypes from "prop-types";
 import GlitchButton from "./GlitchButton";
+import { scrollWithRAF } from "../utils/scrollWithRAF";
 
 export default function Navbar({ scrollToSection }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,8 +15,7 @@ export default function Navbar({ scrollToSection }) {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const videoRef = useRef(null);
   const router = useRouter();
-  const pathname =
-    typeof window !== "undefined" ? window.location.pathname : "/";
+  let pathname = typeof window !== "undefined" ? window.location.pathname : "/";
 
   // Toggle menu function
   const toggleMenu = () => {
@@ -30,7 +30,27 @@ export default function Navbar({ scrollToSection }) {
     setIsMenuOpen(false);
   };
 
-  const handleNav = (section) => {
+  const handleNav = (id) => {
+    pathname = typeof window !== "undefined" ? window.location.pathname : "/";
+    console.log("scrollToSection called with id:", id);
+    if (pathname !== "/") {
+      router.push(`/?scrollTo=${id}`);
+      setIsMenuOpen(false);
+      return;
+    } else {
+      scrollWithRAF(id);
+      setIsMenuOpen(false);
+    }
+    // Scrollowanie na stronie głównej (z animacją)
+    // if (!id) {
+    //   window.scrollTo({ top: 0, behavior: "smooth" });
+    //   setIsMenuOpen(false);
+    //   return;
+    // }
+    // Użyj scrollWithRAF zamiast scrollIntoView/intersectionObserver
+  };
+
+  const handleNav2 = (section) => {
     if (pathname !== "/") {
       if (!section) {
         router.push("/");
@@ -112,6 +132,8 @@ export default function Navbar({ scrollToSection }) {
     }
   }, []);
 
+  // ...existing code...
+
   useEffect(() => {
     setHasMounted(true);
     if (
@@ -125,6 +147,10 @@ export default function Navbar({ scrollToSection }) {
   useEffect(() => {
     let ticking = false;
     const handleScroll = () => {
+      if (!isMobile) {
+        setShowNavbar(true);
+        return;
+      }
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
@@ -143,7 +169,7 @@ export default function Navbar({ scrollToSection }) {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, [lastScrollY, isMobile]);
 
   // Ensure videoLoaded is set if video is already loaded (e.g. from cache)
   useEffect(() => {
@@ -154,7 +180,7 @@ export default function Navbar({ scrollToSection }) {
 
   return (
     <nav
-      className={`fixed z-50 top-0 w-screen h-24 text-white text-lg flex items-center flex-row justify-between md:justify-evenly text-nowrap glassmorphism transition-transform duration-300${
+      className={`fixed z-50 top-0 w-screen h-[88px] text-[#f2f2f2] text-lg flex items-center flex-row justify-between md:justify-evenly text-nowrap glassmorphism transition-transform duration-300${
         showNavbar ? " translate-y-0" : " -translate-y-full"
       }`}
       style={{ border: "none" }}
@@ -170,7 +196,7 @@ export default function Navbar({ scrollToSection }) {
         <span
           className="w-24 h-full ml-4 cursor-pointer bg-transparent"
           style={{ display: "block" }}
-          onClick={() => handleNav("section1")}
+          onClick={() => handleNav(null)}
           role="img"
           aria-label="Logo"
           tabIndex={0}
@@ -214,7 +240,7 @@ export default function Navbar({ scrollToSection }) {
               zIndex: 2,
               display: videoLoaded ? "block" : "none",
             }}
-            onClick={() => handleNav("section1")}
+            onClick={() => handleNav(null)}
             onLoadedData={() => setVideoLoaded(true)}
             onError={() => setVideoLoaded(true)}
           >
@@ -254,7 +280,7 @@ export default function Navbar({ scrollToSection }) {
                 width: "100%",
                 height: "100%",
               }}
-              onClick={() => handleNav("section1")}
+              onClick={() => handleNav(null)}
               role="img"
               aria-label="Logo"
               tabIndex={0}
@@ -324,7 +350,7 @@ export default function Navbar({ scrollToSection }) {
           className="mobile-sidebar glassmorphism fixed right-0 h-screen md:hidden z-50 open"
           style={{
             border: "none",
-            top: "6rem", // ustawione na wysokość navbaru (h-24 = 6rem = 96px)
+            top: "88px", // ustawione na wysokość navbaru (h-24 = 6rem = 96px)
             borderRadius: 0,
             width: "80vw", // zwiększona szerokość sidebaru na mobile
             maxWidth: "400px", // opcjonalnie ograniczenie szerokości

@@ -57,7 +57,7 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-8 pt-32">
+    <div className="min-h-screen bg-[#292929] text-[#f2f2f2] p-8 pt-32">
       {/* Przycisk cofania pod navbarem */}
       <div className="w-full flex items-start mt-4" style={{ height: 56 }}>
         <div className="fixed top-28 left-4 z-40">
@@ -80,7 +80,7 @@ export default function ProjectsPage() {
                   viewBox="0 0 24 24"
                   strokeWidth="2"
                   stroke="currentColor"
-                  className="w-6 h-6 text-white"
+                  className="w-6 h-6 text-[#f2f2f2]"
                   style={{ transform: "rotate(90deg)" }}
                 >
                   <path
@@ -124,14 +124,14 @@ export default function ProjectsPage() {
                 >
                   <div className="relative w-full h-2/3">
                     {!loaded[idx] && (
-                      <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-black/60">
+                      <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-[#292929]/60">
                         {typeof window !== "undefined" && isIOS() ? (
                           <div
                             style={{
                               width: 48,
                               height: 48,
                               border: "6px solid #6a00d1",
-                              borderTop: "6px solid #fff",
+                              borderTop: "6px solid #f2f2f2",
                               borderRadius: "50%",
                               animation: "spin 1.2s linear infinite",
                             }}
@@ -166,8 +166,10 @@ export default function ProjectsPage() {
                       />
                     )}
                   </div>
-                  <div className="p-4 bg-black/60 backdrop-blur-sm rounded-b-[3px] w-full">
-                    <h2 className="text-xl mb-2 text-white">{project.title}</h2>
+                  <div className="p-4 bg-[#292929]/60 backdrop-blur-sm rounded-b-[3px] w-full">
+                    <h2 className="text-xl mb-2 text-[#f2f2f2]">
+                      {project.title}
+                    </h2>
                     <p className="text-gray-300">{project.shortDescription}</p>
                   </div>
                 </div>

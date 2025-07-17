@@ -57,7 +57,7 @@ export default function ToolsCard({ inView, toolsRef }) {
           : `${whiteActive ? " extraordinary-animation-active" : ""}${
               purpleActive ? " extraordinary-animation-active-purple" : ""
             }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
-      } glassmorphism w-full max-w-full sm:max-h-[450px] md:max-h-[400px] lg:col-span-2 lg:row-span-1 flex flex-col`}
+      } glassmorphism w-full max-w-full h-[450px] md:h-[400px] lg:col-span-2 lg:row-span-1 flex flex-col`}
       style={{
         position: "relative",
         display: "flex",

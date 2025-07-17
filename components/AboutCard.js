@@ -100,7 +100,7 @@ function AboutCard({ inView, omnieRef }) {
         }}
       >
         <p
-          className={`button-border-content text-xl bg-black text-[#f2f2f2] p-6 w-full overflow-auto ${
+          className={`text-base sm:text-xl bg-transparent font-lexend font-thin text-[#f2f2f2] px-4 py-8 w-full overflow-auto ${
             inView ? "appear" : ""
           }`}
           style={{
@@ -112,12 +112,18 @@ function AboutCard({ inView, omnieRef }) {
             whiteSpace: "normal",
           }}
         >
-          <AnimatedText
+          Jestem Andrew Tate, były mistrz świata w kickboxingu, przedsiębiorca i
+          twórca treści motywacyjnych. Znany z mojego pewnego siebie podejścia
+          do życia i kontrowersyjnych poglądów, inspiruję ludzi, by dążyli do
+          osiągnięcia sukcesu w każdej dziedzinie. Moje życie to połączenie
+          dyscypliny, ciężkiej pracy i luksusu, które pokazuję, by motywować
+          innych do wyjścia poza swoje granice.
+          {/* <AnimatedText
             text="Jestem Andrew Tate, były mistrz świata w kickboxingu, przedsiębiorca i twórca treści motywacyjnych. Znany z mojego pewnego siebie podejścia do życia i kontrowersyjnych poglądów, inspiruję ludzi, by dążyli do osiągnięcia sukcesu w każdej dziedzinie. Moje życie to połączenie dyscypliny, ciężkiej pracy i luksusu, które pokazuję, by motywować innych do wyjścia poza swoje granice."
             inView={inView}
             as="span"
             letterDelay={0.012}
-          />
+          /> */}
         </p>
       </div>
       {/* WHITE PHASE: 4 borders + 4 glow (should be under purple) */}

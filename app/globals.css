@@ -246,14 +246,14 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f2f2f2;
+  --foreground: #292929;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #292929;
+    --foreground: #f2f2f2;
   }
 }
 
@@ -283,6 +283,19 @@ body {
   font-weight: normal; /* or bold, if you have multiple weights */
 }
 
+/* Lexend Deca Variable Font import */
+@font-face {
+  font-family: "Lexend Deca";
+  src: url("/fonts/LexendDeca-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* Przykładowa klasa do użycia czcionki */
+.font-lexend {
+  font-family: "Lexend Deca", sans-serif;
+}
+
 .button-border-wrapper {
   padding: 0 15px;
   position: relative;
@@ -295,7 +308,7 @@ body {
   position: relative;
   z-index: 10;
   background: transparent;
-  color: white;
+  color: #f2f2f2;
   transition: transform 0.2s ease, color 0.3s ease;
   white-space: normal;
   font-weight: 500;
@@ -315,10 +328,10 @@ body {
 section#section5 input.button-border-content:-webkit-autofill,
 section#section5 input.button-border-content:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0 1000px #18181b inset !important;
-  box-shadow: 0 0 0 1000px #18181b inset !important;
-  -webkit-text-fill-color: #fff !important;
-  color: #fff !important;
-  caret-color: #fff !important;
+  box-shadow: 0 0 0 1000px #292929 inset !important;
+  -webkit-text-fill-color: #f2f2f2 !important;
+  color: #f2f2f2 !important;
+  caret-color: #f2f2f2 !important;
 }
 /* Lista podpowiedzi (datalist) */
 section#section5
@@ -326,15 +339,15 @@ section#section5
   filter: invert(1);
 }
 section#section5 input.button-border-content:-internal-autofill-selected {
-  background-color: #18181b !important;
-  color: #fff !important;
+  background-color: #292929 !important;
+  color: #f2f2f2 !important;
 }
 
 /* Firefox autocomplete dropdown */
 section#section5 input.button-border-content:-moz-autofill,
 section#section5 input.button-border-content:-moz-autofill:focus {
-  box-shadow: 0 0 0 1000px #18181b inset !important;
-  color: #fff !important;
+  box-shadow: 0 0 0 1000px #292929 inset !important;
+  color: #f2f2f2 !important;
 }
 
 /* Białe krawędzie */
@@ -380,7 +393,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 .button-border-wrapper:hover .border-white-2 {
   width: 100%;
   height: 100%;
-  border-color: white;
+  border-color: #f2f2f2;
 }
 
 .button-border-wrapper:hover .border-purple-1,
@@ -500,7 +513,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 
 .glassmorphism {
   backdrop-filter: blur(30px);
-  background: rgba(10, 10, 20, 0.65);
+  background: rgba(51, 51, 61, 0.65);
 }
 
 /* Hamburger menu icon styles */
@@ -518,7 +531,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   position: absolute;
   height: 2px; /* thinner */
   width: 100%;
-  background: white;
+  background: #f2f2f2;
   border-radius: 1px;
   opacity: 1;
   left: 0;
@@ -548,7 +561,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 .button-border-wrapper.animate-in .border-white-2 {
   width: 100%;
   height: 100%;
-  border-color: white;
+  border-color: #f2f2f2;
 }
 
 .button-border-wrapper.animate-in .border-purple-1,
@@ -583,7 +596,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 .scroll-animate.animate-in .border-white-2 {
   width: 100%;
   height: 100%;
-  border-color: white;
+  border-color: #f2f2f2;
 }
 
 .scroll-animate.animate-in .border-purple-1,
@@ -618,7 +631,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 .button-border-wrapper.border-visible .border-white-2 {
   width: 100%;
   height: 100%;
-  border-color: white;
+  border-color: #f2f2f2;
 }
 
 .button-border-wrapper.border-visible .border-purple-1,
@@ -636,7 +649,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 .button-border-wrapper.border-animated .border-white-2 {
   width: 100%;
   height: 100%;
-  border-color: white;
+  border-color: #f2f2f2;
   transition-delay: 0s, 0s, 0s;
 }
 
@@ -693,7 +706,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 .button-border-scroll.active .border-white-2 {
   width: 100%;
   height: 100%;
-  border-color: white;
+  border-color: #f2f2f2;
   /* border-color: red; */
 }
 .button-border-scroll.active .border-purple-1,
@@ -750,7 +763,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 
 .button-border-scroll.active .border-white-1,
 .button-border-scroll.active .border-white-2 {
-  border-color: white !important;
+  border-color: #f2f2f2 !important;
   transition-property: width, height !important;
 }
 
@@ -778,7 +791,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   height: 2px;
   pointer-events: none;
   border-radius: 3px 3px 0 0;
-  box-shadow: 0 0 8px 2px white;
+  box-shadow: 0 0 8px 2px #f2f2f2;
   opacity: 0.7;
   z-index: 5;
   transition: width 0.6s linear, opacity 0.3s;
@@ -792,7 +805,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   height: 2px;
   pointer-events: none;
   border-radius: 0 0 3px 3px;
-  box-shadow: 0 0 8px 2px white;
+  box-shadow: 0 0 8px 2px #f2f2f2;
   opacity: 0.7;
   z-index: 5;
   transition: width 0.6s linear, opacity 0.3s;
@@ -806,7 +819,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   height: 0;
   pointer-events: none;
   border-radius: 3px 0 0 3px;
-  box-shadow: 0 0 8px 2px white;
+  box-shadow: 0 0 8px 2px #f2f2f2;
   opacity: 0.7;
   z-index: 5;
   transition: height 0.6s linear, opacity 0.3s;
@@ -821,7 +834,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   height: 0;
   pointer-events: none;
   border-radius: 0 3px 3px 0;
-  box-shadow: 0 0 8px 2px white;
+  box-shadow: 0 0 8px 2px #f2f2f2;
   opacity: 0.7;
   z-index: 5;
   transition: height 30s linear, opacity 30s linear !important;
@@ -1067,7 +1080,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   left: 0;
   width: 0;
   height: 0;
-  border-top: 4px solid white;
+  border-top: 4px solid #f2f2f2;
   border-radius: 3px 3px 0 0;
   transition: width 30s linear;
   transition-delay: 0s !important;
@@ -1080,7 +1093,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   right: 0;
   width: 0;
   height: 0;
-  border-right: 4px solid white;
+  border-right: 4px solid #f2f2f2;
   border-radius: 0 3px 3px 0;
   transition: height 30s linear;
   transition-delay: 0s !important;
@@ -1092,7 +1105,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   right: 0;
   width: 0;
   height: 0;
-  border-bottom: 4px solid white;
+  border-bottom: 4px solid #f2f2f2;
   border-radius: 0 0 3px 3px;
   transition: width 30s linear;
   transition-delay: 0s !important;
@@ -1105,7 +1118,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   bottom: auto;
   width: 0;
   height: 0;
-  border-left: 4px solid white;
+  border-left: 4px solid #f2f2f2;
   border-radius: 3px 0 0 3px;
   transition: height 30s linear;
   transition-delay: 0s !important;
@@ -1230,10 +1243,10 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   position: absolute;
   top: 0;
   left: 0;
-  height: 4px;
+  height: 2px;
   width: 0%;
   opacity: 0;
-  border-top: 4px solid white;
+  border-top: 2px solid #f2f2f2;
   border-radius: 3px 3px 0 0;
   box-shadow: none;
   z-index: 10;
@@ -1242,7 +1255,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .extraordinary-animation-glow-top-white {
   border: none;
-  box-shadow: 0 0 12px 3px white;
+  box-shadow: 0 -5px 30px 2px #f2f2f2;
   opacity: 0.5;
 }
 
@@ -1251,10 +1264,10 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   position: absolute;
   bottom: 0;
   right: 0;
-  height: 4px;
+  height: 2px;
   width: 0%;
   opacity: 0;
-  border-bottom: 4px solid white;
+  border-bottom: 2px solid #f2f2f2;
   border-radius: 0 0 3px 3px;
   box-shadow: none;
   z-index: 10;
@@ -1263,7 +1276,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .extraordinary-animation-glow-bottom-white {
   border: none;
-  box-shadow: 0 0 12px 3px white;
+  box-shadow: 0 5px 30px 2px #f2f2f2;
   opacity: 0.5;
 }
 
@@ -1272,10 +1285,10 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   position: absolute;
   top: 0;
   left: 0;
-  width: 4px;
+  width: 2px;
   opacity: 0;
   height: 0%;
-  border-left: 4px solid white;
+  border-left: 2px solid #f2f2f2;
   border-radius: 3px 0 0 3px;
   box-shadow: none;
   z-index: 10;
@@ -1284,7 +1297,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .extraordinary-animation-glow-left-white {
   border: none;
-  box-shadow: 0 0 12px 3px white;
+  box-shadow: -5px 0 30px 2px #f2f2f2;
   opacity: 0.5;
 }
 
@@ -1293,10 +1306,10 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 4px;
+  width: 2px;
   height: 0%;
   opacity: 0;
-  border-right: 4px solid white;
+  border-right: 2px solid #f2f2f2;
   border-radius: 0 3px 3px 0;
   box-shadow: none;
   z-index: 10;
@@ -1305,7 +1318,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .extraordinary-animation-glow-right-white {
   border: none;
-  box-shadow: 0 0 12px 3px white;
+  box-shadow: 5px 0 30px 2px #f2f2f2;
   opacity: 0.5;
 }
 
@@ -1315,10 +1328,10 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   position: absolute;
   top: 0;
   left: 0;
-  height: 4px;
+  height: 2px;
   opacity: 0;
   width: 0%;
-  border-top: 4px solid #6a00d1;
+  border-top: 2px solid #6a00d1;
   border-radius: 3px 3px 0 0;
   box-shadow: none;
   z-index: 11;
@@ -1327,7 +1340,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .extraordinary-animation-glow-top-purple {
   border: none;
-  box-shadow: 0 0 16px 4px #6a00d1;
+  box-shadow: 0 -5px 40px 8px #6a00d1;
   opacity: 1;
 }
 
@@ -1336,10 +1349,10 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   position: absolute;
   bottom: 0;
   right: 0;
-  height: 4px;
+  height: 2px;
   opacity: 0;
   width: 0%;
-  border-bottom: 4px solid #6a00d1;
+  border-bottom: 2px solid #6a00d1;
   border-radius: 0 0 3px 3px;
   box-shadow: none;
   z-index: 11;
@@ -1348,7 +1361,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .extraordinary-animation-glow-bottom-purple {
   border: none;
-  box-shadow: 0 0 16px 4px #6a00d1;
+  box-shadow: 0 5px 40px 8px #6a00d1;
   opacity: 1;
 }
 
@@ -1357,10 +1370,10 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   position: absolute;
   top: 0;
   left: 0;
-  width: 4px;
+  width: 2px;
   height: 0%;
   opacity: 0;
-  border-left: 4px solid #6a00d1;
+  border-left: 2px solid #6a00d1;
   border-radius: 3px 0 0 3px;
   box-shadow: none;
   z-index: 11;
@@ -1369,7 +1382,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .extraordinary-animation-glow-left-purple {
   border: none;
-  box-shadow: 0 0 16px 4px #6a00d1;
+  box-shadow: -5px 0 40px 8px #6a00d1;
   opacity: 1;
 }
 
@@ -1378,10 +1391,10 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 4px;
+  width: 2px;
   height: 0%;
   opacity: 0;
-  border-right: 4px solid #6a00d1;
+  border-right: 2px solid #6a00d1;
   border-radius: 0 3px 3px 0;
   box-shadow: none;
   z-index: 11;
@@ -1390,7 +1403,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .extraordinary-animation-glow-right-purple {
   border: none;
-  box-shadow: 0 0 16px 4px #6a00d1;
+  box-shadow: 5px 0 40px 8px #6a00d1;
   opacity: 1;
 }
 
@@ -1602,10 +1615,10 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   position: absolute;
   top: 0;
   left: 0;
-  height: 4px;
+  height: 2px;
   width: 0%;
   opacity: 0;
-  border-top: 4px solid white;
+  border-top: 2px solid #f2f2f2;
   border-radius: 3px 3px 0 0;
   box-shadow: none;
   z-index: 10;
@@ -1614,7 +1627,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .unusual-animation-glow-top-white {
   border: none;
-  box-shadow: 0 0 12px 3px white;
+  box-shadow: 0 -5px 30px 2px #f2f2f2;
   opacity: 0.5;
 }
 
@@ -1623,10 +1636,10 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   position: absolute;
   bottom: 0;
   right: 0;
-  height: 4px;
+  height: 2px;
   width: 0%;
   opacity: 0;
-  border-bottom: 4px solid white;
+  border-bottom: 2px solid #f2f2f2;
   border-radius: 0 0 3px 3px;
   box-shadow: none;
   z-index: 10;
@@ -1635,7 +1648,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .unusual-animation-glow-bottom-white {
   border: none;
-  box-shadow: 0 0 12px 3px white;
+  box-shadow: 0 5px 30px 2px #f2f2f2;
   opacity: 0.5;
 }
 
@@ -1644,10 +1657,10 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   position: absolute;
   top: 0;
   left: 0;
-  width: 4px;
+  width: 2px;
   opacity: 0;
   height: 0%;
-  border-left: 4px solid white;
+  border-left: 2px solid #f2f2f2;
   border-radius: 3px 0 0 3px;
   box-shadow: none;
   z-index: 10;
@@ -1656,7 +1669,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .unusual-animation-glow-left-white {
   border: none;
-  box-shadow: 0 0 12px 3px white;
+  box-shadow: -5px 0 30px 2px #f2f2f2;
   opacity: 0.5;
 }
 
@@ -1665,10 +1678,10 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 4px;
+  width: 2px;
   height: 0%;
   opacity: 0;
-  border-right: 4px solid white;
+  border-right: 2px solid #f2f2f2;
   border-radius: 0 3px 3px 0;
   box-shadow: none;
   z-index: 10;
@@ -1677,7 +1690,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .unusual-animation-glow-right-white {
   border: none;
-  box-shadow: 0 0 12px 3px white;
+  box-shadow: 5px 0 30px 2px #f2f2f2;
   opacity: 0.5;
 }
 
@@ -1687,10 +1700,10 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   position: absolute;
   top: 0;
   left: 0;
-  height: 4px;
+  height: 2px;
   opacity: 0;
   width: 0%;
-  border-top: 4px solid #6a00d1;
+  border-top: 2px solid #6a00d1;
   border-radius: 3px 3px 0 0;
   box-shadow: none;
   z-index: 11;
@@ -1699,7 +1712,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .unusual-animation-glow-top-purple {
   border: none;
-  box-shadow: 0 0 16px 4px #6a00d1;
+  box-shadow: 0 -5px 40px 8px #6a00d1;
   opacity: 1;
 }
 
@@ -1708,10 +1721,10 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   position: absolute;
   bottom: 0;
   right: 0;
-  height: 4px;
+  height: 2px;
   opacity: 0;
   width: 0%;
-  border-bottom: 4px solid #6a00d1;
+  border-bottom: 2px solid #6a00d1;
   border-radius: 0 0 3px 3px;
   box-shadow: none;
   z-index: 11;
@@ -1720,7 +1733,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .unusual-animation-glow-bottom-purple {
   border: none;
-  box-shadow: 0 0 16px 4px #6a00d1;
+  box-shadow: 0 5px 40px 8px #6a00d1;
   opacity: 1;
 }
 
@@ -1729,10 +1742,10 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   position: absolute;
   top: 0;
   left: 0;
-  width: 4px;
+  width: 2px;
   height: 0%;
   opacity: 0;
-  border-left: 4px solid #6a00d1;
+  border-left: 2px solid #6a00d1;
   border-radius: 3px 0 0 3px;
   box-shadow: none;
   z-index: 11;
@@ -1741,7 +1754,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .unusual-animation-glow-left-purple {
   border: none;
-  box-shadow: 0 0 16px 4px #6a00d1;
+  box-shadow: -5px 0 40px 8px #6a00d1;
   opacity: 1;
 }
 
@@ -1750,10 +1763,10 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 4px;
+  width: 2px;
   height: 0%;
   opacity: 0;
-  border-right: 4px solid #6a00d1;
+  border-right: 2px solid #6a00d1;
   border-radius: 0 3px 3px 0;
   box-shadow: none;
   z-index: 11;
@@ -1762,7 +1775,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .unusual-animation-glow-right-purple {
   border: none;
-  box-shadow: 0 0 16px 4px #6a00d1;
+  box-shadow: 5px 0 40px 8px #6a00d1;
   opacity: 1;
 }
 
@@ -1969,7 +1982,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 /* Normal white text */
 /* White text fades out on hover */
 .glitch-text-white {
-  color: white;
+  color: #f2f2f2;
   opacity: 1;
   position: relative;
   z-index: 10;
@@ -2021,7 +2034,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 /* === GLITCH STACK ANIMATION FOR GLITCHBUTTON === */
 
 .glitch-stack {
-  color: white;
+  color: #f2f2f2;
   display: grid;
   grid-template-columns: 1fr;
   position: relative;
@@ -2062,7 +2075,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   0% {
     opacity: 0;
     transform: translateX(-30px);
-    text-shadow: -2px 3px 0 white, 2px -3px 0 #6a00d1;
+    text-shadow: -2px 3px 0 #f2f2f2, 2px -3px 0 #6a00d1;
   }
   60% {
     opacity: 0.5;
@@ -2071,7 +2084,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   80% {
     transform: none;
     opacity: 1;
-    text-shadow: 2px -3px 0 white, -2px 3px 0 #6a00d1;
+    text-shadow: 2px -3px 0 #f2f2f2, -2px 3px 0 #6a00d1;
   }
   100% {
     text-shadow: none;
@@ -2080,11 +2093,11 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 
 @keyframes glitch-stack-glitch {
   0% {
-    text-shadow: -2px 3px 0 #6a00d1, 2px -3px 0 white;
+    text-shadow: -2px 3px 0 #6a00d1, 2px -3px 0 #f2f2f2;
     transform: translate(var(--glitch-translate));
   }
   2% {
-    text-shadow: 2px -3px 0 #6a00d1, -2px 3px 0 white;
+    text-shadow: 2px -3px 0 #6a00d1, -2px 3px 0 #f2f2f2;
   }
   10%,
   100% {

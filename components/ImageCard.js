@@ -55,13 +55,9 @@ const ImageCard = ({ inView, imageRef }) => {
           : `${whiteActive ? " extraordinary-animation-active" : ""}${
               purpleActive ? " extraordinary-animation-active-purple" : ""
             }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
-      } p-[2px] portrait-lg glassmorphism w-full h-full max-w-full max-h-full sm:max-h-[450px] md:max-h-[400px] lg:row-span-2 lg:col-span-1 lg:w-full lg:h-full lg:max-w-full lg:max-h-full`}
+      } p-[2px] portrait-lg glassmorphism w-full aspect-[4/5] max-w-full sm:max-h-[450px] md:max-h-[400px] lg:row-span-2 lg:col-span-1 lg:w-full lg:max-w-full lg:max-h-full`}
       style={{
         position: "relative",
-        minHeight: 0,
-        minWidth: 0,
-        height: "100%",
-        borderRadius: 3,
         opacity: inView ? 1 : 0,
         transition: "opacity 0.7s, transform 0.7s",
         transform:
@@ -77,16 +73,17 @@ const ImageCard = ({ inView, imageRef }) => {
       <img
         src="Andrew.webp"
         alt="Andrew"
-        className="button-border-content w-full h-full object-cover"
+        className="w-full object-cover"
         style={{
           objectFit: "cover",
           width: "100%",
           height: "100%",
+          maxHeight: "100%",
           minHeight: 0,
           minWidth: 0,
-          background: "#111",
+          background: "#292929",
           opacity: 1,
-          borderRadius: "3px",
+          borderRadius: "0px",
           position: "relative",
           zIndex: 2,
         }}

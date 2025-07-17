@@ -3,7 +3,7 @@ import AnimatedText from "./AnimatedText";
 export default function ToolButton({ icon, label, inView }) {
   return (
     <button
-      className={inView ? "appear" : ""}
+      className={inView ? "appear text-base sm:text-xl" : ""}
       style={{
         display: "flex",
         alignItems: "center",
@@ -13,7 +13,7 @@ export default function ToolButton({ icon, label, inView }) {
         borderRadius: "3px",
         padding: "5px 18px",
         border: "none",
-        fontSize: "1rem",
+        // fontSize: "1rem",
         width: "100%",
         maxWidth: 320,
         justifyContent: "flex-start",
@@ -23,9 +23,10 @@ export default function ToolButton({ icon, label, inView }) {
       }}
     >
       {icon}
-      <span>
+      {/* <span>
         <AnimatedText text={label} inView={inView} as="span" />
-      </span>
+      </span> */}
+      {label}
     </button>
   );
 }

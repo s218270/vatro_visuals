@@ -7,13 +7,21 @@ import GlitchButton from "./GlitchButton";
 
 export default function Section4({ scrollToSection }) {
   const [activeIndex, setActiveIndex] = useState(1);
+  const [transitionIndex, setTransitionIndex] = useState(1); // for animation
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState("");
   const [nextBackgroundImage, setNextBackgroundImage] = useState("");
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [projects, setProjects] = useState([]);
+
   const [visibleCount, setVisibleCount] = useState(3);
+
   const carouselRef = useRef(null);
+  const [slideDirection, setSlideDirection] = useState(null); // 'next' | 'prev' | null
+  const [displayed, setDisplayed] = useState([]);
+  const buffer = 2; // liczba slotów bufora po każdej stronie
+  // Stan ładowania dla każdego slotu karuzeli
+  const [loaded, setLoaded] = useState([]);
 
   // Animation reset refs for carousel cards
   const borderRefs = useRef([]);
@@ -26,6 +34,82 @@ export default function Section4({ scrollToSection }) {
     triggerOnce: false,
     threshold: 0.2,
   });
+
+  // --- NOWA LOGIKA: wszystkie elementy renderowane, pozycjonowane absolutnie, widoczne max 3 ---
+  // Wylicz pozycje dla wszystkich elementów
+  function getItemPosition(i) {
+    // Use transitionIndex during animation, otherwise activeIndex
+    const total = projects.length;
+    const idx = isTransitioning ? transitionIndex : activeIndex;
+    // Always 1 invisible on the left, rest on the right
+    let pos = i - idx;
+    if (pos < -1) pos += total; // wrap left overflow to right
+    // Do NOT wrap right overflow, so pos >= visibleCount are on the right
+    return pos;
+  }
+
+  // Responsywność: liczba widocznych elementów
+  useEffect(() => {
+    function updateVisibleCount() {
+      if (window.innerWidth <= 768) {
+        setVisibleCount(1);
+      } else if (window.innerWidth <= 1024) {
+        setVisibleCount(2);
+      } else {
+        setVisibleCount(3);
+      }
+    }
+    updateVisibleCount();
+    window.addEventListener("resize", updateVisibleCount);
+    return () => window.removeEventListener("resize", updateVisibleCount);
+  }, []);
+
+  // Loader logic: set loaded state for each project
+  useEffect(() => {
+    if (!projects.length) return;
+    setLoaded(Array(projects.length).fill(false));
+  }, [projects.length]);
+
+  useEffect(() => {
+    projects.forEach((project, i) => {
+      const imageUrl = getImageUrl(project?.mainImage);
+      if (imageUrl && !loaded[i]) {
+        const img = new window.Image();
+        img.onload = () => handleImageLoad(i);
+        img.onerror = () => handleImageLoad(i);
+        img.src = imageUrl;
+      }
+    });
+    // eslint-disable-next-line
+  }, [projects, loaded]);
+
+  // Animacja przesuwania: po kliknięciu zmieniamy activeIndex, elementy animują transform/opacity
+  useEffect(() => {
+    if (!isTransitioning || !slideDirection) return;
+    // Start animation by updating transitionIndex
+    setTransitionIndex((prev) => {
+      if (slideDirection === "next") {
+        return (prev + 1) % projects.length;
+      } else {
+        return (prev - 1 + projects.length) % projects.length;
+      }
+    });
+    // After animation duration, update activeIndex and reset transitionIndex
+    const timer = setTimeout(() => {
+      setActiveIndex((prev) => {
+        if (slideDirection === "next") {
+          return (prev + 1) % projects.length;
+        } else {
+          return (prev - 1 + projects.length) % projects.length;
+        }
+      });
+      setIsTransitioning(false);
+      setSlideDirection(null);
+      setTransitionIndex((idx) => idx); // keep transitionIndex in sync
+    }, 1200); // czas animacji
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line
+  }, [isTransitioning, slideDirection, projects.length]);
 
   // Fetch projects from Firestore
   useEffect(() => {
@@ -95,14 +179,23 @@ export default function Section4({ scrollToSection }) {
     }
   }
 
-  // Reset animation on view entry for carousel cards
+  // Update background image to center visible project when no card is hovered
   useEffect(() => {
-    if (carouselInView) {
-      borderRefs.current.forEach((el) => {
-        if (el) resetBorderAnimation({ current: el });
-      });
+    if (hoveredIndex === null && projects.length > 0) {
+      const centerIdx =
+        (activeIndex + getCenteredItemIndex()) % projects.length;
+      setNextBackgroundImage(getImageUrl(projects[centerIdx]?.mainImage) || "");
     }
-  }, [carouselInView]);
+  }, [hoveredIndex, activeIndex, projects, visibleCount]);
+
+  // Reset animation on view entry for carousel cards
+  //   useEffect(() => {
+  //     if (carouselInView) {
+  //       borderRefs.current.forEach((el) => {
+  //         if (el) resetBorderAnimation({ current: el });
+  //       });
+  //     }
+  //   }, [carouselInView]);
 
   // Reset animation on hover for nav buttons
   function handleNavButtonMouseEnter(idx) {
@@ -112,74 +205,103 @@ export default function Section4({ scrollToSection }) {
   }
 
   // Responsywność: liczba widocznych elementów
-  useEffect(() => {
-    function updateVisibleCount() {
-      if (window.innerWidth <= 768) {
-        setVisibleCount(1);
-      } else if (window.innerWidth <= 1024) {
-        setVisibleCount(2);
-      } else {
-        setVisibleCount(3);
-      }
-    }
-    updateVisibleCount();
-    window.addEventListener("resize", updateVisibleCount);
-    return () => window.removeEventListener("resize", updateVisibleCount);
-  }, []);
+  //   useEffect(() => {
+  //     function updateVisibleCount() {
+  //       if (window.innerWidth <= 768) {
+  //         setVisibleCount(1);
+  //       } else if (window.innerWidth <= 1024) {
+  //         setVisibleCount(2);
+  //       } else {
+  //         setVisibleCount(3);
+  //       }
+  //     }
+  //     updateVisibleCount();
+  //     window.addEventListener("resize", updateVisibleCount);
+  //     return () => window.removeEventListener("resize", updateVisibleCount);
+  //   }, []);
 
   // --- INFINITE CAROUSEL: BEZ PRZESKOKÓW, MODULO, Z BUFOREM ---
   // Renderujemy widoczne sloty + bufor (2 przed i 2 po)
 
   // Startowy index
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [visibleCount, projects.length]);
-
-  const [slideDirection, setSlideDirection] = useState(null); // 'next' | 'prev' | null
-  const [displayed, setDisplayed] = useState([]);
-  const buffer = 2; // liczba slotów bufora po każdej stronie
+  //   useEffect(() => {
+  //     setActiveIndex(0);
+  //   }, [visibleCount, projects.length]);
 
   // Ustaw sloty na start i po każdej zmianie activeIndex
-  useEffect(() => {
-    if (projects.length === 0) return;
-    const total = projects.length;
-    const count = Math.min(total, visibleCount);
-    // Wylicz indeksy: [activeIndex-buffer, ..., activeIndex+count+buffer-1]
-    const arr = [];
-    for (let i = -buffer; i < count + buffer; i++) {
-      arr.push((activeIndex + i + total) % total);
-    }
-    setDisplayed(arr);
-  }, [projects.length, visibleCount, activeIndex]);
+  //   useEffect(() => {
+  //     if (projects.length === 0) return;
+  //     const total = projects.length;
+  //     const count = Math.min(total, visibleCount);
+  //     // Wylicz indeksy: [activeIndex-buffer, ..., activeIndex+count+buffer-1]
+  //     const arr = [];
+  //     for (let i = -buffer; i < count + buffer; i++) {
+  //       arr.push((activeIndex + i + total) % total);
+  //     }
+  //     setDisplayed(arr);
+  //   }, [projects.length, visibleCount, activeIndex]);
 
   const handlePrev = () => {
     if (isTransitioning) return;
     setSlideDirection("prev");
     setIsTransitioning(true);
+    setTransitionIndex(activeIndex); // start from current
   };
 
   const handleNext = () => {
     if (isTransitioning) return;
     setSlideDirection("next");
     setIsTransitioning(true);
+    setTransitionIndex(activeIndex); // start from current
   };
 
   // Automatyczne przesuwanie karuzeli co 5 sekund (pauza na hover)
+  //   useEffect(() => {
   useEffect(() => {
     if (!projects.length) return;
+    const intervalRef = { current: null };
     let paused = false;
-    const onMouseEnter = () => (paused = true);
-    const onMouseLeave = () => (paused = false);
+    let timeoutRef = null;
+
+    const clearAutoScroll = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      if (timeoutRef) {
+        clearTimeout(timeoutRef);
+        timeoutRef = null;
+      }
+    };
+
+    const startAutoScroll = () => {
+      clearAutoScroll();
+      intervalRef.current = setInterval(() => {
+        if (!paused && !isTransitioning) handleNext();
+      }, 5000);
+    };
+
+    const onMouseEnter = () => {
+      paused = true;
+      clearAutoScroll();
+    };
+    const onMouseLeave = () => {
+      paused = false;
+      clearAutoScroll();
+      timeoutRef = setTimeout(() => {
+        startAutoScroll();
+      }, 100);
+    };
+
     const node = carouselRef.current;
     if (node) {
       node.addEventListener("mouseenter", onMouseEnter);
       node.addEventListener("mouseleave", onMouseLeave);
     }
-    const interval = setInterval(() => {
-      if (!paused && !isTransitioning) handleNext();
-    }, 5000);
+    startAutoScroll();
+
     return () => {
-      clearInterval(interval);
+      clearAutoScroll();
       if (node) {
         node.removeEventListener("mouseenter", onMouseEnter);
         node.removeEventListener("mouseleave", onMouseLeave);
@@ -189,48 +311,45 @@ export default function Section4({ scrollToSection }) {
   }, [projects.length, isTransitioning, visibleCount]);
 
   // Animacja przesuwania wrappera o szerokość jednego widocznego slotu (płynnie)
-  useEffect(() => {
-    if (!isTransitioning || !slideDirection) return;
-    if (!carouselRef.current) return;
-    const wrapper = carouselRef.current;
-    const count = Math.min(projects.length, visibleCount);
-    const shift = 100 / count; // szerokość jednego widocznego slotu
-    wrapper.style.transition = "transform 1.2s cubic-bezier(0.4,0,0.2,1)";
-    wrapper.style.transform =
-      slideDirection === "next"
-        ? `translateX(-${shift}%)`
-        : `translateX(${shift}%)`;
+  //   useEffect(() => {
+  //     if (!isTransitioning || !slideDirection) return;
+  //     if (!carouselRef.current) return;
+  //     const wrapper = carouselRef.current;
+  //     const count = Math.min(projects.length, visibleCount);
+  //     const shift = 100 / count; // szerokość jednego widocznego slotu
+  //     wrapper.style.transition = "transform 1.2s cubic-bezier(0.4,0,0.2,1)";
+  //     wrapper.style.transform =
+  //       slideDirection === "next"
+  //         ? `translateX(-${shift}%)`
+  //         : `translateX(${shift}%)`;
 
-    const handle = () => {
-      wrapper.style.transition = "none";
-      wrapper.style.transform = "translateX(0)";
-      setIsTransitioning(false);
-      setSlideDirection(null);
-      setActiveIndex((prev) => {
-        if (slideDirection === "next") {
-          return (prev + 1) % projects.length;
-        } else {
-          return (prev - 1 + projects.length) % projects.length;
-        }
-      });
-      wrapper.removeEventListener("transitionend", handle);
-    };
-    wrapper.addEventListener("transitionend", handle);
-    // eslint-disable-next-line
-  }, [isTransitioning, slideDirection]);
+  //     const handle = () => {
+  //       wrapper.style.transition = "none";
+  //       wrapper.style.transform = "translateX(0)";
+  //       setIsTransitioning(false);
+  //       setSlideDirection(null);
+  //       setActiveIndex((prev) => {
+  //         if (slideDirection === "next") {
+  //           return (prev + 1) % projects.length;
+  //         } else {
+  //           return (prev - 1 + projects.length) % projects.length;
+  //         }
+  //       });
+  //       wrapper.removeEventListener("transitionend", handle);
+  //     };
+  //     wrapper.addEventListener("transitionend", handle);
+  //     // eslint-disable-next-line
+  //   }, [isTransitioning, slideDirection]);
 
   // Calculate centered item index (musi być przed JSX!)
   function getCenteredItemIndex() {
     return Math.floor(visibleCount / 2);
   }
 
-  // Stan ładowania dla każdego slotu karuzeli
-  const [loaded, setLoaded] = useState([]);
-
   // Resetuj loaded jeśli zmienia się liczba projektów lub widocznych slotów
-  useEffect(() => {
-    setLoaded(Array(displayed.length).fill(false));
-  }, [displayed.length, projects.length]);
+  //   useEffect(() => {
+  //     setLoaded(Array(displayed.length).fill(false));
+  //   }, [displayed.length, projects.length]);
 
   // Helper do ładowania obrazka i ustawiania loaded
   function handleImageLoad(idx) {
@@ -242,18 +361,18 @@ export default function Section4({ scrollToSection }) {
   }
 
   // Ładowanie obrazków dla slotów karuzeli (każdy slot, także buforowy)
-  useEffect(() => {
-    displayed.forEach((idx, i) => {
-      const imageUrl = getImageUrl(projects[idx]?.mainImage);
-      if (imageUrl && !loaded[i]) {
-        const img = new window.Image();
-        img.onload = () => handleImageLoad(i);
-        img.onerror = () => handleImageLoad(i);
-        img.src = imageUrl;
-      }
-    });
-    // eslint-disable-next-line
-  }, [displayed, projects, loaded]);
+  //   useEffect(() => {
+  //     displayed.forEach((idx, i) => {
+  //       const imageUrl = getImageUrl(projects[idx]?.mainImage);
+  //       if (imageUrl && !loaded[i]) {
+  //         const img = new window.Image();
+  //         img.onload = () => handleImageLoad(i);
+  //         img.onerror = () => handleImageLoad(i);
+  //         img.src = imageUrl;
+  //       }
+  //     });
+  //     // eslint-disable-next-line
+  //   }, [displayed, projects, loaded]);
 
   // Funkcja detekcji iOS
   function isIOS() {
@@ -268,13 +387,14 @@ export default function Section4({ scrollToSection }) {
     <section
       id="section4"
       ref={carouselInViewRef}
-      className="h-screen w-full flex flex-col items-center justify-center relative bg-black"
+      className="h-screen w-full flex flex-col items-center justify-center relative bg-[#292929] z-10 overflow-hidden"
       style={{
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${backgroundImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         transition: "background-image 0.5s ease-in-out",
+        // filter: "blur(16px)",
       }}
     >
       {/* Gradient overlays for top/bottom fade */}
@@ -315,10 +435,11 @@ export default function Section4({ scrollToSection }) {
               ? 1
               : 0,
           transition: "opacity 0.5s ease-in-out",
+          filter: "blur(6px)",
         }}
       />
 
-      <h1 className="text-white text-4xl absolute z-20 top-36 mb-8">
+      <h1 className="text-[#f2f2f2] text-4xl absolute z-20 top-36 mb-8">
         Projekty
       </h1>
 
@@ -326,20 +447,23 @@ export default function Section4({ scrollToSection }) {
       <div
         className="w-full max-w-6xl mx-auto absolute"
         style={{
-          overflowX: "hidden",
-          overflowY: "visible",
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
         }}
       >
-        {/* Przyciski nawigacji nad karuzelą - tylko 2! */}
+        {/* Przyciski nawigacji pod karuzelą - tylko 2! */}
         <div
           style={{
             position: "absolute",
-            bottom: "calc(50rem + 24px)", // tuż nad karuzelą
-            left: 20,
+            // bottom: "calc(50rem + 24px)", // tuż nad karuzelą
+            left:
+              typeof window !== "undefined" && window.innerWidth < 550
+                ? 50
+                : 20,
+            // top: 96,
+            marginTop: "384px",
             zIndex: 30,
           }}
         >
@@ -352,7 +476,7 @@ export default function Section4({ scrollToSection }) {
                 viewBox="0 0 24 24"
                 strokeWidth="2"
                 stroke="currentColor"
-                className="w-6 h-6 text-white"
+                className="w-6 h-6 text-[#f2f2f2]"
                 style={{ transform: "rotate(90deg)" }}
               >
                 <path
@@ -367,8 +491,12 @@ export default function Section4({ scrollToSection }) {
         <div
           style={{
             position: "absolute",
-            bottom: "calc(50rem + 24px)", // tuż nad karuzelą
-            right: 20,
+            // bottom: "calc(50rem + 24px)", // tuż nad karuzelą
+            right:
+              typeof window !== "undefined" && window.innerWidth < 550
+                ? 50
+                : 20,
+            marginTop: "384px",
             zIndex: 30,
           }}
         >
@@ -381,7 +509,7 @@ export default function Section4({ scrollToSection }) {
                 viewBox="0 0 24 24"
                 strokeWidth="2"
                 stroke="currentColor"
-                className="w-6 h-6 text-white"
+                className="w-6 h-6 text-[#f2f2f2]"
                 style={{ transform: "rotate(-90deg)" }}
               >
                 <path
@@ -394,6 +522,8 @@ export default function Section4({ scrollToSection }) {
           />
         </div>
 
+        {/* --- STARA KARUZELA ZAKOMENTOWANA --- */}
+        {/*
         <div
           ref={carouselRef}
           className="flex"
@@ -403,32 +533,69 @@ export default function Section4({ scrollToSection }) {
           }}
         >
           {displayed.map((idx, i) => {
-            const project = projects[idx];
+            // ...stary kod mapowania slotów...
+          })}
+        </div>
+        */}
+
+        {/* --- NOWA KARUZELA --- */}
+        <div
+          ref={carouselRef}
+          style={{
+            width: "100%",
+            height: "20rem",
+            position: "relative",
+            // left: "500px",
+          }}
+        >
+          {projects.map((project, i) => {
             if (!project) return null;
             const imageUrl = getImageUrl(project.mainImage);
+            const pos = getItemPosition(i);
+            // Always render leftmost and rightmost invisible elements for smooth transitions
+            const isVisible = pos >= 0 && pos < visibleCount;
+            const isLeftHidden = pos === -1;
+            const isRightHidden = pos === visibleCount;
+            // Responsive gap: smaller on medium devices
+            let cardSpacing = "300";
+            if (typeof window !== "undefined") {
+              if (window.innerWidth <= 1024 && window.innerWidth > 768) {
+                cardSpacing = "200";
+              } else if (window.innerWidth <= 768) {
+                cardSpacing = "150";
+              }
+            }
+            const slotWidth = cardSpacing / visibleCount;
+            const transition = isTransitioning
+              ? "transform 1.2s cubic-bezier(0.77,0,0.175,1), opacity 1.2s cubic-bezier(0.77,0,0.175,1)"
+              : "none";
+            const show = isVisible || isLeftHidden || isRightHidden;
+
             return (
               <div
                 key={project.id ? `${project.id}-${i}` : i}
-                className="flex-shrink-0 p-4 flex items-end justify-center"
-                style={
-                  i < buffer || i >= displayed.length - buffer
-                    ? {
-                        width: 0,
-                        padding: 0,
-                        margin: 0,
-                        opacity: 0,
-                        pointerEvents: "none",
-                        visibility: "hidden",
-                        height: "20rem",
-                      }
-                    : {
-                        width: `calc(100% / ${Math.min(
-                          projects.length,
-                          visibleCount
-                        )})`,
-                        height: "20rem",
-                      }
-                }
+                className="flex items-end justify-center"
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
+                  width: `calc(100% / ${visibleCount})`,
+                  height: "20rem",
+                  opacity: isVisible ? 1 : 0,
+                  pointerEvents: isVisible ? "auto" : "none",
+                  visibility: show ? "visible" : "hidden",
+                  transition,
+                  zIndex: isVisible
+                    ? 10
+                    : isLeftHidden
+                    ? 5
+                    : isRightHidden
+                    ? 5
+                    : 1,
+                  padding: "1rem",
+                  boxSizing: "border-box",
+                  transform: `translateX(${slotWidth * pos}%)`,
+                }}
                 onMouseEnter={() => handleCardMouseEnter(i, project)}
                 onMouseLeave={() => {
                   setHoveredIndex(null);
@@ -496,7 +663,7 @@ export default function Section4({ scrollToSection }) {
                                   width: 48,
                                   height: 48,
                                   border: "6px solid #6a00d1",
-                                  borderTop: "6px solid #fff",
+                                  borderTop: "6px solid #f2f2f2",
                                   borderRadius: "50%",
                                   animation: "spin 1.2s linear infinite",
                                 }}
@@ -540,14 +707,14 @@ export default function Section4({ scrollToSection }) {
                         }}
                       >
                         <span
-                          className="text-white text-xl bg-black/50 px-4 py-2 rounded"
+                          className="text-[#f2f2f2] text-xl bg-[#292929]/50 px-4 py-2 rounded"
                           style={{ zIndex: 3, position: "relative" }}
                         >
                           {project.title}
                         </span>
                         {/* Short description on hover */}
                         <div
-                          className={`w-full transition-all duration-300 bg-black/70 text-white text-base px-4 py-2 rounded-b absolute left-0 bottom-0 ${
+                          className={`w-full transition-all duration-300 bg-[#292929]/70 text-[#f2f2f2] text-base px-4 py-2 rounded-b absolute left-0 bottom-0 ${
                             hoveredIndex === i
                               ? "opacity-100 max-h-32"
                               : "opacity-0 max-h-0 pointer-events-none"
@@ -570,7 +737,7 @@ export default function Section4({ scrollToSection }) {
                               bottom: 0,
                               left: 0,
                               right: 0,
-                              background: "#fff2",
+                              background: "#f2f2f2",
                               padding: 2,
                             }}
                           >
@@ -589,7 +756,15 @@ export default function Section4({ scrollToSection }) {
         </div>
 
         {/* See All Link - styled and placed directly below carousel */}
-        <div className="w-full flex justify-center items-center mt-96 absolute z-20 h-32">
+        <div
+          className="w-full flex justify-center items-center mt-96 absolute z-20 h-32"
+          style={{
+            marginTop:
+              typeof window !== "undefined" && window.innerWidth < 550
+                ? "536px"
+                : "384px",
+          }}
+        >
           <GlitchButton
             styles={{
               padding: "0",
@@ -628,7 +803,7 @@ export default function Section4({ scrollToSection }) {
                 viewBox="0 0 24 24"
                 strokeWidth="2"
                 stroke="currentColor"
-                className="w-6 h-6 text-white"
+                className="w-6 h-6 text-[#f2f2f2]"
               >
                 <path
                   strokeLinecap="round"

@@ -104,10 +104,36 @@ export default function Section5() {
   return (
     <section
       id="section5"
-      className="min-h-screen w-full bg-black flex flex-col items-center justify-center relative px-2 sm:px-6 md:px-12 lg:px-24 xl:px-32"
+      className="min-h-screen w-full bg-[#292929] flex flex-col items-center justify-center relative px-2 sm:px-6 md:px-12 lg:px-24 xl:px-32 z-10"
     >
-      <h1 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-8 appear">
-        <AnimatedText text="Kontakt" inView={true} as="span" />
+      {/* Gradient overlays for top/bottom fade */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "30vh",
+          zIndex: 10,
+          pointerEvents: "none",
+          background: "linear-gradient(to bottom, #000 0%, transparent 100%)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          height: "30vh",
+          zIndex: 10,
+          pointerEvents: "none",
+          background: "linear-gradient(to top, #000 0%, transparent 100%)",
+        }}
+      />
+      <h1 className="text-[#f2f2f2] text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-12 appear">
+        {/* <AnimatedText text="Kontakt" inView={true} as="span" /> */}
+        Kontakt
       </h1>
 
       <div
@@ -130,12 +156,13 @@ export default function Section5() {
         }}
       >
         {isSubmitted ? (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative appear text-base sm:text-lg md:text-xl lg:text-2xl">
-            <AnimatedText
+          <div className="bg-[#6a00d1] border border-[#f2f2f2] text-[#f2f2f2] font-lexend font-thin px-4 py-3 rounded-[3px] relative appear text-base sm:text-lg md:text-xl lg:text-2xl">
+            {/* <AnimatedText
               text="Wiadomość wysłana pomyślnie!"
               inView={inViewForm}
               as="span"
-            />
+            /> */}
+            Wiadomość wysłana pomyślnie!
           </div>
         ) : (
           <form
@@ -144,8 +171,9 @@ export default function Section5() {
             style={{ boxShadow: "none", border: "none" }}
           >
             {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded appear text-base sm:text-lg md:text-xl lg:text-2xl">
-                <AnimatedText text={error} inView={inViewForm} as="span" />
+              <div className="bg-[#f2f2f2] border border-[#6a00d1] text-[#6a00d1] px-4 py-3 rounded-[3px] font-lexend font-thin appear text-base sm:text-lg md:text-xl lg:text-2xl">
+                {/* <AnimatedText text={error} inView={inViewForm} as="span" /> */}
+                {error}
               </div>
             )}
             {/* Email field */}
@@ -173,14 +201,15 @@ export default function Section5() {
                   position: "relative",
                 }}
               >
-                <AnimatedText text="Email" inView={inViewForm} as="span" />
+                {/* <AnimatedText text="Email" inView={inViewForm} as="span" /> */}
+                Email
               </label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 autoComplete="email"
-                className="button-border-content text-white p-3 sm:p-4 md:p-5 w-full rounded-md transition-colors duration-200 focus:outline-none placeholder-gray-400 sm:text-base md:text-lg lg:text-xl"
+                className="text-[#f2f2f2] p-3 sm:p-4 md:p-5 w-full rounded-[3px] font-lexend font-thin transition-colors duration-200 focus:outline-none placeholder-gray-400 sm:text-base md:text-lg lg:text-xl"
                 placeholder="Twój email"
                 style={{
                   border: "none",
@@ -189,14 +218,14 @@ export default function Section5() {
                   zIndex: 1, // Lower z-index so border is above
                   minHeight: 48,
                   fontSize: "1.1rem",
-                  background: "rgba(20,20,20,1)",
+                  background: "rgba(51,51,51,1)",
                   width: "calc(100% - 4px)", // 2px border on each side
                   left: 2,
                 }}
                 onFocus={(e) =>
                   (e.target.style.background = "rgba(30,30,30,1)")
                 }
-                onBlur={(e) => (e.target.style.background = "rgba(20,20,20,1)")}
+                onBlur={(e) => (e.target.style.background = "rgba(51,51,51,1)")}
                 required
               />
               {/* WHITE PHASE: 4 borders + 4 glow (should be under purple) */}
@@ -243,12 +272,13 @@ export default function Section5() {
                   position: "relative",
                 }}
               >
-                <AnimatedText text="Wiadomość" inView={inViewForm} as="span" />
+                {/* <AnimatedText text="Wiadomość" inView={inViewForm} as="span" /> */}
+                Wiadomość
               </label>
               <textarea
                 id="message"
                 name="message"
-                className="button-border-content text-white p-3 sm:p-4 md:p-5 w-full rounded-md transition-colors duration-200 focus:outline-none placeholder-gray-400 sm:text-base md:text-lg lg:text-xl"
+                className="text-[#f2f2f2] p-3 sm:p-4 md:p-5 w-full rounded-[3px] font-lexend font-thin transition-colors duration-200 focus:outline-none placeholder-gray-400 sm:text-base md:text-lg lg:text-xl"
                 placeholder="Treść wiadomości"
                 rows="5"
                 style={{
@@ -258,14 +288,14 @@ export default function Section5() {
                   zIndex: 1, // Lower z-index so border is above
                   minHeight: 120,
                   fontSize: "1.1rem",
-                  background: "rgba(20,20,20,1)",
+                  background: "rgba(51,51,51,1)",
                   width: "calc(100% - 4px)",
                   left: 2,
                 }}
                 onFocus={(e) =>
                   (e.target.style.background = "rgba(30,30,30,1)")
                 }
-                onBlur={(e) => (e.target.style.background = "rgba(20,20,20,1)")}
+                onBlur={(e) => (e.target.style.background = "rgba(51,51,51,1)")}
                 required
               ></textarea>
               {/* WHITE PHASE: 4 borders + 4 glow (should be under purple) */}
@@ -317,7 +347,7 @@ export default function Section5() {
       </div>
 
       {/* Social media icons remain the same */}
-      <div className="flex flex-row mt-3 gap-3">
+      {/* <div className="flex flex-row mt-3 gap-3">
         <a
           href="https://facebook.com"
           className="hover:scale-110 transform transition"
@@ -348,7 +378,7 @@ export default function Section5() {
             className="w-10 h-10"
           />
         </a>
-      </div>
+      </div> */}
       {/* Scroll to LogoAnimation button */}
 
       <div
@@ -371,7 +401,7 @@ export default function Section5() {
               viewBox="0 0 24 24"
               strokeWidth="2"
               stroke="currentColor"
-              className="w-6 h-6 text-white"
+              className="w-6 h-6 text-[#f2f2f2]"
               style={{ transform: "rotate(180deg)" }}
             >
               <path
