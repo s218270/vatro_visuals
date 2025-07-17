@@ -366,7 +366,11 @@ export default function Navbar({ scrollToSection }) {
             {["HOME", "O MNIE", "PORTFOLIO", "KONTAKT"].map((label, idx) => {
               const section = idx === 0 ? null : `section${idx + 2}`;
               return (
-                <GlitchButton onClick={() => handleNav(section)} text={label} />
+                <GlitchButton
+                  key={label}
+                  onClick={() => handleNav(section)}
+                  text={label}
+                />
               );
             })}
           </div>

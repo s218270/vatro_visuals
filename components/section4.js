@@ -186,7 +186,7 @@ export default function Section4({ scrollToSection }) {
         (activeIndex + getCenteredItemIndex()) % projects.length;
       setNextBackgroundImage(getImageUrl(projects[centerIdx]?.mainImage) || "");
     }
-  }, [hoveredIndex, activeIndex, projects, visibleCount]);
+  }, [hoveredIndex, activeIndex, projects, visibleCount, getCenteredItemIndex]);
 
   // Reset animation on view entry for carousel cards
   //   useEffect(() => {
