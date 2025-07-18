@@ -247,12 +247,12 @@
 
 :root {
   --background: #f2f2f2;
-  --foreground: #292929;
+  --foreground: #080808;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #292929;
+    --background: #080808;
     --foreground: #f2f2f2;
   }
 }
@@ -327,8 +327,8 @@ body {
 /* Autouzupełnianie (chrome, safari) */
 section#section5 input.button-border-content:-webkit-autofill,
 section#section5 input.button-border-content:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px #18181b inset !important;
-  box-shadow: 0 0 0 1000px #292929 inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #080808 inset !important;
+  box-shadow: 0 0 0 1000px #080808 inset !important;
   -webkit-text-fill-color: #f2f2f2 !important;
   color: #f2f2f2 !important;
   caret-color: #f2f2f2 !important;
@@ -339,14 +339,14 @@ section#section5
   filter: invert(1);
 }
 section#section5 input.button-border-content:-internal-autofill-selected {
-  background-color: #292929 !important;
+  background-color: #080808 !important;
   color: #f2f2f2 !important;
 }
 
 /* Firefox autocomplete dropdown */
 section#section5 input.button-border-content:-moz-autofill,
 section#section5 input.button-border-content:-moz-autofill:focus {
-  box-shadow: 0 0 0 1000px #292929 inset !important;
+  box-shadow: 0 0 0 1000px #080808 inset !important;
   color: #f2f2f2 !important;
 }
 
@@ -513,7 +513,7 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 
 .glassmorphism {
   backdrop-filter: blur(30px);
-  background: rgba(51, 51, 61, 0.65);
+  background: rgba(10, 10, 20, 0.65);
 }
 
 /* Hamburger menu icon styles */
@@ -1340,7 +1340,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .extraordinary-animation-glow-top-purple {
   border: none;
-  box-shadow: 0 -5px 40px 8px #6a00d1;
+  box-shadow: 0 -5px 40px 4px #6a00d1;
   opacity: 1;
 }
 
@@ -1361,7 +1361,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .extraordinary-animation-glow-bottom-purple {
   border: none;
-  box-shadow: 0 5px 40px 8px #6a00d1;
+  box-shadow: 0 5px 40px 4px #6a00d1;
   opacity: 1;
 }
 
@@ -1382,7 +1382,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .extraordinary-animation-glow-left-purple {
   border: none;
-  box-shadow: -5px 0 40px 8px #6a00d1;
+  box-shadow: -5px 0 40px 4px #6a00d1;
   opacity: 1;
 }
 
@@ -1403,7 +1403,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .extraordinary-animation-glow-right-purple {
   border: none;
-  box-shadow: 5px 0 40px 8px #6a00d1;
+  box-shadow: 5px 0 40px 4px #6a00d1;
   opacity: 1;
 }
 
@@ -1712,7 +1712,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .unusual-animation-glow-top-purple {
   border: none;
-  box-shadow: 0 -5px 40px 8px #6a00d1;
+  box-shadow: 0 -5px 40px 4px #6a00d1;
   opacity: 1;
 }
 
@@ -1733,7 +1733,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .unusual-animation-glow-bottom-purple {
   border: none;
-  box-shadow: 0 5px 40px 8px #6a00d1;
+  box-shadow: 0 5px 40px 4px #6a00d1;
   opacity: 1;
 }
 
@@ -1754,7 +1754,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .unusual-animation-glow-left-purple {
   border: none;
-  box-shadow: -5px 0 40px 8px #6a00d1;
+  box-shadow: -5px 0 40px 4px #6a00d1;
   opacity: 1;
 }
 
@@ -1775,7 +1775,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 .unusual-animation-glow-right-purple {
   border: none;
-  box-shadow: 5px 0 40px 8px #6a00d1;
+  box-shadow: 5px 0 40px 4px #6a00d1;
   opacity: 1;
 }
 

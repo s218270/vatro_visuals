@@ -56,16 +56,14 @@ function AboutCard({ inView, omnieRef }) {
           : `${whiteActive ? " extraordinary-animation-active" : ""}${
               purpleActive ? " extraordinary-animation-active-purple" : ""
             }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
-      } glassmorphism w-full max-w-full sm:max-h-[450px] md:max-h-[400px] lg:col-span-2 lg:row-span-1 flex flex-col`}
+      } glassmorphism w-full flex flex-col`}
       style={{
         position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "stretch",
-        maxWidth: "100%",
         borderRadius: 3,
         opacity: inView ? 1 : 0,
         transition: "opacity 0.7s, transform 0.7s",
+        height: "unset",
+        minHeight: 0,
         transform:
           typeof window !== "undefined" && window.innerWidth >= 1024
             ? inView
@@ -80,6 +78,7 @@ function AboutCard({ inView, omnieRef }) {
         className={inView ? "appear" : ""}
         style={{
           margin: 0,
+          opacity: 1,
           marginTop: 20,
           marginLeft: 35,
           marginBottom: 20,
@@ -93,14 +92,11 @@ function AboutCard({ inView, omnieRef }) {
       </h2>
       <div
         style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
           justifyContent: "center",
         }}
       >
         <p
-          className={`text-base sm:text-xl bg-transparent font-lexend font-thin text-[#f2f2f2] px-4 py-8 w-full overflow-auto ${
+          className={`text-base sm:text-xl bg-transparent font-lexend font-light text-[#f2f2f2] px-8 py-8 w-full overflow-auto ${
             inView ? "appear" : ""
           }`}
           style={{

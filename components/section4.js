@@ -387,9 +387,9 @@ export default function Section4({ scrollToSection }) {
     <section
       id="section4"
       ref={carouselInViewRef}
-      className="h-screen w-full flex flex-col items-center justify-center relative bg-[#292929] z-10 overflow-hidden"
+      className="h-screen w-full flex flex-col items-center justify-center relative bg-[#080808] z-10 overflow-hidden"
       style={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${backgroundImage})`,
+        backgroundImage: `linear-gradient(rgba(8, 8, 8, 0.5), rgba(8, 8, 8, 0.5)), url(${backgroundImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -407,7 +407,8 @@ export default function Section4({ scrollToSection }) {
           height: "30vh",
           zIndex: 10,
           pointerEvents: "none",
-          background: "linear-gradient(to bottom, #000 0%, transparent 100%)",
+          background:
+            "linear-gradient(to bottom, #080808 0%, transparent 100%)",
         }}
       />
       <div
@@ -419,14 +420,14 @@ export default function Section4({ scrollToSection }) {
           height: "30vh",
           zIndex: 10,
           pointerEvents: "none",
-          background: "linear-gradient(to top, #000 0%, transparent 100%)",
+          background: "linear-gradient(to top, #080808 0%, transparent 100%)",
         }}
       />
       {/* Additional background layer for smooth transition */}
       <div
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${nextBackgroundImage})`,
+          backgroundImage: `linear-gradient(rgba(8, 8, 8, 0.5), rgba(8, 8, 8, 0.5)), url(${nextBackgroundImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -650,8 +651,8 @@ export default function Section4({ scrollToSection }) {
                           {typeof window !== "undefined" && isIOS() ? (
                             <div
                               style={{
-                                width: 64,
-                                height: 64,
+                                width: 96,
+                                height: 96,
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -660,8 +661,8 @@ export default function Section4({ scrollToSection }) {
                               <div
                                 className="loader-ios"
                                 style={{
-                                  width: 48,
-                                  height: 48,
+                                  width: 96,
+                                  height: 96,
                                   border: "6px solid #6a00d1",
                                   borderTop: "6px solid #f2f2f2",
                                   borderRadius: "50%",
@@ -677,8 +678,8 @@ export default function Section4({ scrollToSection }) {
                               loop
                               muted
                               style={{
-                                width: 64,
-                                height: 64,
+                                width: 96,
+                                height: 96,
                                 objectFit: "contain",
                                 background: "none",
                               }}
@@ -707,14 +708,19 @@ export default function Section4({ scrollToSection }) {
                         }}
                       >
                         <span
-                          className="text-[#f2f2f2] text-xl bg-[#292929]/50 px-4 py-2 rounded"
-                          style={{ zIndex: 3, position: "relative" }}
+                          className="text-[#f2f2f2] text-xl bg-[#080808]/50 px-4 py-2 rounded-[3px]"
+                          style={{
+                            zIndex: 3,
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                          }}
                         >
                           {project.title}
                         </span>
                         {/* Short description on hover */}
                         <div
-                          className={`w-full transition-all duration-300 bg-[#292929]/70 text-[#f2f2f2] text-base px-4 py-2 rounded-b absolute left-0 bottom-0 ${
+                          className={`w-full transition-all duration-300 bg-[#080808]/70 text-[#f2f2f2] text-base font-lexend font-light px-4 py-2 rounded-b absolute left-0 bottom-0 ${
                             hoveredIndex === i
                               ? "opacity-100 max-h-32"
                               : "opacity-0 max-h-0 pointer-events-none"

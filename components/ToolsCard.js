@@ -57,16 +57,16 @@ export default function ToolsCard({ inView, toolsRef }) {
           : `${whiteActive ? " extraordinary-animation-active" : ""}${
               purpleActive ? " extraordinary-animation-active-purple" : ""
             }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
-      } glassmorphism w-full max-w-full h-[450px] md:h-[400px] lg:col-span-2 lg:row-span-1 flex flex-col`}
+      } glassmorphism w-full max-w-full flex flex-col overflow-hidden`}
       style={{
         position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "stretch",
         maxWidth: "100%",
         borderRadius: 3,
         opacity: inView ? 1 : 0,
         transition: "opacity 0.7s, transform 0.7s",
+        height: 200,
+        minHeight: 200,
+        maxHeight: 200,
         transform:
           typeof window !== "undefined" && window.innerWidth >= 1024
             ? inView
@@ -77,7 +77,7 @@ export default function ToolsCard({ inView, toolsRef }) {
             : "translateX(-60px)",
       }}
     >
-      <h3
+      {/* <h2
         className={inView ? "appear" : ""}
         style={{
           marginTop: 20,
@@ -90,7 +90,7 @@ export default function ToolsCard({ inView, toolsRef }) {
         }}
       >
         <AnimatedText text="Narzędzia" inView={inView} as="span" />
-      </h3>
+      </h2> */}
       <ToolsList inView={inView} />
       {/* WHITE PHASE: 4 borders + 4 glow (should be under purple) */}
       <div className="extraordinary-animation-border-top-white" />

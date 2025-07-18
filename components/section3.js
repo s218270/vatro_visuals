@@ -83,7 +83,7 @@ export default function Section3({ speed, scrollToSection }) {
   return (
     <section
       id="section3"
-      className="min-h-screen w-full bg-[#292929] flex flex-col items-center justify-center relative overflow-hidden z-10"
+      className="min-h-screen w-full bg-[#080808] flex flex-col items-center justify-center relative overflow-hidden z-10"
       ref={containerRef}
     >
       {/* Gradient overlays for top/bottom fade */}
@@ -96,7 +96,8 @@ export default function Section3({ speed, scrollToSection }) {
           height: "30vh",
           zIndex: 1,
           pointerEvents: "none",
-          background: "linear-gradient(to bottom, #000 0%, transparent 100%)",
+          background:
+            "linear-gradient(to bottom, #080808 0%, transparent 100%)",
         }}
       />
       <div
@@ -108,7 +109,7 @@ export default function Section3({ speed, scrollToSection }) {
           height: "30vh",
           zIndex: 1,
           pointerEvents: "none",
-          background: "linear-gradient(to top, #000 0%, transparent 100%)",
+          background: "linear-gradient(to top, #080808 0%, transparent 100%)",
         }}
       />
       {/* Top set of animated background SVG lines */}
@@ -118,6 +119,8 @@ export default function Section3({ speed, scrollToSection }) {
         direction="left" // Opposite direction from first set
         svgWidth={9500}
         svgHeight={1020}
+        width={9500}
+        height={1020}
         scale={0.5}
         style={{
           top: "7vh",
@@ -134,6 +137,8 @@ export default function Section3({ speed, scrollToSection }) {
         direction="right" // Opposite direction from first set
         svgWidth={9500}
         svgHeight={1020}
+        width={9500}
+        height={1020}
         scale={0.6}
         style={{
           top: "calc(7vh - 150px)",
@@ -152,6 +157,8 @@ export default function Section3({ speed, scrollToSection }) {
         direction="right"
         svgWidth={9500}
         svgHeight={1020}
+        width={9500}
+        height={1020}
         scale={0.5}
         style={{
           bottom: "calc(7vh - 50px)",
@@ -169,6 +176,8 @@ export default function Section3({ speed, scrollToSection }) {
         direction="left"
         svgWidth={9500}
         svgHeight={1020}
+        width={9500}
+        height={1020}
         scale={0.6}
         style={{
           bottom: "7vh",
@@ -182,15 +191,26 @@ export default function Section3({ speed, scrollToSection }) {
 
       {/* Responsive Grid Layout */}
       <div
-        className="w-full max-w-[80%] mx-auto flex flex-col lg:grid gap-8 lg:grid-cols-3 lg:grid-rows-2 lg:gap-8 py-[120px]"
-        style={{}}
+        className="w-full xl:max-w-[70%] lg:max-w-[75%] md:max-w-[80%] sm:max-w-[90%] max-w-[95%] mx-auto flex flex-col lg:flex-row items-stretch gap-8 py-[120px] min-h-[600px] h-full lg:h-[80vh]"
+        style={{ minHeight: 600 }}
       >
         {/* Image: col 1, row 1-2 on lg, row 1 on mobile */}
         <ImageCard inView={inViewImage} imageRef={imageRef} />
-        {/* O mnie: col 2-3, row 1 on lg */}
-        <AboutCard inView={inViewOmnie} omnieRef={omnieRef} />
-        {/* Tools: col 2-3, row 2 on lg */}
-        <ToolsCard inView={inViewTools} toolsRef={toolsRef} />
+        <div className="flex flex-col flex-1 gap-8 max-h-[80vh] lg:max-h-full">
+          {/* O mnie: col 2-3, row 1 on lg */}
+          <AboutCard inView={inViewOmnie} omnieRef={omnieRef} />
+          {/* Tools: col 2-3, row 2 on lg */}
+          <div
+            style={{
+              height: 150,
+              minHeight: 150,
+              maxHeight: 150,
+              width: "100%",
+            }}
+          >
+            <ToolsCard inView={inViewTools} toolsRef={toolsRef} />
+          </div>
+        </div>
       </div>
       {/* Button with glitch animation reset on hover */}
       {/* <GlitchButton scrollToSection={scrollToSection} /> */}
@@ -236,7 +256,7 @@ export default function Section3({ speed, scrollToSection }) {
           pointerEvents: "none",
           zIndex: 0,
           background:
-            "radial-gradient(ellipse at center, #7802ab 0%, transparent 70%)",
+            "radial-gradient(ellipse at center, #7802ab 0%, transparent 65%)",
         }}
       />
     </section>

@@ -413,7 +413,7 @@ export default function LogoAnimation({
   // ...usunięto logikę fallbacku, całość obsługuje ThreeFallbackScene...
 
   return (
-    <div className="h-[400vh] w-full relative bg-[#292929] z-0">
+    <div className="h-[400vh] w-full relative bg-[#080808] z-0">
       <div className="sticky top-0 h-screen w-full" style={{ zIndex: 1 }}>
         {!webgl2Supported || forceFallback ? (
           <ThreeFallbackScene

@@ -70,7 +70,7 @@ export default function ProjectPage({ params }) {
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-[#292929] text-[#f2f2f2] flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-[#080808] text-[#f2f2f2] flex flex-col items-center justify-center">
         <h1 className="text-3xl font-bold mb-4">Projekt nie znaleziony</h1>
         <Link href="/projects" className="text-[#6a00d1]">
           Powrót do projektów
@@ -80,7 +80,7 @@ export default function ProjectPage({ params }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#292929] text-[#f2f2f2] p-0 pt-0 w-full">
+    <div className="min-h-screen bg-[#080808] text-[#f2f2f2] p-0 pt-0 w-full">
       <div className="w-full flex items-start mt-4" style={{ height: 56 }}>
         <div className="fixed top-28 left-4 z-40">
           <GlitchButton
@@ -124,12 +124,12 @@ export default function ProjectPage({ params }) {
           style={{ minHeight: "50vh", height: "50vh", maxHeight: "80vh" }}
         >
           {!loaded.main && (
-            <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-[#292929]/60">
+            <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-[#080808]/60">
               {typeof window !== "undefined" && isIOS() ? (
                 <div
                   style={{
-                    width: 48,
-                    height: 48,
+                    width: 96,
+                    height: 96,
                     border: "6px solid #6a00d1",
                     borderTop: "6px solid #f2f2f2",
                     borderRadius: "50%",
@@ -143,8 +143,8 @@ export default function ProjectPage({ params }) {
                   loop
                   muted
                   style={{
-                    width: 48,
-                    height: 48,
+                    width: 96,
+                    height: 96,
                     objectFit: "contain",
                     background: "none",
                   }}
@@ -169,20 +169,20 @@ export default function ProjectPage({ params }) {
             className="absolute left-0 top-0 w-full h-full pointer-events-none"
             style={{
               background:
-                "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.85) 100%)",
+                "linear-gradient(to bottom, rgba(8,8,8,0.2) 0%, rgba(8,8,8,0.5) 60%, rgba(8,8,8,0.85) 100%)",
               borderRadius: 0,
             }}
           />
         </div>
       )}
       <h1
-        className="text-4xl font-bold mb-2 text-center animate-fade-in"
+        className="text-4xl mb-2 text-center animate-fade-in"
         style={{ animationDelay: "80ms", animationFillMode: "both" }}
       >
         {project.title}
       </h1>
       <div
-        className="mb-6 text-lg text-center text-gray-300 animate-fade-in"
+        className="mb-6 text-lg text-center font-lexend font-light text-gray-300 animate-fade-in"
         style={{ animationDelay: "120ms", animationFillMode: "both" }}
       >
         {project.shortDescription || "-"}
@@ -191,13 +191,13 @@ export default function ProjectPage({ params }) {
         className="max-w-2xl mx-auto mb-8 p-6 rounded-[3px] glassmorphism shadow-lg animate-fade-in"
         style={{ animationDelay: "200ms", animationFillMode: "both" }}
       >
-        <div className="mb-2 text-sm text-gray-400 font-semibold">
+        <div className="mb-2 text-sm text-gray-400">
           Data: {dateString || "-"}
         </div>
-        <div className="mb-4 text-sm text-gray-400 font-semibold">
+        <div className="mb-4 text-sm text-gray-400">
           Klient: {project.client || "-"}
         </div>
-        <div className="whitespace-pre-line text-base text-[#f2f2f2]">
+        <div className="whitespace-pre-line text-base font-lexend font-light text-[#f2f2f2]">
           {project.fullDescription || project.fullDesctiption || "-"}
         </div>
       </div>
@@ -252,13 +252,13 @@ export default function ProjectPage({ params }) {
                     animationFillMode: "both",
                   }}
                 >
-                  <div className="mb-4 text-center text-base text-[#f2f2f2]">
+                  <div className="mb-4 text-center text-base font-lexend font-light text-[#f2f2f2]">
                     {file.description || ""}
                   </div>
                   {imgUrl && (
                     <div className="mt-4 w-full rounded-[3px] relative flex flex-col items-center">
                       {!loaded.files[idx] && (
-                        <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-[#292929]/60">
+                        <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-[#080808]/60">
                           {typeof window !== "undefined" && isIOS() ? (
                             <div
                               style={{

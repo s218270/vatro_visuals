@@ -56,9 +56,13 @@ const ImageCard = ({ inView, imageRef }) => {
           : `${whiteActive ? " extraordinary-animation-active" : ""}${
               purpleActive ? " extraordinary-animation-active-purple" : ""
             }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
-      } p-[2px] portrait-lg glassmorphism w-full aspect-[4/5] max-w-full sm:max-h-[450px] md:max-h-[400px] lg:row-span-2 lg:col-span-1 lg:w-full lg:max-w-full lg:max-h-full`}
+      } p-[2px] glassmorphism w-3/5 lg:max-h-full max-h-[80vh] lg:h-full lg:flex-1`}
       style={{
         position: "relative",
+        height:
+          typeof window !== "undefined" && window.innerWidth < 1024
+            ? "40vh"
+            : "100%",
         opacity: inView ? 1 : 0,
         transition: "opacity 0.7s, transform 0.7s",
         transform:
@@ -76,7 +80,7 @@ const ImageCard = ({ inView, imageRef }) => {
         alt="Andrew"
         width={600}
         height={800}
-        className="w-full object-cover"
+        className="object-cover"
         style={{
           objectFit: "cover",
           width: "100%",
@@ -84,7 +88,7 @@ const ImageCard = ({ inView, imageRef }) => {
           maxHeight: "100%",
           minHeight: 0,
           minWidth: 0,
-          background: "#292929",
+          background: "#080808",
           opacity: 1,
           borderRadius: "0px",
           position: "relative",

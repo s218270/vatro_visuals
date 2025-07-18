@@ -3,10 +3,10 @@ import ToolButton from "./ToolButton";
 const tools = [
   {
     label: "After Effects",
-    icon: (
+    icon: (width, height) => (
       <svg
-        width="32"
-        height="32"
+        width={width}
+        height={height}
         viewBox="0 0 500 500"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -29,10 +29,10 @@ const tools = [
   },
   {
     label: "Photoshop",
-    icon: (
+    icon: (width, height) => (
       <svg
-        width="32"
-        height="32"
+        width={width}
+        height={height}
         viewBox="0 0 500 500"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -51,10 +51,10 @@ const tools = [
   },
   {
     label: "Illustrator",
-    icon: (
+    icon: (width, height) => (
       <svg
-        width="32"
-        height="32"
+        width={width}
+        height={height}
         viewBox="0 0 500 500"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -73,10 +73,10 @@ const tools = [
   },
   {
     label: "Premiere Pro",
-    icon: (
+    icon: (width, height) => (
       <svg
-        width="32"
-        height="32"
+        width={width}
+        height={height}
         viewBox="0 0 500 500"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -95,10 +95,10 @@ const tools = [
   },
   {
     label: "Blender",
-    icon: (
+    icon: (width, height) => (
       <svg
-        width="32"
-        height="32"
+        width={width}
+        height={height}
         viewBox="0 0 500 500"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -122,18 +122,18 @@ export default function ToolsList({ inView }) {
 
   return (
     <div
-      className="h-full text-base sm:text-xl tools-list-columns font-lexend font-thin py-8"
+      className="h-full text-base sm:text-xl font-lexend font-light py-8"
       style={{
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-evenly",
         alignItems: "center",
         width: "100%",
-        gap: 24,
+        gap: 4,
         flexWrap: "wrap",
       }}
     >
-      <div
+      {/* <div
         className="tools-list-col"
         style={{
           display: "flex",
@@ -152,8 +152,8 @@ export default function ToolsList({ inView }) {
             inView={inView}
           />
         ))}
-      </div>
-      <div
+      </div> */}
+      {/* <div
         className="tools-list-col tools-list-second-col"
         style={{
           display: "flex",
@@ -172,8 +172,8 @@ export default function ToolsList({ inView }) {
             inView={inView}
           />
         ))}
-      </div>
-      <style>{`
+      </div> */}
+      {/* <style>{`
         @media (max-width: 700px) {
           .tools-list-columns {
             flex-direction: column !important;
@@ -191,9 +191,9 @@ export default function ToolsList({ inView }) {
             display: none !important;
           }
         }
-      `}</style>
+      `}</style> */}
       {/* Na małych ekranach renderuj jedną kolumnę z wszystkimi narzędziami */}
-      <style>{`
+      {/* <style>{`
         @media (max-width: 700px) {
           .tools-list-columns {
             flex-direction: column !important;
@@ -215,17 +215,25 @@ export default function ToolsList({ inView }) {
             display: none !important;
           }
         }
-      `}</style>
-      <div className="tools-list-all w-full pl-8" style={{ display: "none" }}>
-        {tools.map((tool) => (
+      `}</style> */}
+      {tools.map((tool) => {
+        // Responsive icon size: lg+ 48, sm+ 40
+        // Use window.innerWidth if available, fallback to 40
+        let width = 40;
+        let height = 40;
+        if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+          width = 48;
+          height = 48;
+        }
+        return (
           <ToolButton
             key={tool.label}
-            icon={tool.icon}
+            icon={tool.icon(width, height)}
             label={tool.label}
             inView={inView}
           />
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 }

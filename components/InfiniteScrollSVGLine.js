@@ -22,6 +22,8 @@ export default function InfiniteScrollSVGLine({
   style,
   direction = "left",
   isScrolling,
+  width,
+  height,
   svgWidth = 9500, // default to 9500px
   svgHeight = 1020, // default to 1020px
   scrollSpeed = 30,
@@ -132,6 +134,8 @@ export default function InfiniteScrollSVGLine({
             key={i}
             src={src}
             alt="scrolling-svg"
+            width={width}
+            height={height}
             style={{
               position: "absolute",
               left: start + i * scaledWidth,

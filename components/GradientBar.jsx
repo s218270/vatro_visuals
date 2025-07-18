@@ -11,7 +11,8 @@ export default function GradientBar() {
         height: "30vh",
         pointerEvents: "none",
         zIndex: 10, // below scroll button
-        background: "linear-gradient(to bottom, rgba(0,0,0,0) 0%, #000 100%)",
+        background:
+          "linear-gradient(to bottom, rgba(8,8,8,0) 0%, #080808 100%)",
       }}
     />
   );

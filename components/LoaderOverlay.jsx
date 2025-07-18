@@ -13,13 +13,13 @@ export default function LoaderOverlay() {
   }, []);
 
   return (
-    <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#292929] bg-opacity-90 pointer-events-auto">
+    <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#080808] bg-opacity-90 pointer-events-auto">
       {isClient ? (
         isIos ? (
           <div
             style={{
-              width: 48,
-              height: 48,
+              width: 96,
+              height: 96,
               border: "6px solid #6a00d1",
               borderTop: "6px solid #f2f2f2",
               borderRadius: "50%",
@@ -33,8 +33,8 @@ export default function LoaderOverlay() {
             loop
             muted
             style={{
-              width: 48,
-              height: 48,
+              width: 96,
+              height: 96,
               objectFit: "contain",
               background: "none",
             }}
