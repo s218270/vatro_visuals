@@ -1,17 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import Section1 from "../components/section1";
-import Section2 from "../components/section2";
-import Section3 from "../components/section3";
-import Section4 from "../components/section4";
+import dynamic from "next/dynamic";
 import Section5 from "../components/section5";
 import LogoAnimation from "@/components/LogoAnimation";
-import { useRouter, useSearchParams } from "next/navigation";
-import Navbar from "../components/Navbar";
-
 import { getProjects } from "../lib/getProjects";
+
+// Dynamic imports for heavy sections
+const Section3 = dynamic(() => import("../components/section3"), {
+  ssr: false,
+});
+const Section4 = dynamic(() => import("../components/section4"), {
+  ssr: false,
+});
 
 export default function Home() {
   const [speed, setSpeed] = useState(20);
@@ -35,7 +36,6 @@ export default function Home() {
   };
 
   const scrollToSection = (id) => {
-    console.log("scrollToSection called with id:", id);
     if (!id) {
       window.scrollTo({ top: 0, behavior: "smooth" });
       setIsMenuOpen(false);
@@ -43,9 +43,8 @@ export default function Home() {
     }
     const section = document.getElementById(id);
     if (!section) {
-      console.warn("Section not found in DOM:", id);
+      // Optionally: warn in dev only
     } else {
-      console.log("Section found:", section, section.getBoundingClientRect());
       // Force scroll using window.scrollTo for reliability
       const y = section.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({ top: y, behavior: "smooth" });
@@ -101,13 +100,11 @@ export default function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getProjects();
-        console.log("Projects:", data);
+        await getProjects();
       } catch (error) {
-        console.error("Błąd przy pobieraniu projektów:", error);
+        // Optionally: handle error
       }
     }
-
     fetchData();
   }, []);
 
@@ -216,13 +213,7 @@ export default function Home() {
 
   return (
     <div>
-      {/* <Navbar scrollToSection={scrollToSection} /> */}
-      {/* <Section1 scrollToSection={scrollToSection} /> */}
-      {/* Przywrócono LogoAnimation */}
       <LogoAnimation scrollToSection={scrollToSection} />
-      {/* <Section2 scrollToSection={scrollToSection} /> */}
-      {/* <div className="h-screen bg-red-700"></div> */}
-      {/* <div className="h-screen bg-blue-500"></div> */}
       <Section3 speed={speed} scrollToSection={scrollToSection} />
       <Section4 scrollToSection={scrollToSection} />
       <Section5 />

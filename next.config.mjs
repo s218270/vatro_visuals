@@ -2,7 +2,9 @@
 const nextConfig = {
   images: {
     domains: ["firebasestorage.googleapis.com"],
+    formats: ["image/webp", "image/avif"],
   },
+  swcMinify: true,
   // Serve .hdr with correct MIME
   async headers() {
     return [

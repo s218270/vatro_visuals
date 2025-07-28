@@ -32,7 +32,7 @@ export default function Navbar({ scrollToSection }) {
 
   const handleNav = (id) => {
     pathname = typeof window !== "undefined" ? window.location.pathname : "/";
-    console.log("scrollToSection called with id:", id);
+    // (log usunięty)
     if (pathname !== "/") {
       router.push(`/?scrollTo=${id}`);
       setIsMenuOpen(false);

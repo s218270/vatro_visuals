@@ -141,18 +141,7 @@ export default function Section4({ scrollToSection }) {
         if (mainImage.token) {
           url += `&token=${mainImage.token}`;
         }
-        if (typeof window !== "undefined") {
-          // eslint-disable-next-line no-console
-          console.log(
-            "FIREBASE IMAGE URL:",
-            url,
-            "| bucket:",
-            bucket,
-            "| path:",
-            path,
-            mainImage.token ? `| token: ${mainImage.token}` : ""
-          );
-        }
+        // (log usunięty)
         return url;
       }
     }
