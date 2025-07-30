@@ -307,12 +307,18 @@ export default function ThreeFallbackScene({
       ScrollTrigger.refresh();
     }
     window.addEventListener("resize", handleResize);
-    // Animacja
-    const animate = () => {
+    // Animacja z throttlingiem (~30 FPS)
+    let lastRenderTime = 0;
+    const targetFPS = 30;
+    const frameDuration = 1000 / targetFPS;
+    const animate = (now) => {
       requestAnimationFrame(animate);
-      renderer.render(scene, camera);
+      if (!lastRenderTime || now - lastRenderTime >= frameDuration) {
+        renderer.render(scene, camera);
+        lastRenderTime = now;
+      }
     };
-    animate();
+    requestAnimationFrame(animate);
     return () => {
       window.removeEventListener("resize", handleResize);
       ScrollTrigger.getAll().forEach((st) => st.kill());
