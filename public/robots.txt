@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Sitemap: https://vatro-visuals.vercel.app/sitemap.xml
+
+# Pozwól wszystkim botom na pełne indeksowanie
