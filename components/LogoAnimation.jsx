@@ -344,15 +344,15 @@ export default function LogoAnimation({
       );
 
     // Proceduralny skybox jako cubemap: wyodrębnione do createSkyboxCubeMap
-    // const { texture: skyboxTexture } = createSkyboxCubeMap(renderer);
-    // scene.background = skyboxTexture;
-
-    // Nowy sposób: cubemap z plików PNG
-    const cubeTextureLoader = new THREE.CubeTextureLoader();
-    const cubeTexture = cubeTextureLoader
-      .setPath("/meshes/")
-      .load(["px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"]);
-    scene.background = cubeTexture;
+    // Ustaw HDRI Cave.hdr jako tło sceny
+    new RGBELoader()
+      .setDataType(THREE.FloatType)
+      .setPath("/hdri/")
+      .load("Purple Cave.hdr", (hdrEquirect) => {
+        const bgTexture =
+          pmremGenerator.fromEquirectangular(hdrEquirect).texture;
+        scene.background = bgTexture;
+      });
 
     // Handle resize
     function handleResize() {
