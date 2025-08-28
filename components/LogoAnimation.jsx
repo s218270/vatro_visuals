@@ -344,8 +344,15 @@ export default function LogoAnimation({
       );
 
     // Proceduralny skybox jako cubemap: wyodrębnione do createSkyboxCubeMap
-    const { texture: skyboxTexture } = createSkyboxCubeMap(renderer);
-    scene.background = skyboxTexture;
+    // const { texture: skyboxTexture } = createSkyboxCubeMap(renderer);
+    // scene.background = skyboxTexture;
+
+    // Nowy sposób: cubemap z plików PNG
+    const cubeTextureLoader = new THREE.CubeTextureLoader();
+    const cubeTexture = cubeTextureLoader
+      .setPath("/meshes/")
+      .load(["px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"]);
+    scene.background = cubeTexture;
 
     // Handle resize
     function handleResize() {
