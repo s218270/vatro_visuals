@@ -76,10 +76,10 @@ const ImageCard = ({ inView, imageRef }) => {
       }}
     >
       <Image
-        src="/Andrew.webp"
+        src="/Profile Picture.webp"
         alt="Andrew"
-        width={600}
-        height={800}
+        width={1080}
+        height={1920}
         className="object-cover"
         style={{
           objectFit: "cover",

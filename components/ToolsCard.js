@@ -57,15 +57,13 @@ export default function ToolsCard({ inView, toolsRef }) {
           : `${whiteActive ? " extraordinary-animation-active" : ""}${
               purpleActive ? " extraordinary-animation-active-purple" : ""
             }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
-      } glassmorphism w-full max-w-full flex flex-col overflow-hidden`}
+      } glassmorphism w-full max-w-full flex flex-col overflow-hidden `}
       style={{
         position: "relative",
         maxWidth: "100%",
         borderRadius: 3,
         opacity: inView ? 1 : 0,
         transition: "opacity 0.7s, transform 0.7s",
-        height: 200,
-        minHeight: 200,
         maxHeight: 200,
         transform:
           typeof window !== "undefined" && window.innerWidth >= 1024

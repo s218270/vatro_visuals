@@ -344,15 +344,79 @@ export default function LogoAnimation({
       );
 
     // Proceduralny skybox jako cubemap: wyodrębnione do createSkyboxCubeMap
-    // Ustaw HDRI Cave.hdr jako tło sceny
-    new RGBELoader()
-      .setDataType(THREE.FloatType)
-      .setPath("/hdri/")
-      .load("Purple Cave.hdr", (hdrEquirect) => {
-        const bgTexture =
-          pmremGenerator.fromEquirectangular(hdrEquirect).texture;
-        scene.background = bgTexture;
-      });
+    // Shaderowe tło na bazie przesłanego kodu (statyczna klatka, bez animacji)
+    const staticCaveShader = {
+      uniforms: {
+        iResolution: { value: new THREE.Vector2(1, 1) },
+      },
+      vertexShader: `
+        varying vec3 vPosition;
+        varying vec2 vUv;
+        void main() {
+          vPosition = position;
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        // Kolory bazowe
+        const vec3 colDark   = vec3(0.039, 0.039, 0.059); // #0a0a0f
+        const vec3 colPurple = vec3(0.294, 0.0,   0.509); // #4b0082
+        const vec3 colGlow   = vec3(0.616, 0.306, 0.866); // #9d4edd
+
+        uniform vec2 iResolution;
+        varying vec3 vPosition;
+        varying vec2 vUv;
+
+        // Prosta rotacja Y
+        vec3 rotY(vec3 p, float a) {
+          float c = cos(a), s = sin(a);
+          return vec3(c*p.x + s*p.z, p.y, -s*p.x + c*p.z);
+        }
+
+        void main() {
+          // Wylicz UV jak w shadertoy
+          vec2 fragCoord = vUv * iResolution;
+          vec2 uv = fragCoord / iResolution - 0.5;
+          uv.x *= iResolution.x / iResolution.y;
+
+          float time = 0.0; // statyczna klatka
+          vec3 pos = (sin(time*0.14)*2.0+4.5)*vec3(sin(time*0.5), 0.0, cos(time*0.5));
+          pos.z -= time;
+          pos.y += 0.7 * sin(time * 0.2);
+          float rot = -time*0.5;
+          vec3 dir = normalize(vec3(uv, -0.6));
+          dir = rotY(dir, rot);
+
+          vec3 sun = vec3(-0.6, 0.5,-0.3); 
+          float i = max(0.0, 1.2/(length(sun-dir)+1.0));
+
+          // zamiast niebieskiego nieba robimy blend ciemnego i fioletu
+          vec3 skyCol = mix(colDark, colPurple, pow(1.0 - dir.y, 1.2));
+
+          // dodajemy glow w zależności od kąta patrzenia
+          float glowMask = smoothstep(0.2, 0.8, 1.0 - abs(dir.x)) * smoothstep(-0.1, 0.6, dir.y);
+          skyCol += colGlow * glowMask * 0.5;
+
+          vec3 col = skyCol;
+
+          gl_FragColor = vec4(col, 1.0);
+        }
+      `,
+    };
+
+    const geometry = new THREE.SphereGeometry(50, 64, 64);
+    const material = new THREE.ShaderMaterial({
+      ...staticCaveShader,
+      side: THREE.BackSide,
+    });
+    // Ustaw rozdzielczość na aktualny viewport
+    material.uniforms.iResolution.value.set(
+      renderer.domElement.width,
+      renderer.domElement.height
+    );
+    const caveBackground = new THREE.Mesh(geometry, material);
+    scene.add(caveBackground);
 
     // Handle resize
     function handleResize() {

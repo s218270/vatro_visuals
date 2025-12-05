@@ -222,7 +222,10 @@ export default function ProjectPage({ params }) {
                   imgUrl = file.path.referencePath;
                 } else {
                   const fileName = file.path.referencePath.split("/").pop();
-                  imgUrl = `https://firebasestorage.googleapis.com/v0/b/vatrovisuals-5eb95.firebasestorage.app/o/${encodeURIComponent(
+                  // Use the appspot.com bucket hostname to avoid upstream 412 errors
+                  // some Firebase bucket strings may include ".firebasestorage.app" — convert to ".appspot.com"
+                  const bucketHost = "vatrovisuals-5eb95.appspot.com";
+                  imgUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketHost}/o/${encodeURIComponent(
                     fileName
                   )}?alt=media`;
                 }

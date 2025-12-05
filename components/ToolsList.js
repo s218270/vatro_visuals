@@ -122,7 +122,7 @@ export default function ToolsList({ inView }) {
 
   return (
     <div
-      className="h-full text-base sm:text-xl font-lexend font-light py-8"
+      className="h-full text-base sm:text-xl font-lexend font-light"
       style={{
         display: "flex",
         flexDirection: "row",

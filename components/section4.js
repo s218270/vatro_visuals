@@ -377,15 +377,20 @@ export default function Section4({ scrollToSection }) {
       id="section4"
       ref={carouselInViewRef}
       className="h-screen w-full flex flex-col items-center justify-center relative bg-[#080808] z-10 overflow-hidden"
-      style={{
-        backgroundImage: `linear-gradient(rgba(8, 8, 8, 0.5), rgba(8, 8, 8, 0.5)), url(${backgroundImage})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        transition: "background-image 0.5s ease-in-out",
-        // filter: "blur(16px)",
-      }}
     >
+      {/* Tło video */}
+      <video
+        className="absolute inset-0 w-full h-full object-cover z-40"
+        src="/xhkqh-b4zb6.webm"
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{
+          pointerEvents: "none",
+          filter: "brightness(0.5) blur(2px)",
+        }}
+      />
       {/* Gradient overlays for top/bottom fade */}
       <div
         style={{
@@ -428,92 +433,92 @@ export default function Section4({ scrollToSection }) {
           filter: "blur(6px)",
         }}
       />
+      <div className="z-50">
+        <h1 className="text-[#f2f2f2] text-[48px] lg:text-[72px] left-0 absolute top-16 w-full text-center justify-center">
+          Projekty
+        </h1>
 
-      <h1 className="text-[#f2f2f2] text-4xl absolute z-20 top-36 mb-8">
-        Projekty
-      </h1>
-
-      {/* Carousel Container */}
-      <div
-        className="w-full max-w-6xl mx-auto absolute"
-        style={{
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-        }}
-      >
-        {/* Przyciski nawigacji pod karuzelą - tylko 2! */}
+        {/* Carousel Container */}
         <div
+          className="w-full max-w-6xl mx-auto absolute"
           style={{
-            position: "absolute",
-            // bottom: "calc(50rem + 24px)", // tuż nad karuzelą
-            left:
-              typeof window !== "undefined" && window.innerWidth < 550
-                ? 50
-                : 20,
-            // top: 96,
-            marginTop: "384px",
-            zIndex: 30,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
           }}
         >
-          <GlitchButton
-            onClick={handlePrev}
-            text={
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                className="w-6 h-6 text-[#f2f2f2]"
-                style={{ transform: "rotate(90deg)" }}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            }
-          />
-        </div>
-        <div
-          style={{
-            position: "absolute",
-            // bottom: "calc(50rem + 24px)", // tuż nad karuzelą
-            right:
-              typeof window !== "undefined" && window.innerWidth < 550
-                ? 50
-                : 20,
-            marginTop: "384px",
-            zIndex: 30,
-          }}
-        >
-          <GlitchButton
-            onClick={handleNext}
-            text={
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                className="w-6 h-6 text-[#f2f2f2]"
-                style={{ transform: "rotate(-90deg)" }}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            }
-          />
-        </div>
+          {/* Przyciski nawigacji pod karuzelą - tylko 2! */}
+          <div
+            style={{
+              position: "absolute",
+              // bottom: "calc(50rem + 24px)", // tuż nad karuzelą
+              left:
+                typeof window !== "undefined" && window.innerWidth < 550
+                  ? 50
+                  : 20,
+              // top: 96,
+              marginTop: "384px",
+              zIndex: 30,
+            }}
+          >
+            <GlitchButton
+              onClick={handlePrev}
+              text={
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  className="w-6 h-6 text-[#f2f2f2]"
+                  style={{ transform: "rotate(90deg)" }}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              }
+            />
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              // bottom: "calc(50rem + 24px)", // tuż nad karuzelą
+              right:
+                typeof window !== "undefined" && window.innerWidth < 550
+                  ? 50
+                  : 20,
+              marginTop: "384px",
+              zIndex: 30,
+            }}
+          >
+            <GlitchButton
+              onClick={handleNext}
+              text={
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  className="w-6 h-6 text-[#f2f2f2]"
+                  style={{ transform: "rotate(-90deg)" }}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              }
+            />
+          </div>
 
-        {/* --- STARA KARUZELA ZAKOMENTOWANA --- */}
-        {/*
+          {/* --- STARA KARUZELA ZAKOMENTOWANA --- */}
+          {/*
         <div
           ref={carouselRef}
           className="flex"
@@ -528,287 +533,289 @@ export default function Section4({ scrollToSection }) {
         </div>
         */}
 
-        {/* --- NOWA KARUZELA --- */}
-        <div
-          ref={carouselRef}
-          style={{
-            width: "100%",
-            height: "20rem",
-            position: "relative",
-            // left: "500px",
-          }}
-        >
-          {projects.map((project, i) => {
-            if (!project) return null;
-            const imageUrl = getImageUrl(project.mainImage);
-            const pos = getItemPosition(i);
-            // Always render leftmost and rightmost invisible elements for smooth transitions
-            const isVisible = pos >= 0 && pos < visibleCount;
-            const isLeftHidden = pos === -1;
-            const isRightHidden = pos === visibleCount;
-            // Responsive gap: smaller on medium devices
-            let cardSpacing = "300";
-            if (typeof window !== "undefined") {
-              if (window.innerWidth <= 1024 && window.innerWidth > 768) {
-                cardSpacing = "200";
-              } else if (window.innerWidth <= 768) {
-                cardSpacing = "150";
+          {/* --- NOWA KARUZELA --- */}
+          <div
+            ref={carouselRef}
+            style={{
+              width: "100%",
+              height: "20rem",
+              position: "relative",
+              // left: "500px",
+            }}
+          >
+            {projects.map((project, i) => {
+              if (!project) return null;
+              const imageUrl = getImageUrl(project.mainImage);
+              const pos = getItemPosition(i);
+              // Always render leftmost and rightmost invisible elements for smooth transitions
+              const isVisible = pos >= 0 && pos < visibleCount;
+              const isLeftHidden = pos === -1;
+              const isRightHidden = pos === visibleCount;
+              // Responsive gap: smaller on medium devices
+              let cardSpacing = "300";
+              if (typeof window !== "undefined") {
+                if (window.innerWidth <= 1024 && window.innerWidth > 768) {
+                  cardSpacing = "200";
+                } else if (window.innerWidth <= 768) {
+                  cardSpacing = "150";
+                }
               }
-            }
-            const slotWidth = cardSpacing / visibleCount;
-            const transition = isTransitioning
-              ? "transform 1.2s cubic-bezier(0.77,0,0.175,1), opacity 1.2s cubic-bezier(0.77,0,0.175,1)"
-              : "none";
-            const show = isVisible || isLeftHidden || isRightHidden;
+              const slotWidth = cardSpacing / visibleCount;
+              const transition = isTransitioning
+                ? "transform 1.2s cubic-bezier(0.77,0,0.175,1), opacity 1.2s cubic-bezier(0.77,0,0.175,1)"
+                : "none";
+              const show = isVisible || isLeftHidden || isRightHidden;
 
-            return (
-              <div
-                key={project.id ? `${project.id}-${i}` : i}
-                className="flex items-end justify-center"
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  top: 0,
-                  width: `calc(100% / ${visibleCount})`,
-                  height: "20rem",
-                  opacity: isVisible ? 1 : 0,
-                  pointerEvents: isVisible ? "auto" : "none",
-                  visibility: show ? "visible" : "hidden",
-                  transition,
-                  zIndex: isVisible
-                    ? 10
-                    : isLeftHidden
-                    ? 5
-                    : isRightHidden
-                    ? 5
-                    : 1,
-                  padding: "1rem",
-                  boxSizing: "border-box",
-                  transform: `translateX(${slotWidth * pos}%)`,
-                }}
-                onMouseEnter={() => handleCardMouseEnter(i, project)}
-                onMouseLeave={() => {
-                  setHoveredIndex(null);
-                  setNextBackgroundImage(
-                    getImageUrl(
-                      projects[
-                        (activeIndex + getCenteredItemIndex()) % projects.length
-                      ]?.mainImage
-                    ) || ""
-                  );
-                }}
-              >
-                <Link
-                  href={`/projects/${project.id}`}
-                  className="w-full h-full"
-                  style={{ display: "block", height: "100%" }}
+              return (
+                <div
+                  key={project.id ? `${project.id}-${i}` : i}
+                  className="flex items-end justify-center"
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    top: 0,
+                    width: `calc(100% / ${visibleCount})`,
+                    height: "20rem",
+                    opacity: isVisible ? 1 : 0,
+                    pointerEvents: isVisible ? "auto" : "none",
+                    visibility: show ? "visible" : "hidden",
+                    transition,
+                    zIndex: isVisible
+                      ? 10
+                      : isLeftHidden
+                      ? 5
+                      : isRightHidden
+                      ? 5
+                      : 1,
+                    padding: "1rem",
+                    boxSizing: "border-box",
+                    transform: `translateX(${slotWidth * pos}%)`,
+                  }}
+                  onMouseEnter={() => handleCardMouseEnter(i, project)}
+                  onMouseLeave={() => {
+                    setHoveredIndex(null);
+                    setNextBackgroundImage(
+                      getImageUrl(
+                        projects[
+                          (activeIndex + getCenteredItemIndex()) %
+                            projects.length
+                        ]?.mainImage
+                      ) || ""
+                    );
+                  }}
                 >
-                  <GlitchButton
-                    styles={{
-                      padding: 0,
-                      position: "relative",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
+                  <Link
+                    href={`/projects/${project.id}`}
+                    className="w-full h-full"
+                    style={{ display: "block", height: "100%" }}
                   >
-                    <div
-                      ref={(el) => (borderRefs.current[i] = el)}
-                      className={`glassmorphism w-full h-[14.5rem] flex items-center justify-center relative`}
-                      style={{
-                        borderRadius: 3,
-                        minHeight: 0,
-                        minWidth: 0,
+                    <GlitchButton
+                      styles={{
                         padding: 0,
-                        transition: "height 0.3s cubic-bezier(0.4,0,0.2,1)",
-                        height: hoveredIndex === i ? "18rem" : "14.5rem",
+                        position: "relative",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
-                      {/* Loader tylko w środku karty */}
-                      {!loaded[i] && (
-                        <div
-                          className="flex items-center justify-center w-full h-full z-20"
-                          style={{
-                            position: "absolute",
-                            left: 0,
-                            top: 0,
-                            right: 0,
-                            bottom: 0,
-                            background: "none",
-                          }}
-                        >
-                          {typeof window !== "undefined" && isIOS() ? (
-                            <div
-                              style={{
-                                width: 96,
-                                height: 96,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            >
+                      <div
+                        ref={(el) => (borderRefs.current[i] = el)}
+                        className={`glassmorphism w-full h-[14.5rem] flex items-center justify-center relative`}
+                        style={{
+                          borderRadius: 3,
+                          minHeight: 0,
+                          minWidth: 0,
+                          padding: 0,
+                          transition: "height 0.3s cubic-bezier(0.4,0,0.2,1)",
+                          height: hoveredIndex === i ? "18rem" : "14.5rem",
+                        }}
+                      >
+                        {/* Loader tylko w środku karty */}
+                        {!loaded[i] && (
+                          <div
+                            className="flex items-center justify-center w-full h-full z-20"
+                            style={{
+                              position: "absolute",
+                              left: 0,
+                              top: 0,
+                              right: 0,
+                              bottom: 0,
+                              background: "none",
+                            }}
+                          >
+                            {typeof window !== "undefined" && isIOS() ? (
                               <div
-                                className="loader-ios"
                                 style={{
                                   width: 96,
                                   height: 96,
-                                  border: "6px solid #6a00d1",
-                                  borderTop: "6px solid #f2f2f2",
-                                  borderRadius: "50%",
-                                  animation: "spin 1.2s linear infinite",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <div
+                                  className="loader-ios"
+                                  style={{
+                                    width: 96,
+                                    height: 96,
+                                    border: "6px solid #6a00d1",
+                                    borderTop: "6px solid #f2f2f2",
+                                    borderRadius: "50%",
+                                    animation: "spin 1.2s linear infinite",
+                                  }}
+                                />
+                                <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+                              </div>
+                            ) : (
+                              <video
+                                src="/Loading_WWW.webm"
+                                autoPlay
+                                loop
+                                muted
+                                style={{
+                                  width: 96,
+                                  height: 96,
+                                  objectFit: "contain",
+                                  background: "none",
                                 }}
                               />
-                              <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
-                            </div>
-                          ) : (
-                            <video
-                              src="/Loading_WWW.webm"
-                              autoPlay
-                              loop
-                              muted
-                              style={{
-                                width: 96,
-                                height: 96,
-                                objectFit: "contain",
-                                background: "none",
-                              }}
-                            />
-                          )}
-                          <style>{`
+                            )}
+                            <style>{`
                           @keyframes spin { 100% { transform: rotate(360deg); } }
                         `}</style>
-                        </div>
-                      )}
+                          </div>
+                        )}
 
-                      <div
-                        className="w-full h-full flex flex-col items-center justify-center overflow-hidden cursor-pointer transition-all duration-200"
-                        style={{
-                          backgroundImage: getImageUrl(project.mainImage)
-                            ? `url(${getImageUrl(project.mainImage)})`
-                            : undefined,
-                          backgroundColor: getImageUrl(project.mainImage)
-                            ? undefined
-                            : "#222",
-                          backgroundSize: "cover",
-                          backgroundPosition: "center",
-                          borderRadius: 3,
-                          position: "relative",
-                          zIndex: 2,
-                        }}
-                      >
-                        <span
-                          className="text-[#f2f2f2] text-xl bg-[#080808]/50 px-4 py-2 rounded-[3px]"
-                          style={{
-                            zIndex: 3,
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                          }}
-                        >
-                          {project.title}
-                        </span>
-                        {/* Short description on hover */}
                         <div
-                          className={`w-full transition-all duration-300 bg-[#080808]/70 text-[#f2f2f2] text-base font-lexend font-light px-4 py-2 rounded-b absolute left-0 bottom-0 ${
-                            hoveredIndex === i
-                              ? "opacity-100 max-h-32"
-                              : "opacity-0 max-h-0 pointer-events-none"
-                          }`}
+                          className="w-full h-full flex flex-col items-center justify-center overflow-hidden cursor-pointer transition-all duration-200"
                           style={{
-                            zIndex: 4,
-                            overflow: "hidden",
+                            backgroundImage: getImageUrl(project.mainImage)
+                              ? `url(${getImageUrl(project.mainImage)})`
+                              : undefined,
+                            backgroundColor: getImageUrl(project.mainImage)
+                              ? undefined
+                              : "#222",
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                            borderRadius: 3,
+                            position: "relative",
+                            zIndex: 2,
                           }}
                         >
-                          {project.shortDescription}
-                        </div>
-                        {/* DEBUG: pokaż URL jeśli nie ma obrazka */}
-                        {!getImageUrl(project.mainImage) && (
                           <span
+                            className="text-[#f2f2f2] text-xl bg-[#080808]/50 px-4 py-2 rounded-[3px]"
                             style={{
-                              color: "red",
-                              fontSize: 10,
-                              wordBreak: "break-all",
+                              zIndex: 3,
                               position: "absolute",
-                              bottom: 0,
+                              top: 0,
                               left: 0,
-                              right: 0,
-                              background: "#f2f2f2",
-                              padding: 2,
                             }}
                           >
-                            brak obrazka
-                            <br />
-                            {JSON.stringify(project.mainImage)}
+                            {project.title}
                           </span>
-                        )}
+                          {/* Short description on hover */}
+                          <div
+                            className={`w-full transition-all duration-300 bg-[#080808]/70 text-[#f2f2f2] text-base font-lexend font-light px-4 py-2 rounded-b absolute left-0 bottom-0 ${
+                              hoveredIndex === i
+                                ? "opacity-100 max-h-32"
+                                : "opacity-0 max-h-0 pointer-events-none"
+                            }`}
+                            style={{
+                              zIndex: 4,
+                              overflow: "hidden",
+                            }}
+                          >
+                            {project.shortDescription}
+                          </div>
+                          {/* DEBUG: pokaż URL jeśli nie ma obrazka */}
+                          {!getImageUrl(project.mainImage) && (
+                            <span
+                              style={{
+                                color: "red",
+                                fontSize: 10,
+                                wordBreak: "break-all",
+                                position: "absolute",
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                background: "#f2f2f2",
+                                padding: 2,
+                              }}
+                            >
+                              brak obrazka
+                              <br />
+                              {JSON.stringify(project.mainImage)}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </GlitchButton>
-                </Link>
-              </div>
-            );
-          })}
-        </div>
+                    </GlitchButton>
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
 
-        {/* See All Link - styled and placed directly below carousel */}
-        <div
-          className="w-full flex justify-center items-center mt-96 absolute z-20 h-32"
-          style={{
-            marginTop:
-              typeof window !== "undefined" && window.innerWidth < 550
-                ? "536px"
-                : "384px",
-          }}
-        >
-          <GlitchButton
-            styles={{
-              padding: "0",
-              textAlign: "center",
-              justifyContent: "center",
-              alignItems: "center",
+          {/* See All Link - styled and placed directly below carousel */}
+          <div
+            className="w-full flex justify-center items-center mt-96 absolute z-20 h-32"
+            style={{
+              marginTop:
+                typeof window !== "undefined" && window.innerWidth < 550
+                  ? "536px"
+                  : "384px",
             }}
-            text={
-              <Link
-                href="/projects"
-                style={{
-                  position: "relative",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "16px 24px",
-                }}
-              >
-                Zobacz wszystkie projekty
-              </Link>
-            }
-          />
-        </div>
+          >
+            <GlitchButton
+              styles={{
+                padding: "0",
+                textAlign: "center",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              text={
+                <Link
+                  href="/projects"
+                  style={{
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "16px 24px",
+                  }}
+                >
+                  Zobacz wszystkie projekty
+                </Link>
+              }
+            />
+          </div>
 
-        {/* Section Navigation Buttons */}
-        <div
-          className="flex flex-col items-center gap-4 absolute z-30 bottom-10 left-1/2"
-          style={{ transform: "translateX(-50%)" }}
-        >
-          <GlitchButton
-            onClick={() => scrollToSection("section5")}
-            text={
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                className="w-6 h-6 text-[#f2f2f2]"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            }
-          />
-          {/* Scroll to section3 button (upwards) */}
+          {/* Section Navigation Buttons */}
+          <div
+            className="flex flex-col items-center gap-4 absolute z-30 bottom-10 left-1/2"
+            style={{ transform: "translateX(-50%)" }}
+          >
+            <GlitchButton
+              onClick={() => scrollToSection("section5")}
+              text={
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  className="w-6 h-6 text-[#f2f2f2]"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              }
+            />
+            {/* Scroll to section3 button (upwards) */}
+          </div>
         </div>
       </div>
     </section>

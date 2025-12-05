@@ -105,6 +105,12 @@ export default function Section5() {
     <section
       id="section5"
       className="min-h-screen w-full bg-[#080808] flex flex-col items-center justify-center relative px-2 sm:px-6 md:px-12 lg:px-24 xl:px-32 z-10"
+      style={{
+        backgroundImage: "url('/Cave.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
     >
       {/* Gradient overlays for top/bottom fade */}
       <div
@@ -134,7 +140,7 @@ export default function Section5() {
       />
       <h1 className="text-[#f2f2f2] text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-12 appear">
         {/* <AnimatedText text="Kontakt" inView={true} as="span" /> */}
-        Kontakt
+        KONTAKT
       </h1>
 
       <div

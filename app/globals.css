@@ -2105,3 +2105,139 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
     transform: none;
   }
 }
+
+/* Section3 layout helpers (keeps mobile layout unchanged)
+   Desktop: both columns have equal height (60vh) limited by max widths.
+   The image column keeps a 9:16 portrait ratio and is capped so it doesn't fill the whole section. */
+.section3-image-wrap {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  height: 40vh; /* mobile default */
+  width: 100%;
+}
+.section3-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 40vh; /* mobile default */
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .section3-image-wrap {
+    height: 60vh;
+    /* compute width from height to keep 9:16 aspect ratio, cap to reasonable values */
+    width: calc(60vh * 9 / 16);
+    max-width: 420px;
+    min-width: 260px;
+  }
+  .section3-right {
+    height: 60vh;
+    /* ensure right column doesn't overflow and keeps same height */
+    max-width: calc(100% - (calc(60vh * 9 / 16) + 32px));
+    gap: 32px !important; /* gap-8 */
+    row-gap: 32px !important;
+    font-size: clamp(0.95rem, 1.1vw, 1rem);
+    overflow-wrap: break-word;
+  }
+}
+
+/* Precise Tailwind-step adjustments for AboutCard paragraph
+   - 1024-1279px : increase by +1 Tailwind step (text-lg -> 1.125rem)
+   - 1280-1319px : decrease by -1 Tailwind step relative to xl (text-xl -> 1.25rem)
+   - >=1320px : restore 2xl (1.5rem)
+*/
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .about-card-text {
+    font-size: 1.125rem !important; /* text-lg */
+    line-height: 1.6 !important;
+  }
+}
+
+@media (min-width: 1280px) and (max-width: 1319px) {
+  .about-card-text {
+    font-size: 1.25rem !important; /* text-xl */
+    line-height: 1.6 !important;
+  }
+}
+
+@media (min-width: 1320px) {
+  .about-card-text {
+    font-size: 1.25rem !important; /* text-xl (reduced from 2xl per request) */
+    line-height: 1.6 !important;
+  }
+}
+
+/* Navbar: custom breakpoint at 940px to control when desktop grid kicks in */
+@media (min-width: 940px) {
+  /* container becomes a 3-column grid: left | spacer | right. minmax(0,1fr) allows columns to shrink */
+  .grid-at-940 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .grid-at-940 .nav-left-group,
+  .grid-at-940 .nav-right-group {
+    display: flex;
+    gap: 1.5rem; /* matches gap-6 (24px) if needed adjust */
+    align-items: center;
+    min-width: 0; /* allow children to shrink inside the flex/grid */
+  }
+
+  /* left group hugs the center (right edge of left column) */
+  .grid-at-940 .nav-left-group {
+    justify-content: flex-end;
+  }
+
+  /* right group hugs the center (left edge of right column) */
+  .grid-at-940 .nav-right-group {
+    justify-content: flex-start;
+  }
+
+  /* show center spacer at this breakpoint */
+  .grid-at-940 .center-spacer {
+    display: block;
+  }
+
+  /* position logo absolutely in the center of the nav container */
+  .grid-at-940 .logo-wrapper {
+    margin-left: 0 !important;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 40;
+  }
+
+  /* hide mobile-specific UI at desktop widths */
+  .grid-at-940 .hamburger-toggle {
+    display: none !important;
+  }
+  .grid-at-940 .mobile-only {
+    display: none !important;
+  }
+}
+
+/* Default (mobile) behaviours */
+.hamburger-toggle {
+  display: flex;
+}
+.mobile-only {
+  display: block;
+}
+
+/* ensure nav groups can shrink on small screens too */
+.nav-left-group,
+.nav-right-group {
+  min-width: 0;
+}
+
+/* From 1200px to 1600px gradually increase center spacer from 6rem (96px) to 12rem (192px) */
+@media (min-width: 1200px) {
+  .grid-at-940 .center-spacer {
+    /* 6rem = 96px, target 12rem = 192px; slope = 96px over 400px viewport width -> 0.24 */
+    width: clamp(96px, calc(96px + (100vw - 1200px) * 0.24), 192px);
+  }
+}
