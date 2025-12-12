@@ -557,8 +557,8 @@ export default function LogoAnimation({
       const y = r * Math.cos(phi);
       const z = r * Math.sin(phi) * Math.sin(theta);
       s.position.set(x, y, z);
-      // Limit scale so none become visually huge
-      const baseScale = 0.18 + Math.random() * 0.18; // 0.18 .. 0.36
+      // Limit scale but increase variety so sizes vary more
+      const baseScale = 0.12 + Math.random() * 0.6; // 0.12 .. 0.72
       s.scale.set(baseScale, baseScale, baseScale);
       // Zapamiętaj bazową pozycję i parametry smooth ruchu (sinusoidalnie) oraz puls
       const ambObj = {
@@ -566,14 +566,14 @@ export default function LogoAnimation({
         basePosition: s.position.clone(),
         // slightly larger autonomous amplitudes so motion is visible
         amp: new THREE.Vector3(
-          0.22 + Math.random() * 0.9,
-          0.12 + Math.random() * 0.5,
-          0.22 + Math.random() * 0.9
+          0.28 + Math.random() * 1.2,
+          0.16 + Math.random() * 0.7,
+          0.28 + Math.random() * 1.2
         ),
-        // per-axis frequencies and phases for less correlated motion
-        freqX: 0.08 + Math.random() * 0.32,
-        freqY: 0.06 + Math.random() * 0.28,
-        freqZ: 0.08 + Math.random() * 0.32,
+        // per-axis frequencies and phases for less correlated motion (faster)
+        freqX: 0.12 + Math.random() * 0.5,
+        freqY: 0.1 + Math.random() * 0.4,
+        freqZ: 0.12 + Math.random() * 0.5,
         phaseX: Math.random() * Math.PI * 2,
         phaseY: Math.random() * Math.PI * 2,
         phaseZ: Math.random() * Math.PI * 2,
@@ -637,7 +637,8 @@ export default function LogoAnimation({
       const y = r * Math.cos(phi);
       const z = r * Math.sin(phi) * Math.sin(theta);
       m.position.set(x, y, z);
-      const baseScale = 0.28 + Math.random() * 0.32; // smaller: 0.28 .. 0.6
+      // interactive spheres: increase size variety (some small, some larger)
+      const baseScale = 0.18 + Math.random() * 0.9; // 0.18 .. 1.08
       m.scale.set(baseScale, baseScale, baseScale);
       const intObj = {
         mesh: m,
@@ -645,14 +646,14 @@ export default function LogoAnimation({
         baseScale,
         // stronger autonomous amplitude so spheres move noticeably
         amp: new THREE.Vector3(
-          0.28 + Math.random() * 0.9,
-          0.12 + Math.random() * 0.5,
-          0.28 + Math.random() * 0.9
+          0.4 + Math.random() * 1.2,
+          0.18 + Math.random() * 0.8,
+          0.4 + Math.random() * 1.2
         ),
-        // per-axis frequencies/phases for unique autonomous motion (faster)
-        freqX: 0.08 + Math.random() * 0.36,
-        freqY: 0.06 + Math.random() * 0.3,
-        freqZ: 0.08 + Math.random() * 0.36,
+        // per-axis frequencies/phases for unique autonomous motion (noticeably faster)
+        freqX: 0.16 + Math.random() * 0.7,
+        freqY: 0.12 + Math.random() * 0.6,
+        freqZ: 0.16 + Math.random() * 0.7,
         phaseX: Math.random() * Math.PI * 2,
         phaseY: Math.random() * Math.PI * 2,
         phaseZ: Math.random() * Math.PI * 2,
@@ -699,9 +700,10 @@ export default function LogoAnimation({
     // not used to apply immediate deltas — we set target from absolute mouse
     // position and animate toward it with easing.
     const prevMouseNorm = new THREE.Vector2(0, 0);
-    // Max yaw reduced by additional 30% per request: previously PI*0.5 (~90°),
-    // now 70% of that => PI*0.35 (~63°).
-    const MAX_YAW = Math.PI * 0.35; // ~63° max yaw
+    // Max yaw: reduce dramatically (80% smaller than previous) so full-edge
+    // pointer produces only a very small rotation. Previously ~63°; now 20%
+    // of that -> PI*0.07 (~12.6°).
+    const MAX_YAW = Math.PI * 0.07; // ~12.6° max yaw
     const MAX_PITCH = Math.PI * 0.28; // how far up/down the shell rotates
 
     // === Mouse influence ===
@@ -848,16 +850,21 @@ export default function LogoAnimation({
       const yawEase2 = 0.5 - 0.5 * Math.cos(yawNorm2 * Math.PI);
       const pitchEase2 = 0.5 - 0.5 * Math.cos(pitchNorm2 * Math.PI);
       // dynamic lerp factor: base speed plus extra proportional to distance
-      // tuned so ease-out finishes somewhat faster
-      const BASE_SPEED = 0.09; // stronger base so easing finishes quicker
-      const EXTRA_SPEED = 1.8; // scales with normalized distance for responsiveness
+      // slowed down by another 50% per request (smaller overall motion).
+      const BASE_SPEED = 0.0225; // half of previous
+      const EXTRA_SPEED = 0.45; // half of previous
+      // increase ease-in effect by applying a bias to the ease curve.
+      // IN_BIAS < 1 amplifies the early portion of the ease (stronger in).
+      const IN_BIAS = 0.5;
+      const yawEaseIn = Math.pow(yawEase2, IN_BIAS);
+      const pitchEaseIn = Math.pow(pitchEase2, IN_BIAS);
       const yawLerp = Math.min(
         1,
-        (BASE_SPEED + EXTRA_SPEED * yawNorm2) * yawEase2
+        (BASE_SPEED + EXTRA_SPEED * yawNorm2) * yawEaseIn
       );
       const pitchLerp = Math.min(
         1,
-        (BASE_SPEED + EXTRA_SPEED * pitchNorm2) * pitchEase2
+        (BASE_SPEED + EXTRA_SPEED * pitchNorm2) * pitchEaseIn
       );
       sphereRotation.currentYaw = THREE.MathUtils.lerp(
         sphereRotation.currentYaw,
