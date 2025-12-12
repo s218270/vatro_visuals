@@ -399,7 +399,7 @@ export default function Section4({ scrollToSection }) {
           left: 0,
           width: "100%",
           height: "30vh",
-          zIndex: 10,
+          zIndex: 45,
           pointerEvents: "none",
           background:
             "linear-gradient(to bottom, #080808 0%, transparent 100%)",
@@ -412,7 +412,7 @@ export default function Section4({ scrollToSection }) {
           left: 0,
           width: "100%",
           height: "30vh",
-          zIndex: 10,
+          zIndex: 45,
           pointerEvents: "none",
           background: "linear-gradient(to top, #080808 0%, transparent 100%)",
         }}

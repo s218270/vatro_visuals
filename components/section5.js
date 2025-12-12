@@ -184,28 +184,16 @@ export default function Section5() {
               </div>
             )}
             {/* Email field */}
-            <div
-              className={`extraordinary-animation-wrapper${
-                isHardReset
-                  ? " extraordinary-animation-reset"
-                  : isResetting
-                  ? ""
-                  : `${whiteActive ? " extraordinary-animation-active" : ""}${
-                      purpleActive
-                        ? " extraordinary-animation-active-purple"
-                        : ""
-                    }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
-              } relative ${inViewForm ? "appear" : ""}`}
-              style={{ borderRadius: 3, padding: 0 }}
-            >
+            <div style={{ borderRadius: 3, padding: 0 }}>
               <label
                 htmlFor="email"
-                className="block text-sm sm:text-base md:text-lg lg:text-xl font-medium text-gray-500 appear"
+                className="block text-base sm:text-lg md:text-xl lg:text-2xl font-medium text-gray-500 appear"
                 style={{
                   marginLeft: 12,
                   marginTop: 8,
                   zIndex: 2,
                   position: "relative",
+                  marginBottom: 8,
                 }}
               >
                 {/* <AnimatedText text="Email" inView={inViewForm} as="span" /> */}
@@ -235,48 +223,18 @@ export default function Section5() {
                 onBlur={(e) => (e.target.style.background = "rgba(31,31,31,1)")}
                 required
               />
-              {/* WHITE PHASE: 4 borders + 4 glow (should be under purple) */}
-              <div className="extraordinary-animation-border-top-white" />
-              <div className="extraordinary-animation-border-bottom-white" />
-              <div className="extraordinary-animation-border-left-white" />
-              <div className="extraordinary-animation-border-right-white" />
-              <div className="extraordinary-animation-glow-top-white" />
-              <div className="extraordinary-animation-glow-bottom-white" />
-              <div className="extraordinary-animation-glow-left-white" />
-              <div className="extraordinary-animation-glow-right-white" />
-              {/* PURPLE PHASE: 4 borders + 4 glow (should be above white) */}
-              <div className="extraordinary-animation-border-top-purple" />
-              <div className="extraordinary-animation-border-bottom-purple" />
-              <div className="extraordinary-animation-border-left-purple" />
-              <div className="extraordinary-animation-border-right-purple" />
-              <div className="extraordinary-animation-glow-top-purple" />
-              <div className="extraordinary-animation-glow-bottom-purple" />
-              <div className="extraordinary-animation-glow-left-purple" />
-              <div className="extraordinary-animation-glow-right-purple" />
             </div>
             {/* Message field */}
-            <div
-              className={`extraordinary-animation-wrapper${
-                isHardReset
-                  ? " extraordinary-animation-reset"
-                  : isResetting
-                  ? ""
-                  : `${whiteActive ? " extraordinary-animation-active" : ""}${
-                      purpleActive
-                        ? " extraordinary-animation-active-purple"
-                        : ""
-                    }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
-              } relative ${inViewForm ? "appear" : ""}`}
-              style={{ borderRadius: 3, padding: 0 }}
-            >
+            <div style={{ borderRadius: 3, padding: 0 }}>
               <label
                 htmlFor="message"
-                className="block text-sm sm:text-base md:text-lg lg:text-xl font-medium text-gray-500 appear"
+                className="block text-base sm:text-lg md:text-xl lg:text-2xl font-medium text-gray-500 appear"
                 style={{
                   marginLeft: 12,
                   marginTop: 8,
                   zIndex: 2,
                   position: "relative",
+                  marginBottom: 8,
                 }}
               >
                 {/* <AnimatedText text="Wiadomość" inView={inViewForm} as="span" /> */}
@@ -305,24 +263,6 @@ export default function Section5() {
                 onBlur={(e) => (e.target.style.background = "rgba(31,31,31,1)")}
                 required
               ></textarea>
-              {/* WHITE PHASE: 4 borders + 4 glow (should be under purple) */}
-              <div className="extraordinary-animation-border-top-white" />
-              <div className="extraordinary-animation-border-bottom-white" />
-              <div className="extraordinary-animation-border-left-white" />
-              <div className="extraordinary-animation-border-right-white" />
-              <div className="extraordinary-animation-glow-top-white" />
-              <div className="extraordinary-animation-glow-bottom-white" />
-              <div className="extraordinary-animation-glow-left-white" />
-              <div className="extraordinary-animation-glow-right-white" />
-              {/* PURPLE PHASE: 4 borders + 4 glow (should be above white) */}
-              <div className="extraordinary-animation-border-top-purple" />
-              <div className="extraordinary-animation-border-bottom-purple" />
-              <div className="extraordinary-animation-border-left-purple" />
-              <div className="extraordinary-animation-border-right-purple" />
-              <div className="extraordinary-animation-glow-top-purple" />
-              <div className="extraordinary-animation-glow-bottom-purple" />
-              <div className="extraordinary-animation-glow-left-purple" />
-              <div className="extraordinary-animation-glow-right-purple" />
             </div>
             {/* Submit button */}
             <div className="mt-6 md:mt-8 justify-center flex items-center">

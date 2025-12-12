@@ -108,6 +108,10 @@ export default function LogoAnimation({
     const dotPosition = new THREE.Vector3();
     const modelPositions = [];
     let modelsLoaded = 0;
+    // centroid of models (populated after models load)
+    let sceneCenter = new THREE.Vector3();
+    // ambientGroup will be created later; keep reference so we can position it relative to models
+    let ambientGroup = null;
 
     // --- Set HDR jako environment map dla modeli (bez tła) ---
     new RGBELoader()
@@ -151,6 +155,53 @@ export default function LogoAnimation({
                 const center = new THREE.Vector3();
                 modelPositions.forEach((pos) => center.add(pos));
                 center.divideScalar(modelPositions.length);
+                // store in outer-scoped sceneCenter for positioning particles/domes
+                sceneCenter.copy(center);
+                // if ambientGroup already exists, position it around the models' centroid
+                try {
+                  if (ambientGroup) ambientGroup.position.copy(sceneCenter);
+                  // If interactive particles were created before models finished
+                  // loading, shift their base positions so the spherical shell
+                  // centers on the models' centroid.
+                  try {
+                    if (
+                      typeof interactiveGroup !== "undefined" &&
+                      interactiveGroup
+                    )
+                      interactiveGroup.children.forEach((c) =>
+                        c.position.add(sceneCenter)
+                      );
+                    if (
+                      typeof interactiveParticles !== "undefined" &&
+                      interactiveParticles
+                    )
+                      interactiveParticles.forEach((ip) => {
+                        if (ip.basePosition) ip.basePosition.add(sceneCenter);
+                        if (ip.mesh) ip.mesh.position.add(sceneCenter);
+                      });
+                  } catch (e) {
+                    // ignore if interactiveGroup/interactiveParticles not yet defined
+                  }
+                  // If HDR env is ready, assign it to particle materials so they get metallic reflections
+                  if (scene.environment) {
+                    [
+                      ambientGroup,
+                      typeof interactiveGroup !== "undefined"
+                        ? interactiveGroup
+                        : null,
+                    ].forEach((g) => {
+                      if (!g) return;
+                      g.traverse((child) => {
+                        if (child.isMesh && child.material) {
+                          child.material.envMap = scene.environment;
+                          child.material.needsUpdate = true;
+                        }
+                      });
+                    });
+                  }
+                } catch (e) {
+                  // ignore if ambientGroup not defined yet
+                }
 
                 // Wszystkie modele załadowane — teraz ustaw kamerę i animację
                 let skewAngle = THREE.MathUtils.degToRad(startSkewDeg);
@@ -343,80 +394,344 @@ export default function LogoAnimation({
         }
       );
 
-    // Proceduralny skybox jako cubemap: wyodrębnione do createSkyboxCubeMap
-    // Shaderowe tło na bazie przesłanego kodu (statyczna klatka, bez animacji)
-    const staticCaveShader = {
+    // Usunięto poprzednie fioletowe tło shaderowe — zostaje tylko nowe tło (promień + particles)
+
+    // === Spotlight w kolorze #6a00d1, przytwierdzony do kamery (pozycja zależna od kamery),
+    // kierunek stały w stronę górnej części sceny ===
+    const spotlight = new THREE.SpotLight(
+      "#6a00d1",
+      3.5,
+      80,
+      THREE.MathUtils.degToRad(32),
+      0.85,
+      1.0
+    );
+    const spotlightTarget = new THREE.Object3D();
+    spotlight.castShadow = false;
+    spotlight.penumbra = 0.8;
+    spotlight.decay = 1.0;
+    // pozycję targetu ustawimy w pętli względem kamery
+    spotlightTarget.position.set(0, 6, -2);
+    scene.add(spotlightTarget);
+    spotlight.target = spotlightTarget;
+    scene.add(spotlight);
+
+    // Billboardowa kolista poświata nad sceną (radial gradient #6a00d1)
+    function createPurpleGlowTexture(size = 256) {
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      const g = ctx.createRadialGradient(
+        size / 2,
+        size / 2,
+        0,
+        size / 2,
+        size / 2,
+        size / 2
+      );
+      // Wzmocniony środek dla jaśniejszego, punktowego glow
+      g.addColorStop(0.0, "rgba(106,0,209,0.85)");
+      g.addColorStop(0.18, "rgba(106,0,209,0.55)");
+      g.addColorStop(0.45, "rgba(106,0,209,0.30)");
+      g.addColorStop(1.0, "rgba(106,0,209,0.0)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+      ctx.fill();
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+      tex.generateMipmaps = false;
+      return tex;
+    }
+    const purpleGlowTex = createPurpleGlowTexture(256);
+    const glowMat = new THREE.SpriteMaterial({
+      map: purpleGlowTex,
+      color: new THREE.Color("#ffffff"),
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      opacity: 1.0,
+      depthWrite: false,
+    });
+    const glowSprite = new THREE.Sprite(glowMat);
+    // większa poświata (dalej powiększamy)
+    glowSprite.scale.set(50.0, 50.0, 50.0);
+    scene.add(glowSprite);
+    let glowPulse = 0;
+
+    // Volumetryczny stożek wizualizujący poświatę spotlightu (addytywny, subtelny)
+    const volGeom = new THREE.ConeGeometry(1, 1, 48, 1, true);
+    const volMat = new THREE.ShaderMaterial({
       uniforms: {
-        iResolution: { value: new THREE.Vector2(1, 1) },
+        uColor: { value: new THREE.Color("#6a00d1") },
+        uOpacity: { value: 0.12 },
       },
       vertexShader: `
-        varying vec3 vPosition;
         varying vec2 vUv;
-        void main() {
-          vPosition = position;
+        void main(){
           vUv = uv;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `,
       fragmentShader: `
-        // Kolory bazowe
-        const vec3 colDark   = vec3(0.039, 0.039, 0.059); // #0a0a0f
-        const vec3 colPurple = vec3(0.294, 0.0,   0.509); // #4b0082
-        const vec3 colGlow   = vec3(0.616, 0.306, 0.866); // #9d4edd
-
-        uniform vec2 iResolution;
-        varying vec3 vPosition;
+        uniform vec3 uColor;
+        uniform float uOpacity;
         varying vec2 vUv;
-
-        // Prosta rotacja Y
-        vec3 rotY(vec3 p, float a) {
-          float c = cos(a), s = sin(a);
-          return vec3(c*p.x + s*p.z, p.y, -s*p.x + c*p.z);
-        }
-
-        void main() {
-          // Wylicz UV jak w shadertoy
-          vec2 fragCoord = vUv * iResolution;
-          vec2 uv = fragCoord / iResolution - 0.5;
-          uv.x *= iResolution.x / iResolution.y;
-
-          float time = 0.0; // statyczna klatka
-          vec3 pos = (sin(time*0.14)*2.0+4.5)*vec3(sin(time*0.5), 0.0, cos(time*0.5));
-          pos.z -= time;
-          pos.y += 0.7 * sin(time * 0.2);
-          float rot = -time*0.5;
-          vec3 dir = normalize(vec3(uv, -0.6));
-          dir = rotY(dir, rot);
-
-          vec3 sun = vec3(-0.6, 0.5,-0.3); 
-          float i = max(0.0, 1.2/(length(sun-dir)+1.0));
-
-          // zamiast niebieskiego nieba robimy blend ciemnego i fioletu
-          vec3 skyCol = mix(colDark, colPurple, pow(1.0 - dir.y, 1.2));
-
-          // dodajemy glow w zależności od kąta patrzenia
-          float glowMask = smoothstep(0.2, 0.8, 1.0 - abs(dir.x)) * smoothstep(-0.1, 0.6, dir.y);
-          skyCol += colGlow * glowMask * 0.5;
-
-          vec3 col = skyCol;
-
-          gl_FragColor = vec4(col, 1.0);
+        void main(){
+          // pionowy zanik (mocniejszy bliżej źródła)
+          float head = smoothstep(0.0, 0.25, vUv.y);
+          float tail = 1.0 - vUv.y;
+          float alpha = head * tail;
+          // delikatna redukcja przy krawędziach szwu UV
+          float seam = min(vUv.x, 1.0 - vUv.x);
+          alpha *= smoothstep(0.0, 0.2, seam);
+          gl_FragColor = vec4(uColor, alpha * uOpacity);
         }
       `,
-    };
-
-    const geometry = new THREE.SphereGeometry(50, 64, 64);
-    const material = new THREE.ShaderMaterial({
-      ...staticCaveShader,
-      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      transparent: true,
+      side: THREE.DoubleSide,
     });
-    // Ustaw rozdzielczość na aktualny viewport
-    material.uniforms.iResolution.value.set(
-      renderer.domElement.width,
-      renderer.domElement.height
-    );
-    const caveBackground = new THREE.Mesh(geometry, material);
-    scene.add(caveBackground);
+    const volumetricCone = new THREE.Mesh(volGeom, volMat);
+    scene.add(volumetricCone);
+
+    // === Particles: ambient (around 50) using sprite ===
+    // Tworzymy proceduralną teksturę sprite (okrąg z delikatnym halo)
+    function createSpriteTexture(size = 64) {
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      const g = ctx.createRadialGradient(
+        size / 2,
+        size / 2,
+        0,
+        size / 2,
+        size / 2,
+        size / 2
+      );
+      // Sharper core and quicker falloff for less blur: stronger inner stop and tighter gradient
+      g.addColorStop(0.0, "rgba(255,255,255,1.0)");
+      g.addColorStop(0.18, "rgba(255,255,255,1.0)");
+      g.addColorStop(0.35, "rgba(255,255,255,0.7)");
+      g.addColorStop(1, "rgba(255,255,255,0.0)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+      ctx.fill();
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+      tex.generateMipmaps = false;
+      return tex;
+    }
+
+    const spriteTextureSmall = createSpriteTexture(64);
+    // larger texture for interactive particles to reduce blur at bigger scale
+    const spriteTextureLarge = createSpriteTexture(128);
+
+    // Increase ambient particle count for denser dome (doubled)
+    const ambientCount = 180;
+    ambientGroup = new THREE.Group();
+    const ambientParticles = [];
+    // Ambient particles as soft sprites (blurred points) for low-cost, soft metallic feel
+    for (let i = 0; i < ambientCount; i++) {
+      const mat = new THREE.SpriteMaterial({
+        map: spriteTextureSmall,
+        color: new THREE.Color("#ffffff"),
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+        opacity: 0.9,
+        depthWrite: false,
+      });
+      const s = new THREE.Sprite(mat);
+      // Rozmieszczenie w formie kopuły (hemisfera) wokół środka sceny
+      const r = 30 + Math.random() * 40; // promień od środka (30..70)
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(Math.random());
+      const x = r * Math.sin(phi) * Math.cos(theta);
+      const y = r * Math.cos(phi);
+      const z = r * Math.sin(phi) * Math.sin(theta);
+      s.position.set(x, y, z);
+      // Limit scale so none become visually huge
+      const baseScale = 0.18 + Math.random() * 0.18; // 0.18 .. 0.36
+      s.scale.set(baseScale, baseScale, baseScale);
+      // Zapamiętaj bazową pozycję i parametry smooth ruchu (sinusoidalnie) oraz puls
+      const ambObj = {
+        sprite: s,
+        basePosition: s.position.clone(),
+        // slightly larger autonomous amplitudes so motion is visible
+        amp: new THREE.Vector3(
+          0.22 + Math.random() * 0.9,
+          0.12 + Math.random() * 0.5,
+          0.22 + Math.random() * 0.9
+        ),
+        // per-axis frequencies and phases for less correlated motion
+        freqX: 0.08 + Math.random() * 0.32,
+        freqY: 0.06 + Math.random() * 0.28,
+        freqZ: 0.08 + Math.random() * 0.32,
+        phaseX: Math.random() * Math.PI * 2,
+        phaseY: Math.random() * Math.PI * 2,
+        phaseZ: Math.random() * Math.PI * 2,
+        // random local wobble direction so particles don't all move same way
+        wobbleDir: new THREE.Vector3(
+          Math.random() * 2 - 1,
+          Math.random() * 2 - 1,
+          Math.random() * 2 - 1
+        ).normalize(),
+        baseScale,
+        // pulse scheduling: next pulse (seconds from start), duration and amplitude
+        pulseNext: Math.random() * 6 + 1, // first pulse after 1..7s
+        pulseDuration: 0.6 + Math.random() * 1.2, // 0.6..1.8s
+        pulseAmp: 0.06 + Math.random() * 0.24,
+        pulsing: false,
+        pulseStart: 0,
+      };
+      ambientParticles.push(ambObj);
+      // Ensure particles are not spawned too close to the camera
+      try {
+        const minCamDist = 35;
+        const camPos = camera.position.clone();
+        const d = ambObj.sprite.position.distanceTo(camPos);
+        if (d < minCamDist) {
+          const dir = ambObj.sprite.position.clone().sub(camPos).normalize();
+          ambObj.sprite.position.copy(
+            camPos.clone().add(dir.multiplyScalar(minCamDist))
+          );
+          ambObj.basePosition = ambObj.sprite.position.clone();
+        }
+      } catch (e) {}
+      ambientGroup.add(s);
+    }
+    scene.add(ambientGroup);
+
+    // === Particles: interactive (larger, follow mouse) ===
+    // Interactive particles now live on a sphere surrounding the scene center.
+    // We'll store each particle's base world position and then rotate the
+    // entire sphere (a quaternion) based on mouse yaw/pitch. This creates
+    // the effect of a spherical shell rotating toward the mouse, not a single
+    // flat ring.
+    const interactiveCount = 100;
+    const interactiveGroup = new THREE.Group();
+    const interactiveParticles = [];
+    // use true spheres (moderate segments for smooth reflections) so HDR env
+    // looks correct on the surface. Keep segments moderate for perf.
+    const interactiveGeom = new THREE.SphereGeometry(1.0, 12, 10);
+    for (let i = 0; i < interactiveCount; i++) {
+      const mat = new THREE.MeshStandardMaterial({
+        color: new THREE.Color("#ffffff"),
+        metalness: 1.0,
+        roughness: 0.06,
+        envMapIntensity: 1.6,
+      });
+      const m = new THREE.Mesh(interactiveGeom, mat);
+      // place on spherical shell radius 30..70
+      const r = 30 + Math.random() * 40;
+      const theta = Math.random() * Math.PI * 2; // azimuth
+      const phi = Math.acos(2 * Math.random() - 1); // inclination
+      const x = r * Math.sin(phi) * Math.cos(theta);
+      const y = r * Math.cos(phi);
+      const z = r * Math.sin(phi) * Math.sin(theta);
+      m.position.set(x, y, z);
+      const baseScale = 0.28 + Math.random() * 0.32; // smaller: 0.28 .. 0.6
+      m.scale.set(baseScale, baseScale, baseScale);
+      const intObj = {
+        mesh: m,
+        basePosition: m.position.clone(), // world-space base pos
+        baseScale,
+        // stronger autonomous amplitude so spheres move noticeably
+        amp: new THREE.Vector3(
+          0.28 + Math.random() * 0.9,
+          0.12 + Math.random() * 0.5,
+          0.28 + Math.random() * 0.9
+        ),
+        // per-axis frequencies/phases for unique autonomous motion (faster)
+        freqX: 0.08 + Math.random() * 0.36,
+        freqY: 0.06 + Math.random() * 0.3,
+        freqZ: 0.08 + Math.random() * 0.36,
+        phaseX: Math.random() * Math.PI * 2,
+        phaseY: Math.random() * Math.PI * 2,
+        phaseZ: Math.random() * Math.PI * 2,
+        // each particle has a slightly different wobble direction
+        wobbleDir: new THREE.Vector3(
+          Math.random() * 2 - 1,
+          Math.random() * 2 - 1,
+          Math.random() * 2 - 1
+        ).normalize(),
+        // pulse scheduling for interactive spheres as well
+        pulseNext: Math.random() * 5 + 0.8,
+        pulseDuration: 0.7 + Math.random() * 1.2,
+        pulseAmp: 0.08 + Math.random() * 0.22,
+        pulsing: false,
+        pulseStart: 0,
+      };
+      interactiveParticles.push(intObj);
+      try {
+        const minCamDistI = 35;
+        const camPosI = camera.position.clone();
+        const di = intObj.mesh.position.distanceTo(camPosI);
+        if (di < minCamDistI) {
+          const diri = intObj.mesh.position.clone().sub(camPosI).normalize();
+          intObj.mesh.position.copy(
+            camPosI.clone().add(diri.multiplyScalar(minCamDistI))
+          );
+          intObj.basePosition = intObj.mesh.position.clone();
+        }
+      } catch (e) {}
+      interactiveGroup.add(m);
+    }
+    scene.add(interactiveGroup);
+
+    // Sphere rotation state (smoothed)
+    const sphereRotation = {
+      currentYaw: 0,
+      currentPitch: 0,
+      targetYaw: 0,
+      targetPitch: 0,
+    };
+    // normalized mouse position (-1..1)
+    const mouseNorm = new THREE.Vector2(0, 0);
+    // previous normalized mouse (kept for potential speed measurement if needed)
+    // not used to apply immediate deltas — we set target from absolute mouse
+    // position and animate toward it with easing.
+    const prevMouseNorm = new THREE.Vector2(0, 0);
+    // Max yaw reduced by additional 30% per request: previously PI*0.5 (~90°),
+    // now 70% of that => PI*0.35 (~63°).
+    const MAX_YAW = Math.PI * 0.35; // ~63° max yaw
+    const MAX_PITCH = Math.PI * 0.28; // how far up/down the shell rotates
+
+    // === Mouse influence ===
+    const mouse = new THREE.Vector2(0, 0);
+    const mouseWorld = new THREE.Vector3();
+    const raycaster = new THREE.Raycaster();
+    const mousePlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0); // płaszczyzna Z=0
+    function onMouseMove(e) {
+      const rect = renderer.domElement.getBoundingClientRect();
+      const normX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      const normY = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+      // update shared mouse for raycasting use
+      mouse.x = normX;
+      mouse.y = normY;
+      raycaster.setFromCamera(mouse, camera);
+      raycaster.ray.intersectPlane(mousePlane, mouseWorld);
+
+      // Set normalized mouse state (authoritative). We set the target
+      // rotation from the absolute pointer position; animate() will smooth
+      // toward this target with an ease-in/out. This ensures movement
+      // duration matches user interaction while still easing at start/end.
+      mouseNorm.x = Math.max(-1, Math.min(1, normX));
+      mouseNorm.y = Math.max(-1, Math.min(1, normY));
+      sphereRotation.targetYaw = mouseNorm.x * MAX_YAW;
+      sphereRotation.targetPitch = mouseNorm.y * MAX_PITCH;
+      // store previous (for optional speed calculations)
+      prevMouseNorm.x = mouseNorm.x;
+      prevMouseNorm.y = mouseNorm.y;
+    }
+    renderer.domElement.addEventListener("mousemove", onMouseMove);
 
     // Handle resize
     function handleResize() {
@@ -433,6 +748,203 @@ export default function LogoAnimation({
     // --- ANIMACJA: renderuj tylko scenę ---
     const animate = () => {
       requestAnimationFrame(animate);
+      // Spotlight: pozycja przy kamerze bez wpływu rotacji (offset w osi świata)
+      const lightWorldPos = camera.position
+        .clone()
+        .add(new THREE.Vector3(0, 0.8, 0.2));
+      spotlight.position.copy(lightWorldPos);
+      // Cel: przed kamerą w kierunku patrzenia + lekko do góry
+      const forward = new THREE.Vector3();
+      camera.getWorldDirection(forward);
+      const targetWorld = camera.position
+        .clone()
+        .add(forward.multiplyScalar(8))
+        .add(new THREE.Vector3(0, 2.5, 0));
+      spotlightTarget.position.copy(targetWorld);
+      spotlightTarget.updateMatrixWorld();
+
+      // Kolista poświata: billboardowy sprite ustawiony w górnej części sceny
+      // Znacznie wyżej ponad górną krawędzią sceny i nieco dalej przed kamerą
+      const glowPos = camera.position
+        .clone()
+        .add(forward.clone().multiplyScalar(7))
+        .add(new THREE.Vector3(0, 22.0, 0));
+      glowSprite.position.copy(glowPos);
+      glowSprite.quaternion.copy(camera.quaternion);
+      glowPulse += 0.012;
+      // Jeszcze jaśniejsza poświata - texture ma silniejszy środek; utrzymujemy opacity na maksimum
+      let base = 1.0;
+      let pulse = Math.sin(glowPulse) * 0.06;
+      glowMat.opacity = Math.min(1.0, base + pulse);
+
+      // Ambient particles drift
+      // Ambient particles: smooth sinusoidal motion around basePosition (slower, smoother)
+      const t = performance.now() * 0.001;
+      for (const ap of ambientParticles) {
+        // per-axis independent wobble, projected along a per-particle wobbleDir
+        const wx = Math.sin(t * ap.freqX + ap.phaseX) * ap.amp.x;
+        const wy = Math.cos(t * ap.freqY + ap.phaseY) * ap.amp.y;
+        const wz = Math.sin(t * ap.freqZ + ap.phaseZ) * ap.amp.z;
+        const target = ap.basePosition
+          .clone()
+          .add(
+            new THREE.Vector3(
+              ap.wobbleDir.x * wx,
+              ap.wobbleDir.y * wy,
+              ap.wobbleDir.z * wz
+            )
+          );
+        if (ap.sprite) {
+          ap.sprite.position.copy(target);
+          // scheduled pulsing: occasional grow -> shrink with random pauses
+          const now = t;
+          if (!ap.pulsing && now >= (ap.pulseNext || 0)) {
+            ap.pulsing = true;
+            ap.pulseStart = now;
+            ap.pulseEnd = now + (ap.pulseDuration || 1.0);
+          }
+          let newScale = ap.baseScale;
+          if (ap.pulsing) {
+            const p = Math.max(
+              0,
+              Math.min(1, (now - ap.pulseStart) / (ap.pulseDuration || 1.0))
+            );
+            if (p >= 1) {
+              ap.pulsing = false;
+              // schedule next pulse with a random gap (2..8s)
+              ap.pulseNext = now + 2 + Math.random() * 6;
+            } else {
+              // ease-in-out grow then shrink: use full cosine cycle (0->0, 0.5->1, 1->0)
+              const ease = 0.5 - 0.5 * Math.cos(p * Math.PI * 2);
+              newScale = ap.baseScale * (1 + (ap.pulseAmp || 0.12) * ease);
+            }
+          }
+          ap.sprite.scale.set(newScale, newScale, newScale);
+        }
+      }
+
+      // Interactive particles placed on a spherical shell. We rotate the
+      // entire shell toward the mouse by building a quaternion from a
+      // smoothed yaw/pitch derived from the normalized mouse and applying
+      // it to each particle's base world position.
+      // Update sphereRotation targets based on normalized mouse (-1..1)
+      // targetYaw/targetPitch are set on mousemove handler (directional step);
+      // do not override them here so the shell holds after movement.
+      // Slower base smoothing (twice slower than previous). Apply an
+      // ease-in-out factor based on how far we are from the target so the
+      // motion accelerates when starting and decelerates near the target.
+      // Smooth toward the target with an ease-in/out whose speed scales
+      // with the distance to target. This keeps rotation duration roughly
+      // proportional to how far the mouse moved while providing a pleasant
+      // ease in/out at the start and end of the motion.
+      const yawTarget = sphereRotation.targetYaw;
+      const pitchTarget = sphereRotation.targetPitch;
+      const yawDiff2 = yawTarget - sphereRotation.currentYaw;
+      const pitchDiff2 = pitchTarget - sphereRotation.currentPitch;
+      // normalized distance 0..1
+      const yawNorm2 = Math.min(1, Math.abs(yawDiff2) / MAX_YAW);
+      const pitchNorm2 = Math.min(1, Math.abs(pitchDiff2) / MAX_PITCH);
+      // ease-in-out curve (cosine) applied to normalized distance
+      const yawEase2 = 0.5 - 0.5 * Math.cos(yawNorm2 * Math.PI);
+      const pitchEase2 = 0.5 - 0.5 * Math.cos(pitchNorm2 * Math.PI);
+      // dynamic lerp factor: base speed plus extra proportional to distance
+      // tuned so ease-out finishes somewhat faster
+      const BASE_SPEED = 0.09; // stronger base so easing finishes quicker
+      const EXTRA_SPEED = 1.8; // scales with normalized distance for responsiveness
+      const yawLerp = Math.min(
+        1,
+        (BASE_SPEED + EXTRA_SPEED * yawNorm2) * yawEase2
+      );
+      const pitchLerp = Math.min(
+        1,
+        (BASE_SPEED + EXTRA_SPEED * pitchNorm2) * pitchEase2
+      );
+      sphereRotation.currentYaw = THREE.MathUtils.lerp(
+        sphereRotation.currentYaw,
+        yawTarget,
+        yawLerp
+      );
+      sphereRotation.currentPitch = THREE.MathUtils.lerp(
+        sphereRotation.currentPitch,
+        pitchTarget,
+        pitchLerp
+      );
+      // hard clamp to allowed range
+      sphereRotation.currentYaw = Math.max(
+        -MAX_YAW,
+        Math.min(MAX_YAW, sphereRotation.currentYaw)
+      );
+      sphereRotation.currentPitch = Math.max(
+        -MAX_PITCH,
+        Math.min(MAX_PITCH, sphereRotation.currentPitch)
+      );
+
+      // build quaternion (rotate Y then X)
+      const euler = new THREE.Euler(
+        sphereRotation.currentPitch,
+        sphereRotation.currentYaw,
+        0,
+        "YXZ"
+      );
+      const rotQuat = new THREE.Quaternion().setFromEuler(euler);
+
+      const centerVec = sceneCenter
+        ? sceneCenter.clone()
+        : new THREE.Vector3(0, 0, 0);
+      for (const ip of interactiveParticles) {
+        // per-axis independent wobble, projected along each particle's
+        // wobbleDir so autonomous motion varies per particle
+        const wx = Math.sin(t * ip.freqX + ip.phaseX) * ip.amp.x;
+        const wy = Math.cos(t * ip.freqY + ip.phaseY) * ip.amp.y;
+        const wz = Math.sin(t * ip.freqZ + ip.phaseZ) * ip.amp.z;
+        const iox = ip.wobbleDir.x * wx;
+        const ioy = ip.wobbleDir.y * wy;
+        const ioz = ip.wobbleDir.z * wz;
+
+        // base position relative to center, rotated by the global quaternion
+        const rel = ip.basePosition.clone().sub(centerVec);
+        const rotated = rel.applyQuaternion(rotQuat);
+        const final = rotated
+          .add(new THREE.Vector3(iox, ioy, ioz))
+          .add(centerVec);
+
+        if (ip.mesh) {
+          ip.mesh.position.copy(final);
+          // scheduled pulsing for interactive spheres
+          const nowI = t;
+          if (!ip.pulsing && nowI >= (ip.pulseNext || 0)) {
+            ip.pulsing = true;
+            ip.pulseStart = nowI;
+            ip.pulseEnd = nowI + (ip.pulseDuration || 1.0);
+          }
+          let newScaleI = ip.baseScale;
+          if (ip.pulsing) {
+            const pI = Math.max(
+              0,
+              Math.min(1, (nowI - ip.pulseStart) / (ip.pulseDuration || 1.0))
+            );
+            if (pI >= 1) {
+              ip.pulsing = false;
+              ip.pulseNext = nowI + 2 + Math.random() * 6;
+            } else {
+              const easeI = 0.5 - 0.5 * Math.cos(pI * Math.PI * 2);
+              newScaleI = ip.baseScale * (1 + (ip.pulseAmp || 0.12) * easeI);
+            }
+          }
+          ip.mesh.scale.set(newScaleI, newScaleI, newScaleI);
+          // Clamp distance from center
+          const distFromCenter = new THREE.Vector3()
+            .subVectors(ip.mesh.position, centerVec)
+            .length();
+          if (distFromCenter > 200) {
+            const dir = ip.mesh.position.clone().sub(centerVec).normalize();
+            ip.mesh.position.copy(
+              centerVec.clone().add(dir.multiplyScalar(200))
+            );
+          }
+        }
+      }
+
       renderer.render(scene, camera);
     };
     animate();
@@ -441,6 +953,7 @@ export default function LogoAnimation({
       window.removeEventListener("resize", handleResize);
       ScrollTrigger.getAll().forEach((st) => st.kill());
       renderer.dispose();
+      renderer.domElement.removeEventListener("mousemove", onMouseMove);
       if (mount && mount.contains(renderer.domElement)) {
         mount.removeChild(renderer.domElement);
       }

@@ -1547,7 +1547,8 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   opacity: 1;
   transform-origin: right;
   animation: extraordinary-glow-shrink-width 3s cubic-bezier(0.19, 1, 0.22, 1)
-    forwards;
+      forwards,
+    extraordinary-white-dim-extra 0.1s linear 0s forwards;
   animation-fill-mode: forwards;
 }
 .extraordinary-animation-active-purple
@@ -1556,7 +1557,8 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   opacity: 1;
   transform-origin: left;
   animation: extraordinary-glow-shrink-width-bottom 3s
-    cubic-bezier(0.19, 1, 0.22, 1) forwards;
+      cubic-bezier(0.19, 1, 0.22, 1) forwards,
+    extraordinary-white-dim-extra 0.1s linear 0s forwards;
   animation-fill-mode: forwards;
 }
 .extraordinary-animation-active-purple
@@ -1565,7 +1567,8 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   opacity: 1;
   transform-origin: bottom;
   animation: extraordinary-glow-shrink-height 3s cubic-bezier(0.19, 1, 0.22, 1)
-    forwards;
+      forwards,
+    extraordinary-white-dim-extra 0.1s linear 0s forwards;
   animation-fill-mode: forwards;
 }
 .extraordinary-animation-active-purple
@@ -1574,8 +1577,19 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   opacity: 1;
   transform-origin: top;
   animation: extraordinary-glow-shrink-height-right 3s
-    cubic-bezier(0.19, 1, 0.22, 1) forwards;
+      cubic-bezier(0.19, 1, 0.22, 1) forwards,
+    extraordinary-white-dim-extra 0.1s linear 0s forwards;
   animation-fill-mode: forwards;
+}
+
+/* Extra quick dim for extraordinary white glows during purple phase: 0.6 -> 0.2 */
+@keyframes extraordinary-white-dim-extra {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 0.2;
+  }
 }
 
 /* === UNUSUAL ANIMATION (BORDER + GLOW) === */
@@ -1621,7 +1635,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-top: 2px solid #f2f2f2;
   border-radius: 3px 3px 0 0;
   box-shadow: none;
-  z-index: 10;
+  z-index: 9;
   transition: width 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
   transition-delay: 0s;
 }
@@ -1642,7 +1656,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-bottom: 2px solid #f2f2f2;
   border-radius: 0 0 3px 3px;
   box-shadow: none;
-  z-index: 10;
+  z-index: 9;
   transition: width 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
   transition-delay: 0s;
 }
@@ -1663,7 +1677,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-left: 2px solid #f2f2f2;
   border-radius: 3px 0 0 3px;
   box-shadow: none;
-  z-index: 10;
+  z-index: 9;
   transition: height 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
   transition-delay: 0s;
 }
@@ -1684,7 +1698,7 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-right: 2px solid #f2f2f2;
   border-radius: 0 3px 3px 0;
   box-shadow: none;
-  z-index: 10;
+  z-index: 9;
   transition: height 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
   transition-delay: 0s;
 }
@@ -1907,40 +1921,59 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 }
 
 .unusual-animation-wrapper:hover .unusual-animation-glow-top-white {
-  animation-delay: 1s !important;
+  /* start shrink animation after 1s; also run a very short opacity-dim
+     animation at 1s to quickly reduce white glow to 50% during purple phase */
   width: 100%;
   opacity: 1;
   transform-origin: right;
-  animation: unusual-glow-shrink-width 1s cubic-bezier(0.19, 1, 0.22, 1)
-    forwards;
+  animation: unusual-glow-shrink-width 1s cubic-bezier(0.19, 1, 0.22, 1) 1s
+      forwards,
+    unusual-white-dim 0.1s linear 1s forwards;
   animation-fill-mode: forwards;
 }
 .unusual-animation-wrapper:hover .unusual-animation-glow-bottom-white {
-  animation-delay: 1s !important;
+  /* start shrink animation after 1s; also run a very short opacity-dim
+     animation at 1s to quickly reduce white glow to 50% during purple phase */
   width: 100%;
   opacity: 1;
   transform-origin: left;
   animation: unusual-glow-shrink-width-bottom 1s cubic-bezier(0.19, 1, 0.22, 1)
-    forwards;
+      1s forwards,
+    unusual-white-dim 0.1s linear 1s forwards;
   animation-fill-mode: forwards;
 }
 .unusual-animation-wrapper:hover .unusual-animation-glow-left-white {
-  animation-delay: 1s !important;
+  /* start shrink animation after 1s; also run a very short opacity-dim
+     animation at 1s to quickly reduce white glow to 50% during purple phase */
   height: 100%;
   opacity: 1;
   transform-origin: bottom;
-  animation: unusual-glow-shrink-height 1s cubic-bezier(0.19, 1, 0.22, 1)
-    forwards;
+  animation: unusual-glow-shrink-height 1s cubic-bezier(0.19, 1, 0.22, 1) 1s
+      forwards,
+    unusual-white-dim 0.1s linear 1s forwards;
   animation-fill-mode: forwards;
 }
 .unusual-animation-wrapper:hover .unusual-animation-glow-right-white {
-  animation-delay: 1s !important;
+  /* start shrink animation after 1s; also run a very short opacity-dim
+     animation at 1s to quickly reduce white glow to 50% during purple phase */
   height: 100%;
   opacity: 1;
   transform-origin: top;
   animation: unusual-glow-shrink-height-right 1s cubic-bezier(0.19, 1, 0.22, 1)
-    forwards;
+      1s forwards,
+    unusual-white-dim 0.1s linear 1s forwards;
   animation-fill-mode: forwards;
+}
+
+/* Quick dim of white glow to 50% to soften transition when purple glow animates.
+   Runs at 1s delay (same time purple starts) and lasts 0.1s. */
+@keyframes unusual-white-dim {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 0.2;
+  }
 }
 
 /* --- UNUSUAL ANIMATION: animate out on mouse leave (not hover) --- */
