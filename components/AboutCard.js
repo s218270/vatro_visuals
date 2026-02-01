@@ -52,11 +52,11 @@ function AboutCard({ inView, omnieRef }) {
         isHardReset
           ? " extraordinary-animation-reset"
           : isResetting
-          ? ""
-          : `${whiteActive ? " extraordinary-animation-active" : ""}${
-              purpleActive ? " extraordinary-animation-active-purple" : ""
-            }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
-      } glassmorphism w-full flex flex-col`}
+            ? ""
+            : `${whiteActive ? " extraordinary-animation-active" : ""}${
+                purpleActive ? " extraordinary-animation-active-purple" : ""
+              }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
+      } glassmorphism w-full flex flex-col flex-1`}
       style={{
         position: "relative",
         borderRadius: 3,
@@ -70,20 +70,18 @@ function AboutCard({ inView, omnieRef }) {
               ? "translateX(0)"
               : "translateX(80px)"
             : inView
-            ? "translateX(0)"
-            : "translateX(60px)",
+              ? "translateX(0)"
+              : "translateX(60px)",
       }}
     >
       <h2
-        className={inView ? "appear text-[48px] lg:text-[72px]" : ""}
+        className={`${inView ? "appear " : ""}text-[48px] lg:text-[72px] mt-0 lg:mt-5`}
         style={{
           margin: 0,
           opacity: 1,
-          marginTop: 20,
           marginLeft: 35,
           marginBottom: 10,
           padding: 0,
-          //   fontSize: "72px",
           color: "#f2f2f2",
           textAlign: "left",
         }}
@@ -96,7 +94,7 @@ function AboutCard({ inView, omnieRef }) {
         }}
       >
         <p
-          className={`about-card-text text-base sm:text-xl md:text-lg lg:text-base xl:text-2xl bg-transparent font-lexend font-light text-[#f2f2f2] px-8 py-8 w-full overflow-auto ${
+          className={`about-card-text text-base sm:text-xl md:text-lg lg:text-base xl:text-2xl bg-transparent font-lexend font-light text-[#f2f2f2] px-8 py-8 w-full ${
             inView ? "appear" : ""
           }`}
           style={{

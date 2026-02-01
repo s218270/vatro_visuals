@@ -85,7 +85,7 @@ export default function Home() {
             purple.classList.remove("glitch-out");
             purple.classList.add("glitch-done");
           },
-          { once: true }
+          { once: true },
         );
       };
 
@@ -169,7 +169,7 @@ export default function Home() {
     if (typeof window !== "undefined") {
       const checkMobile = () => {
         setIsMobile(
-          window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent)
+          window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent),
         );
       };
       checkMobile();
@@ -209,6 +209,35 @@ export default function Home() {
     ) {
       setIsIOS(true);
     }
+  }, []);
+
+  // Stabilizuj jednostkę vh na urządzeniach mobilnych.
+  // Ustawia --vh = 1% wysokości okna, używaj w CSS: height: calc(var(--vh) * 100)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    function setVh() {
+      try {
+        document.documentElement.style.setProperty(
+          "--vh",
+          `${window.innerHeight * 0.01}px`,
+        );
+      } catch (e) {
+        // ignore
+      }
+    }
+    setVh();
+    let t = null;
+    function onResize() {
+      clearTimeout(t);
+      t = setTimeout(setVh, 100);
+    }
+    window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
+    };
   }, []);
 
   return (

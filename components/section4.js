@@ -4,6 +4,7 @@ import { getProjects } from "../lib/getProjects";
 import Link from "next/link";
 import { useInView } from "react-intersection-observer";
 import GlitchButton from "./GlitchButton";
+import PreventDownloadWrapper from "./PreventDownloadWrapper";
 
 export default function Section4({ scrollToSection }) {
   const [activeIndex, setActiveIndex] = useState(1);
@@ -72,7 +73,8 @@ export default function Section4({ scrollToSection }) {
 
   useEffect(() => {
     projects.forEach((project, i) => {
-      const imageUrl = getImageUrl(project?.mainImage);
+      // preload carousel thumbnail (use `thumbnail` field)
+      const imageUrl = getImageUrl(project?.thumbnail);
       if (imageUrl && !loaded[i]) {
         const img = new window.Image();
         img.onload = () => handleImageLoad(i);
@@ -114,11 +116,26 @@ export default function Section4({ scrollToSection }) {
   // Fetch projects from Firestore
   useEffect(() => {
     async function fetchData() {
-      const data = await getProjects();
-      setProjects(data);
+      // limit carousel dataset to keep homepage light
+      const data = await getProjects({ limit: 12 });
+      const sorted = sortProjectsByPriority(data);
+      setProjects(sorted);
     }
     fetchData();
   }, []);
+
+  // Sort helper: projects with numeric `priority` first (ascending), then others
+  function sortProjectsByPriority(list) {
+    if (!Array.isArray(list)) return list;
+    const withPriority = [];
+    const withoutPriority = [];
+    for (const item of list) {
+      if (typeof item.priority === "number") withPriority.push(item);
+      else withoutPriority.push(item);
+    }
+    withPriority.sort((a, b) => a.priority - b.priority);
+    return [...withPriority, ...withoutPriority];
+  }
 
   // Helper to get image url from mainImage
   function getImageUrl(mainImage) {
@@ -136,7 +153,7 @@ export default function Section4({ scrollToSection }) {
       }
       if (bucket && path) {
         let url = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(
-          path
+          path,
         )}?alt=media`;
         if (mainImage.token) {
           url += `&token=${mainImage.token}`;
@@ -177,58 +194,12 @@ export default function Section4({ scrollToSection }) {
     }
   }, [hoveredIndex, activeIndex, projects, visibleCount, getCenteredItemIndex]);
 
-  // Reset animation on view entry for carousel cards
-  //   useEffect(() => {
-  //     if (carouselInView) {
-  //       borderRefs.current.forEach((el) => {
-  //         if (el) resetBorderAnimation({ current: el });
-  //       });
-  //     }
-  //   }, [carouselInView]);
-
   // Reset animation on hover for nav buttons
   function handleNavButtonMouseEnter(idx) {
     if (navButtonRefs.current[idx]) {
       resetBorderAnimation({ current: navButtonRefs.current[idx] });
     }
   }
-
-  // Responsywność: liczba widocznych elementów
-  //   useEffect(() => {
-  //     function updateVisibleCount() {
-  //       if (window.innerWidth <= 768) {
-  //         setVisibleCount(1);
-  //       } else if (window.innerWidth <= 1024) {
-  //         setVisibleCount(2);
-  //       } else {
-  //         setVisibleCount(3);
-  //       }
-  //     }
-  //     updateVisibleCount();
-  //     window.addEventListener("resize", updateVisibleCount);
-  //     return () => window.removeEventListener("resize", updateVisibleCount);
-  //   }, []);
-
-  // --- INFINITE CAROUSEL: BEZ PRZESKOKÓW, MODULO, Z BUFOREM ---
-  // Renderujemy widoczne sloty + bufor (2 przed i 2 po)
-
-  // Startowy index
-  //   useEffect(() => {
-  //     setActiveIndex(0);
-  //   }, [visibleCount, projects.length]);
-
-  // Ustaw sloty na start i po każdej zmianie activeIndex
-  //   useEffect(() => {
-  //     if (projects.length === 0) return;
-  //     const total = projects.length;
-  //     const count = Math.min(total, visibleCount);
-  //     // Wylicz indeksy: [activeIndex-buffer, ..., activeIndex+count+buffer-1]
-  //     const arr = [];
-  //     for (let i = -buffer; i < count + buffer; i++) {
-  //       arr.push((activeIndex + i + total) % total);
-  //     }
-  //     setDisplayed(arr);
-  //   }, [projects.length, visibleCount, activeIndex]);
 
   const handlePrev = () => {
     if (isTransitioning) return;
@@ -299,37 +270,6 @@ export default function Section4({ scrollToSection }) {
     // eslint-disable-next-line
   }, [projects.length, isTransitioning, visibleCount]);
 
-  // Animacja przesuwania wrappera o szerokość jednego widocznego slotu (płynnie)
-  //   useEffect(() => {
-  //     if (!isTransitioning || !slideDirection) return;
-  //     if (!carouselRef.current) return;
-  //     const wrapper = carouselRef.current;
-  //     const count = Math.min(projects.length, visibleCount);
-  //     const shift = 100 / count; // szerokość jednego widocznego slotu
-  //     wrapper.style.transition = "transform 1.2s cubic-bezier(0.4,0,0.2,1)";
-  //     wrapper.style.transform =
-  //       slideDirection === "next"
-  //         ? `translateX(-${shift}%)`
-  //         : `translateX(${shift}%)`;
-
-  //     const handle = () => {
-  //       wrapper.style.transition = "none";
-  //       wrapper.style.transform = "translateX(0)";
-  //       setIsTransitioning(false);
-  //       setSlideDirection(null);
-  //       setActiveIndex((prev) => {
-  //         if (slideDirection === "next") {
-  //           return (prev + 1) % projects.length;
-  //         } else {
-  //           return (prev - 1 + projects.length) % projects.length;
-  //         }
-  //       });
-  //       wrapper.removeEventListener("transitionend", handle);
-  //     };
-  //     wrapper.addEventListener("transitionend", handle);
-  //     // eslint-disable-next-line
-  //   }, [isTransitioning, slideDirection]);
-
   // Calculate centered item index (musi być przed JSX!)
   function getCenteredItemIndex() {
     return Math.floor(visibleCount / 2);
@@ -349,20 +289,6 @@ export default function Section4({ scrollToSection }) {
     });
   }
 
-  // Ładowanie obrazków dla slotów karuzeli (każdy slot, także buforowy)
-  //   useEffect(() => {
-  //     displayed.forEach((idx, i) => {
-  //       const imageUrl = getImageUrl(projects[idx]?.mainImage);
-  //       if (imageUrl && !loaded[i]) {
-  //         const img = new window.Image();
-  //         img.onload = () => handleImageLoad(i);
-  //         img.onerror = () => handleImageLoad(i);
-  //         img.src = imageUrl;
-  //       }
-  //     });
-  //     // eslint-disable-next-line
-  //   }, [displayed, projects, loaded]);
-
   // Funkcja detekcji iOS
   function isIOS() {
     if (typeof window === "undefined") return false;
@@ -376,7 +302,7 @@ export default function Section4({ scrollToSection }) {
     <section
       id="section4"
       ref={carouselInViewRef}
-      className="h-screen w-full flex flex-col items-center justify-center relative bg-[#080808] z-10 overflow-hidden"
+      className="min-h-screen w-full flex flex-col items-center justify-center relative bg-[#080808] z-10 overflow-hidden py-[150px]"
     >
       {/* Tło video */}
       <video
@@ -433,105 +359,14 @@ export default function Section4({ scrollToSection }) {
           filter: "blur(6px)",
         }}
       />
-      <div className="z-50">
-        <h1 className="text-[#f2f2f2] text-[48px] lg:text-[72px] left-0 absolute top-16 w-full text-center justify-center">
+      <div className="z-50 w-full flex flex-col items-center justify-center">
+        <h1 className="text-[#f2f2f2] text-[48px] lg:text-[72px] w-full text-center mb-8">
           Projekty
         </h1>
 
         {/* Carousel Container */}
-        <div
-          className="w-full max-w-6xl mx-auto absolute"
-          style={{
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}
-        >
-          {/* Przyciski nawigacji pod karuzelą - tylko 2! */}
-          <div
-            style={{
-              position: "absolute",
-              // bottom: "calc(50rem + 24px)", // tuż nad karuzelą
-              left:
-                typeof window !== "undefined" && window.innerWidth < 550
-                  ? 50
-                  : 20,
-              // top: 96,
-              marginTop: "384px",
-              zIndex: 30,
-            }}
-          >
-            <GlitchButton
-              onClick={handlePrev}
-              text={
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="w-6 h-6 text-[#f2f2f2]"
-                  style={{ transform: "rotate(90deg)" }}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              }
-            />
-          </div>
-          <div
-            style={{
-              position: "absolute",
-              // bottom: "calc(50rem + 24px)", // tuż nad karuzelą
-              right:
-                typeof window !== "undefined" && window.innerWidth < 550
-                  ? 50
-                  : 20,
-              marginTop: "384px",
-              zIndex: 30,
-            }}
-          >
-            <GlitchButton
-              onClick={handleNext}
-              text={
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="w-6 h-6 text-[#f2f2f2]"
-                  style={{ transform: "rotate(-90deg)" }}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              }
-            />
-          </div>
-
-          {/* --- STARA KARUZELA ZAKOMENTOWANA --- */}
-          {/*
-        <div
-          ref={carouselRef}
-          className="flex"
-          style={{
-            width: "100%", // wrapper zawsze 100% szerokości kontenera
-            // transform i transition obsługiwane przez useEffect
-          }}
-        >
-          {displayed.map((idx, i) => {
-            // ...stary kod mapowania slotów...
-          })}
-        </div>
-        */}
+        <div className="w-full max-w-6xl mx-auto relative flex flex-col items-center">
+          {/* Navigation buttons will sit below the carousel in normal flow */}
 
           {/* --- NOWA KARUZELA --- */}
           <div
@@ -545,7 +380,8 @@ export default function Section4({ scrollToSection }) {
           >
             {projects.map((project, i) => {
               if (!project) return null;
-              const imageUrl = getImageUrl(project.mainImage);
+              // use thumbnail for carousel card thumbnail
+              const imageUrl = getImageUrl(project.thumbnail);
               const pos = getItemPosition(i);
               // Always render leftmost and rightmost invisible elements for smooth transitions
               const isVisible = pos >= 0 && pos < visibleCount;
@@ -583,10 +419,10 @@ export default function Section4({ scrollToSection }) {
                     zIndex: isVisible
                       ? 10
                       : isLeftHidden
-                      ? 5
-                      : isRightHidden
-                      ? 5
-                      : 1,
+                        ? 5
+                        : isRightHidden
+                          ? 5
+                          : 1,
                     padding: "1rem",
                     boxSizing: "border-box",
                     transform: `translateX(${slotWidth * pos}%)`,
@@ -599,8 +435,8 @@ export default function Section4({ scrollToSection }) {
                         projects[
                           (activeIndex + getCenteredItemIndex()) %
                             projects.length
-                        ]?.mainImage
-                      ) || ""
+                        ]?.mainImage,
+                      ) || "",
                     );
                   }}
                 >
@@ -686,13 +522,13 @@ export default function Section4({ scrollToSection }) {
                           </div>
                         )}
 
-                        <div
+                        <PreventDownloadWrapper
                           className="w-full h-full flex flex-col items-center justify-center overflow-hidden cursor-pointer transition-all duration-200"
                           style={{
-                            backgroundImage: getImageUrl(project.mainImage)
-                              ? `url(${getImageUrl(project.mainImage)})`
+                            backgroundImage: getImageUrl(project.thumbnail)
+                              ? `url(${getImageUrl(project.thumbnail)})`
                               : undefined,
-                            backgroundColor: getImageUrl(project.mainImage)
+                            backgroundColor: getImageUrl(project.thumbnail)
                               ? undefined
                               : "#222",
                             backgroundSize: "cover",
@@ -728,7 +564,7 @@ export default function Section4({ scrollToSection }) {
                             {project.shortDescription}
                           </div>
                           {/* DEBUG: pokaż URL jeśli nie ma obrazka */}
-                          {!getImageUrl(project.mainImage) && (
+                          {!getImageUrl(project.thumbnail) && (
                             <span
                               style={{
                                 color: "red",
@@ -744,10 +580,10 @@ export default function Section4({ scrollToSection }) {
                             >
                               brak obrazka
                               <br />
-                              {JSON.stringify(project.mainImage)}
+                              {JSON.stringify(project.thumbnail)}
                             </span>
                           )}
-                        </div>
+                        </PreventDownloadWrapper>
                       </div>
                     </GlitchButton>
                   </Link>
@@ -756,16 +592,56 @@ export default function Section4({ scrollToSection }) {
             })}
           </div>
 
-          {/* See All Link - styled and placed directly below carousel */}
-          <div
-            className="w-full flex justify-center items-center mt-96 absolute z-20 h-32"
-            style={{
-              marginTop:
-                typeof window !== "undefined" && window.innerWidth < 550
-                  ? "536px"
-                  : "384px",
-            }}
-          >
+          {/* Nav buttons for carousel (normal flow) */}
+          <div className="w-full max-w-6xl mx-auto flex justify-between items-center mt-6 z-30">
+            <div>
+              <GlitchButton
+                onClick={handlePrev}
+                text={
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    className="w-6 h-6 text-[#f2f2f2]"
+                    style={{ transform: "rotate(90deg)" }}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                }
+              />
+            </div>
+            <div>
+              <GlitchButton
+                onClick={handleNext}
+                text={
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    className="w-6 h-6 text-[#f2f2f2]"
+                    style={{ transform: "rotate(-90deg)" }}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                }
+              />
+            </div>
+          </div>
+
+          {/* See All Link - styled and placed directly below carousel (normal flow) */}
+          <div className="w-full flex justify-center items-center mt-8 z-20 h-32">
             <GlitchButton
               styles={{
                 padding: "0",
@@ -790,33 +666,34 @@ export default function Section4({ scrollToSection }) {
             />
           </div>
 
-          {/* Section Navigation Buttons */}
-          <div
-            className="flex flex-col items-center gap-4 absolute z-30 bottom-10 left-1/2"
-            style={{ transform: "translateX(-50%)" }}
-          >
-            <GlitchButton
-              onClick={() => scrollToSection("section5")}
-              text={
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="w-6 h-6 text-[#f2f2f2]"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              }
-            />
-            {/* Scroll to section3 button (upwards) */}
-          </div>
+          {/* Section Navigation Buttons moved to bottom of section (see later) */}
         </div>
+      </div>
+
+      {/* Section Navigation Buttons: pinned to section bottom */}
+      <div
+        className="flex flex-col items-center gap-4 absolute z-50"
+        style={{ left: "50%", bottom: 40, transform: "translateX(-50%)" }}
+      >
+        <GlitchButton
+          onClick={() => scrollToSection("section5")}
+          text={
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="2"
+              stroke="currentColor"
+              className="w-6 h-6 text-[#f2f2f2]"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          }
+        />
       </div>
     </section>
   );

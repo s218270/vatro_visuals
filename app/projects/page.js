@@ -5,40 +5,50 @@ import Image from "next/image";
 import Link from "next/link";
 import "./fadein.css";
 import GlitchButton from "@/components/GlitchButton";
+import PreventDownloadWrapper from "@/components/PreventDownloadWrapper";
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState([]);
-  const [hoveredIndex, setHoveredIndex] = useState(null);
   const [loaded, setLoaded] = useState([]);
-  const borderRefs = useRef([]);
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getProjects();
-      setProjects(data);
-      setLoaded(Array(data.length).fill(false));
+      // limit to 100 items to avoid fetching huge payloads at once
+      const data = await getProjects({ limit: 100 });
+      const sorted = sortProjectsByPriority(data);
+      setProjects(sorted);
+      setLoaded(Array(sorted.length).fill(false));
     }
     fetchData();
   }, []);
 
-  //   function resetBorderAnimation(ref) {
-  //     if (!ref?.current) return;
-  //     ref.current.classList.remove("animate-in");
-  //     void ref.current.offsetWidth;
-  //     requestAnimationFrame(() => {
-  //       ref.current.classList.add("animate-in");
-  //     });
-  //   }
+  // Helper to resolve thumbnail/mainImage storage refs to usable URLs
+  function resolveImageRef(img) {
+    if (!img) return null;
+    if (typeof img === "string") return img;
+    if (img.referencePath) {
+      if (img.referencePath.startsWith("http")) return img.referencePath;
+      const fileName = img.referencePath.split("/").pop();
+      const bucketHost = "vatrovisuals-5eb95.appspot.com";
+      return `https://firebasestorage.googleapis.com/v0/b/${bucketHost}/o/${encodeURIComponent(
+        fileName,
+      )}?alt=media${img.token ? `&token=${img.token}` : ""}`;
+    }
+    return null;
+  }
 
-  //   function handleCardMouseEnter(idx) {
-  //     setHoveredIndex(idx);
-  //     if (borderRefs.current[idx]) {
-  //       resetBorderAnimation({ current: borderRefs.current[idx] });
-  //     }
-  //   }
-  //   function handleCardMouseLeave() {
-  //     setHoveredIndex(null);
-  //   }
+  // Sort helper: projects with numeric `priority` first (ascending), then others
+  function sortProjectsByPriority(list) {
+    if (!Array.isArray(list)) return list;
+    const withPriority = [];
+    const withoutPriority = [];
+    for (const item of list) {
+      if (typeof item.priority === "number") withPriority.push(item);
+      else withoutPriority.push(item);
+    }
+    withPriority.sort((a, b) => a.priority - b.priority);
+    return [...withPriority, ...withoutPriority];
+  }
 
   function isIOS() {
     if (typeof window === "undefined") return false;
@@ -153,18 +163,25 @@ export default function ProjectsPage() {
                         <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
                       </div>
                     )}
-                    {project.mainImage && (
-                      <Image
-                        src={project.mainImage}
-                        alt={project.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        onLoad={() => handleImageLoad(idx)}
-                        onError={() => handleImageLoad(idx)}
-                        style={{ borderRadius: "inherit" }}
-                      />
-                    )}
+                    {(() => {
+                      const thumbSrc = resolveImageRef(
+                        project.thumbnail || project.mainImage,
+                      );
+                      return thumbSrc ? (
+                        <PreventDownloadWrapper className="w-full h-full">
+                          <Image
+                            src={thumbSrc}
+                            alt={project.title}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            onLoad={() => handleImageLoad(idx)}
+                            onError={() => handleImageLoad(idx)}
+                            style={{ borderRadius: "inherit" }}
+                          />
+                        </PreventDownloadWrapper>
+                      ) : null;
+                    })()}
                   </div>
                   <div className="p-4 bg-[#080808]/60 backdrop-blur-sm rounded-b-[3px] w-full">
                     <h2 className="text-xl mb-2 text-[#f2f2f2]">
@@ -177,92 +194,6 @@ export default function ProjectsPage() {
                 </div>
               </Link>
             </GlitchButton>
-            {/* <Link
-              href={`/projects/${project.id}`}
-              className="block h-full"
-              style={{ height: "100%" }}
-              onMouseEnter={() => handleCardMouseEnter(idx)}
-              onMouseLeave={handleCardMouseLeave}
-            >
-              <div
-                ref={(el) => (borderRefs.current[idx] = el)}
-                className={`button-border-scroll glassmorphism w-full h-64 flex flex-col justify-end relative transition-all duration-200 group-hover:scale-105 origin-bottom animate-in${
-                  hoveredIndex === idx ? " active" : ""
-                } animate-fade-in`}
-                style={{
-                  borderRadius: 3,
-                  minHeight: 0,
-                  minWidth: 0,
-                  padding: 0,
-                  animationDelay: `${idx * 80}ms`,
-                  animationFillMode: "both",
-                }}
-              >
-                <div className="relative w-full h-2/3">
-                  {!loaded[idx] && (
-                    <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-black/60">
-                      {typeof window !== "undefined" && isIOS() ? (
-                        <div
-                          style={{
-                            width: 48,
-                            height: 48,
-                            border: "6px solid #a259f7",
-                            borderTop: "6px solid #fff",
-                            borderRadius: "50%",
-                            animation: "spin 1.2s linear infinite",
-                          }}
-                        />
-                      ) : (
-                        <video
-                          src="/Loading_WWW.webm"
-                          autoPlay
-                          loop
-                          muted
-                          style={{
-                            width: 48,
-                            height: 48,
-                            objectFit: "contain",
-                            animation: "spin 1.2s linear infinite",
-                            background: "none",
-                          }}
-                        />
-                      )}
-                      <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
-                    </div>
-                  )}
-                  {project.mainImage && (
-                    <Image
-                      src={project.mainImage}
-                      alt={project.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      onLoad={() => handleImageLoad(idx)}
-                      onError={() => handleImageLoad(idx)}
-                      style={{ borderRadius: "inherit" }}
-                    />
-                  )}
-                </div>
-                <div className="p-4 bg-black/60 backdrop-blur-sm rounded-b-[3px] w-full">
-                  <h2 className="text-xl font-bold mb-2 text-white">
-                    {project.title}
-                  </h2>
-                  <p className="text-gray-300">{project.shortDescription}</p>
-                </div>
-                <div className="border-line border-white-1"></div>
-                <div className="border-line border-white-2"></div>
-                <div className="border-white-glow-top"></div>
-                <div className="border-white-glow-right"></div>
-                <div className="border-white-glow-bottom"></div>
-                <div className="border-white-glow-left"></div>
-                <div className="border-line border-purple-1"></div>
-                <div className="border-line border-purple-2"></div>
-                <div className="border-purple-glow-top"></div>
-                <div className="border-purple-glow-right"></div>
-                <div className="border-purple-glow-bottom"></div>
-                <div className="border-purple-glow-left"></div>
-              </div>
-            </Link> */}
           </div>
         ))}
       </div>

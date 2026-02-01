@@ -1,7 +1,5 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import ToolsList from "./ToolsList";
-import AnimatedText from "./AnimatedText";
 import useInView from "../lib/useInView";
 import InfiniteScrollSVGLine from "./InfiniteScrollSVGLine";
 import ImageCard from "./ImageCard";
@@ -103,6 +101,12 @@ export default function Section3({ speed, scrollToSection }) {
       // ignore and use fallback
       gap = 48;
     }
+    // Ensure the content container gap matches the computed gap (keeps spacing consistent when stacked)
+    try {
+      contentRef.current.style.gap = `${gap}px`;
+    } catch (e) {
+      // ignore
+    }
 
     function applyPositioning() {
       const vw = window.innerWidth;
@@ -140,33 +144,27 @@ export default function Section3({ speed, scrollToSection }) {
       const leftWidth = leftEl.getBoundingClientRect().width;
       const rightWidth = rightEl.getBoundingClientRect().width;
 
-      // viewport center
-      const centerX = vw / 2;
+      // center the whole content block inside the content container
+      // compute a start X so that left + leftWidth + gap + rightWidth is centered inside contentRect
+      const totalColsWidth = leftWidth + gap + rightWidth;
+      const startX = Math.max(0, (contentRect.width - totalColsWidth) / 2);
 
-      // compute left column left position so that (left + leftWidth + gap/2) == centerX
-      const desiredLeftPageX = centerX - leftWidth - gap / 2;
-      const desiredRightPageX = centerX + gap / 2;
+      // positions relative to content container
+      const leftRel = startX;
+      const rightRel = startX + leftWidth + gap;
 
-      // compute positions relative to content container
-      const contentLeft = contentRect.left + window.scrollX;
-      const leftRel = desiredLeftPageX - contentRect.left;
-      const rightRel = desiredRightPageX - contentRect.left;
-
-      // compute available width for right column inside content based on left column position
-      const leftRelClamped = Math.max(leftRel, 0);
-      // remaining space after left column and gap
-      const remaining =
-        contentRect.width - (leftRelClamped + leftWidth + gap) - 16;
-      const availableWidth = Math.max(300, remaining); // enforce a larger min width to prevent overflow
+      // compute available width for right column inside content based on centered startX
+      const remaining = contentRect.width - (rightRel + rightWidth) - 16;
+      const availableWidth = Math.max(300, rightWidth + remaining); // ensure at least current rightWidth
 
       // Apply absolute positioning
       leftEl.style.position = "absolute";
-      leftEl.style.top = "0";
+      leftEl.style.top = "50%";
       leftEl.style.left = `${Math.max(leftRel, 0)}px`;
-      leftEl.style.transform = "none";
+      leftEl.style.transform = "translateY(-50%)";
 
       rightEl.style.position = "absolute";
-      rightEl.style.top = "0";
+      rightEl.style.top = "50%";
       rightEl.style.left = `${Math.max(rightRel, 0)}px`;
       // constrain right column width so it fits into the content container
       rightEl.style.boxSizing = "border-box";
@@ -194,11 +192,13 @@ export default function Section3({ speed, scrollToSection }) {
       rightEl.style.flexDirection = "column";
       rightEl.style.gap = `${gap}px`;
 
-      // Ensure right column matches left column height (so the gap between About and Tools is stable)
+      // Ensure right column aligns visually with left column where possible,
+      // but do NOT force fixed heights — allow the section to grow with content.
       try {
         const leftHeight = leftEl.getBoundingClientRect().height;
-        rightEl.style.height = `${leftHeight}px`;
-        rightEl.style.maxHeight = `${leftHeight}px`;
+        // Optionally we could limit right column max-height to viewport,
+        // but avoid forcing exact height which causes clipping on small screens.
+        // rightEl.style.maxHeight = `${Math.min(leftHeight, window.innerHeight * 0.85)}px`;
       } catch (e) {
         // ignore
       }
@@ -210,7 +210,9 @@ export default function Section3({ speed, scrollToSection }) {
         if (aboutEl) {
           aboutEl.style.flex = "1 1 auto";
           aboutEl.style.minHeight = "0"; // allow it to shrink properly
-          aboutEl.style.overflow = "hidden";
+          // Do NOT force overflow:hidden here — allow AboutCard to expand vertically
+          // so the section can grow with its content on short viewports.
+          aboutEl.style.overflow = "";
         }
         if (toolsEl) {
           // keep tools fixed height (already inline in JSX), but ensure it doesn't stretch
@@ -227,63 +229,92 @@ export default function Section3({ speed, scrollToSection }) {
         if (aboutP) {
           aboutP.style.wordBreak = "break-word";
           aboutP.style.overflowWrap = "break-word";
-          // read current computed font-size (px)
-          const cs = getComputedStyle(aboutP);
-          let current = parseFloat(cs.fontSize.replace("px", "")) || 16;
-          const minPx = 14; // minimum font size in px
-          let iter2 = 0;
-          function aboutFits() {
-            // check p width and height against the AboutCard area (first child of rightEl)
-            const aboutArea = rightEl.children && rightEl.children[0];
-            if (!aboutArea) return true;
-            return (
-              aboutP.scrollWidth <= aboutArea.clientWidth + 1 &&
-              aboutP.scrollHeight <= aboutArea.clientHeight + 1
-            );
-          }
-          // Reset any previous inline font-size to start fresh (but preserve rightEl size tweak)
-          aboutP.style.fontSize = "";
-          // If it doesn't fit, reduce stepwise
-          while (!aboutFits() && iter2 < 10 && current > minPx) {
-            iter2++;
-            current = Math.max(minPx, current * 0.94);
-            aboutP.style.fontSize = `${current}px`;
+          // Only perform iterative font-size shrinking on sufficiently tall viewports.
+          // On short viewports shrinking causes content to be visually truncated.
+          if (window.innerHeight >= 1000) {
+            // read current computed font-size (px)
+            const cs = getComputedStyle(aboutP);
+            let current = parseFloat(cs.fontSize.replace("px", "")) || 16;
+            const minPx = 14; // minimum font size in px
+            let iter2 = 0;
+            function aboutFits() {
+              // check p width and height against the AboutCard area (first child of rightEl)
+              const aboutArea = rightEl.children && rightEl.children[0];
+              if (!aboutArea) return true;
+              return (
+                aboutP.scrollWidth <= aboutArea.clientWidth + 1 &&
+                aboutP.scrollHeight <= aboutArea.clientHeight + 1
+              );
+            }
+            // Reset any previous inline font-size to start fresh (but preserve rightEl size tweak)
+            aboutP.style.fontSize = "";
+            // If it doesn't fit, reduce stepwise
+            while (!aboutFits() && iter2 < 10 && current > minPx) {
+              iter2++;
+              current = Math.max(minPx, current * 0.94);
+              aboutP.style.fontSize = `${current}px`;
+            }
+          } else {
+            // On short viewports, ensure we don't keep an inline font-size that would shrink text.
+            aboutP.style.fontSize = "";
           }
         }
       } catch (e) {
         // ignore errors
       }
-      rightEl.style.transform = "none";
+      rightEl.style.transform = "translateY(-50%)";
 
       // ensure content wrapper is tall enough to contain absolute children
-      const desiredHeight = leftEl.getBoundingClientRect().height;
-      // set the content height to match the left column (which is the image column)
-      contentRef.current.style.height = `${desiredHeight}px`;
-
-      // If right column overflows, gently reduce font-size (only on desktop)
-      // so content fits into availableWidth/desiredHeight. Clamp minimum font-size.
-      const minFont = 0.85; // rem
-      const maxIterations = 8;
-      let iter = 0;
-      function fits() {
-        return (
-          rightEl.scrollWidth <= rightEl.clientWidth + 1 &&
-          rightEl.scrollHeight <= rightEl.clientHeight + 1
-        );
+      // Use minHeight instead of fixed height so the section can grow if children are taller.
+      // Set minHeight to the max of left and right column heights so the section
+      // expands whenever any column + margins is larger than the current size.
+      try {
+        const leftH = leftEl.getBoundingClientRect().height;
+        const rightH = rightEl.getBoundingClientRect().height;
+        // content area height should be the taller column; padding moved to outer section
+        const desiredInner = Math.max(leftH, rightH);
+        const desiredHeight = Math.max(600, desiredInner); // keep floor but no added padding here
+        contentRef.current.style.minHeight = `${desiredHeight}px`;
+        // Ensure the outer section wrapper grows to contain the content + vertical padding (150px top + 150px bottom)
+        if (containerRef && containerRef.current) {
+          try {
+            const contentH = contentRef.current.getBoundingClientRect().height;
+            const minH = Math.max(window.innerHeight || 0, contentH + 300); // add 300px for section padding
+            containerRef.current.style.minHeight = `${minH}px`;
+          } catch (e) {
+            // ignore
+          }
+        }
+      } catch (e) {
+        // ignore
       }
-      // read current font-size in rem-ish (assume 16px base)
-      let currentFont = parseFloat(
-        getComputedStyle(rightEl).fontSize.replace("px", "")
-      );
-      const basePx = 16;
-      while (!fits() && iter < maxIterations) {
-        iter++;
-        currentFont = Math.max(minFont * basePx, currentFont * 0.95);
-        rightEl.style.fontSize = `${currentFont}px`;
-        // reflow measurements
-        // eslint-disable-next-line no-unused-expressions
-        rightEl.offsetHeight;
-        if (currentFont <= minFont * basePx) break;
+
+      // If right column overflows, gently reduce font-size (only on desktop and tall viewports)
+      // so content fits into availableWidth/desiredHeight. Clamp minimum font-size.
+      if (window.innerHeight >= 1000) {
+        const minFont = 0.85; // rem
+        const maxIterations = 8;
+        let iter = 0;
+        function fits() {
+          return (
+            rightEl.scrollWidth <= rightEl.clientWidth + 1 &&
+            rightEl.scrollHeight <= rightEl.clientHeight + 1
+          );
+        }
+        // read current font-size in rem-ish (assume 16px base)
+        let currentFont = parseFloat(
+          getComputedStyle(rightEl).fontSize.replace("px", ""),
+        );
+        const basePx = 16;
+        while (!fits() && iter < maxIterations) {
+          iter++;
+          currentFont = Math.max(minFont * basePx, currentFont * 0.95);
+          rightEl.style.fontSize = `${currentFont}px`;
+          // reflow measurements
+          // eslint-disable-next-line no-unused-expressions
+          rightEl.offsetHeight;
+          if (currentFont <= minFont * basePx) break;
+        }
       }
     }
 
@@ -303,7 +334,7 @@ export default function Section3({ speed, scrollToSection }) {
   return (
     <section
       id="section3"
-      className="min-h-screen w-full bg-[#080808] flex flex-col items-center justify-center relative overflow-hidden z-10"
+      className="min-h-screen w-full bg-[#080808] flex flex-col items-center justify-center relative overflow-hidden z-10 py-[150px]"
       ref={containerRef}
     >
       {/* Gradient overlays for top/bottom fade */}
@@ -413,13 +444,12 @@ export default function Section3({ speed, scrollToSection }) {
       <div
         id="section3-content"
         ref={contentRef}
-        className="w-full xl:max-w-[1400px] lg:max-w-[1200px] md:max-w-[900px] sm:max-w-[80%] max-w-[95%] mx-auto relative flex flex-col lg:flex-row items-stretch gap-8 py-[120px] min-h-[600px] h-full lg:h-[80vh]"
-        style={{ minHeight: 600 }}
+        className="w-full xl:max-w-[1400px] lg:max-w-[1200px] md:max-w-[900px] sm:max-w-[80%] max-w-[95%] mx-auto relative z-20 flex flex-col lg:flex-row items-stretch gap-8 min-h-[600px]"
       >
         {/* Image: left column. On mobile it behaves as before, on lg it keeps portrait 9:16 ratio */}
         <div
           ref={leftWrapRef}
-          className="section3-image-wrap flex-shrink-0 w-full h-[40vh] lg:h-[60vh] flex items-stretch justify-center"
+          className="section3-image-wrap flex-shrink-0 w-full h-auto lg:h-[60vh] lg:min-h-[650px] flex items-stretch justify-center"
         >
           <ImageCard inView={inViewImage} imageRef={imageRef} />
         </div>
@@ -427,11 +457,11 @@ export default function Section3({ speed, scrollToSection }) {
         {/* Right column: description + tools - takes remaining space */}
         <div
           ref={rightWrapRef}
-          className="section3-right flex flex-col flex-1 gap-8 lg:justify-between h-[40vh] lg:h-[60vh] max-h-[60vh]"
+          className="section3-right flex flex-col flex-1 gap-8 lg:justify-between min-h-0 lg:min-h-[650px]"
         >
-          {/* O mnie: col 2-3, row 1 on lg */}
+          {/* O mnie */}
           <AboutCard inView={inViewOmnie} omnieRef={omnieRef} />
-          {/* Tools: col 2-3, row 2 on lg */}
+          {/* Tools */}
           <div
             style={{
               height: 150,
@@ -486,7 +516,7 @@ export default function Section3({ speed, scrollToSection }) {
           width: "100%",
           height: "100vh",
           pointerEvents: "none",
-          zIndex: 0,
+          zIndex: -10,
           background:
             "radial-gradient(ellipse at center, #7802ab 0%, transparent 65%)",
         }}

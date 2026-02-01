@@ -7,6 +7,9 @@ const ImageCard = ({ inView, imageRef }) => {
   const [hideWhite, setHideWhite] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [isHardReset, setIsHardReset] = useState(false);
+  const [isSingleColumn, setIsSingleColumn] = useState(
+    typeof window !== "undefined" ? window.innerWidth < 1024 : false
+  );
   const purpleTimeout = useRef();
   const resetTimeout = useRef();
   const hardResetTimeout = useRef();
@@ -45,6 +48,20 @@ const ImageCard = ({ inView, imageRef }) => {
     };
   }, [inView]);
 
+  // update single-column/mobile state via matchMedia so we swap images responsively
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 1023px)");
+    const handler = (e) => setIsSingleColumn(e.matches);
+    setIsSingleColumn(mq.matches);
+    if (mq.addEventListener) mq.addEventListener("change", handler);
+    else if (mq.addListener) mq.addListener(handler);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", handler);
+      else if (mq.removeListener) mq.removeListener(handler);
+    };
+  }, []);
+
   return (
     <div
       ref={imageRef}
@@ -76,10 +93,10 @@ const ImageCard = ({ inView, imageRef }) => {
       }}
     >
       <Image
-        src="/Profile Picture.webp"
-        alt="Andrew"
-        width={1080}
-        height={1920}
+        src={isSingleColumn ? "/Pic (16.9).png" : "/Pic.png"}
+        alt="Profile"
+        width={isSingleColumn ? 1920 : 1080}
+        height={isSingleColumn ? 1080 : 1920}
         className="object-cover"
         style={{
           objectFit: "cover",

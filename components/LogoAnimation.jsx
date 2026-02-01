@@ -77,7 +77,7 @@ export default function LogoAnimation({
       30,
       mount.clientWidth / mount.clientHeight,
       0.1,
-      100
+      100,
     );
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -88,6 +88,10 @@ export default function LogoAnimation({
       mount.removeChild(mount.firstChild);
     }
     mount.appendChild(renderer.domElement);
+    // hide desktop canvas until models + prototypes are ready
+    try {
+      renderer.domElement.style.visibility = "hidden";
+    } catch (e) {}
 
     // Lighting
     const ambient = new THREE.AmbientLight(0xffffff, 1.2);
@@ -112,6 +116,10 @@ export default function LogoAnimation({
     let sceneCenter = new THREE.Vector3();
     // ambientGroup will be created later; keep reference so we can position it relative to models
     let ambientGroup = null;
+    // combined group for all particles (will replace ambient+interactive)
+    let combinedGroup = null;
+    // combined particles array (merged ambient + interactive)
+    let combinedParticles = null;
 
     // --- Set HDR jako environment map dla modeli (bez tła) ---
     new RGBELoader()
@@ -123,6 +131,53 @@ export default function LogoAnimation({
           const envMap =
             pmremGenerator.fromEquirectangular(hdrEquirect).texture;
           scene.environment = envMap;
+
+          // If the particle prototype or particle groups already exist,
+          // assign the new envMap so cloned GLB particles get proper HDR reflections.
+          try {
+            if (typeof particleProto !== "undefined" && particleProto)
+              particleProto.traverse((c) => {
+                if (c.isMesh && c.material) {
+                  c.material.envMap = scene.environment;
+                  c.material.envMapIntensity =
+                    c.material.envMapIntensity || 1.0;
+                  c.material.needsUpdate = true;
+                }
+              });
+          } catch (e) {
+            // particleProto may not be declared yet; ignore
+          }
+          try {
+            if (
+              typeof interactiveParticleProto !== "undefined" &&
+              interactiveParticleProto
+            )
+              interactiveParticleProto.traverse((c) => {
+                if (c.isMesh && c.material) {
+                  c.material.envMap = scene.environment;
+                  c.material.envMapIntensity =
+                    c.material.envMapIntensity || 1.0;
+                  c.material.needsUpdate = true;
+                }
+              });
+          } catch (e) {
+            // interactiveParticleProto may not be declared yet; ignore
+          }
+
+          try {
+            if (combinedGroup) {
+              combinedGroup.traverse((child) => {
+                if (child.isMesh && child.material) {
+                  child.material.envMap = scene.environment;
+                  child.material.envMapIntensity =
+                    child.material.envMapIntensity || 1.0;
+                  child.material.needsUpdate = true;
+                }
+              });
+            }
+          } catch (e) {
+            // combinedGroup may not exist yet
+          }
 
           const loader = new GLTFLoader();
 
@@ -149,7 +204,26 @@ export default function LogoAnimation({
               scene.add(model);
               modelsLoaded++;
               if (modelsLoaded === modelInfos.length) {
-                setLoading(false); // hide loader when all models loaded
+                // don't hide loader yet — wait for particle prototypes
+                const protosReady = !!(
+                  particleProto ||
+                  interactiveParticleProto ||
+                  thirdParticleProto
+                );
+                if (protosReady) {
+                  try {
+                    createCombinedParticleGroups();
+                  } catch (e) {}
+                  setLoading(false);
+                  try {
+                    renderer.domElement.style.visibility = "visible";
+                  } catch (e) {}
+                } else {
+                  // keep loader visible; canvas remains hidden until prototypes load
+                  console.log(
+                    "Models loaded; waiting for particle prototypes before showing scene",
+                  );
+                }
 
                 // Calculate centroid of all models
                 const center = new THREE.Vector3();
@@ -169,7 +243,7 @@ export default function LogoAnimation({
                       interactiveGroup
                     )
                       interactiveGroup.children.forEach((c) =>
-                        c.position.add(sceneCenter)
+                        c.position.add(sceneCenter),
                       );
                     if (
                       typeof interactiveParticles !== "undefined" &&
@@ -251,7 +325,7 @@ export default function LogoAnimation({
                   function updateCameraPosition(
                     angleRad,
                     verticalTiltRad,
-                    extra = {}
+                    extra = {},
                   ) {
                     // extra: {x, y, roll} offset for camera position and additional roll
                     let extraX = extra.x || 0;
@@ -263,7 +337,7 @@ export default function LogoAnimation({
                     const camPos = new THREE.Vector3(
                       center.x + x,
                       center.y + y,
-                      center.z + z
+                      center.z + z,
                     );
                     camera.position.copy(camPos);
                     const up = new THREE.Vector3(0, 1, 0);
@@ -276,7 +350,7 @@ export default function LogoAnimation({
                       const rollQuat = new THREE.Quaternion();
                       rollQuat.setFromAxisAngle(
                         new THREE.Vector3(0, 0, 1),
-                        extraRoll
+                        extraRoll,
                       );
                       quat.multiply(rollQuat);
                     }
@@ -284,7 +358,7 @@ export default function LogoAnimation({
                     const skewQuat = new THREE.Quaternion();
                     skewQuat.setFromAxisAngle(
                       new THREE.Vector3(0, 0, 1),
-                      -skewAngle
+                      -skewAngle,
                     );
                     quat.multiply(skewQuat);
                     camera.quaternion.copy(quat);
@@ -317,10 +391,10 @@ export default function LogoAnimation({
                           self && typeof self.progress === "number"
                             ? self.progress
                             : self &&
-                              self.scrollTrigger &&
-                              typeof self.scrollTrigger.progress === "number"
-                            ? self.scrollTrigger.progress
-                            : 0;
+                                self.scrollTrigger &&
+                                typeof self.scrollTrigger.progress === "number"
+                              ? self.scrollTrigger.progress
+                              : 0;
                         if (progress > 0.55) {
                           // tilt starts at 55%
                           roll = -((progress - 0.55) / 0.45) * 0.35;
@@ -336,10 +410,10 @@ export default function LogoAnimation({
                         self && typeof self.progress === "number"
                           ? self.progress
                           : self &&
-                            self.scrollTrigger &&
-                            typeof self.scrollTrigger.progress === "number"
-                          ? self.scrollTrigger.progress
-                          : 0;
+                              self.scrollTrigger &&
+                              typeof self.scrollTrigger.progress === "number"
+                            ? self.scrollTrigger.progress
+                            : 0;
                       if (progress > 0.55) {
                         roll = -((progress - 0.55) / 0.45) * 0.35;
                       }
@@ -391,7 +465,7 @@ export default function LogoAnimation({
               }
             });
           });
-        }
+        },
       );
 
     // Usunięto poprzednie fioletowe tło shaderowe — zostaje tylko nowe tło (promień + particles)
@@ -404,7 +478,7 @@ export default function LogoAnimation({
       80,
       THREE.MathUtils.degToRad(32),
       0.85,
-      1.0
+      1.0,
     );
     const spotlightTarget = new THREE.Object3D();
     spotlight.castShadow = false;
@@ -428,7 +502,7 @@ export default function LogoAnimation({
         0,
         size / 2,
         size / 2,
-        size / 2
+        size / 2,
       );
       // Wzmocniony środek dla jaśniejszego, punktowego glow
       g.addColorStop(0.0, "rgba(106,0,209,0.85)");
@@ -511,7 +585,7 @@ export default function LogoAnimation({
         0,
         size / 2,
         size / 2,
-        size / 2
+        size / 2,
       );
       // Sharper core and quicker falloff for less blur: stronger inner stop and tighter gradient
       g.addColorStop(0.0, "rgba(255,255,255,1.0)");
@@ -534,158 +608,537 @@ export default function LogoAnimation({
     // larger texture for interactive particles to reduce blur at bigger scale
     const spriteTextureLarge = createSpriteTexture(128);
 
-    // Increase ambient particle count for denser dome (doubled)
-    const ambientCount = 180;
-    ambientGroup = new THREE.Group();
-    const ambientParticles = [];
-    // Ambient particles as soft sprites (blurred points) for low-cost, soft metallic feel
-    for (let i = 0; i < ambientCount; i++) {
-      const mat = new THREE.SpriteMaterial({
-        map: spriteTextureSmall,
-        color: new THREE.Color("#ffffff"),
-        blending: THREE.AdditiveBlending,
-        transparent: true,
-        opacity: 0.9,
-        depthWrite: false,
-      });
-      const s = new THREE.Sprite(mat);
-      // Rozmieszczenie w formie kopuły (hemisfera) wokół środka sceny
-      const r = 30 + Math.random() * 40; // promień od środka (30..70)
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(Math.random());
-      const x = r * Math.sin(phi) * Math.cos(theta);
-      const y = r * Math.cos(phi);
-      const z = r * Math.sin(phi) * Math.sin(theta);
-      s.position.set(x, y, z);
-      // Limit scale but increase variety so sizes vary more
-      const baseScale = 0.12 + Math.random() * 0.6; // 0.12 .. 0.72
-      s.scale.set(baseScale, baseScale, baseScale);
-      // Zapamiętaj bazową pozycję i parametry smooth ruchu (sinusoidalnie) oraz puls
-      const ambObj = {
-        sprite: s,
-        basePosition: s.position.clone(),
-        // slightly larger autonomous amplitudes so motion is visible
-        amp: new THREE.Vector3(
-          0.28 + Math.random() * 1.2,
-          0.16 + Math.random() * 0.7,
-          0.28 + Math.random() * 1.2
-        ),
-        // per-axis frequencies and phases for less correlated motion (faster)
-        freqX: 0.12 + Math.random() * 0.5,
-        freqY: 0.1 + Math.random() * 0.4,
-        freqZ: 0.12 + Math.random() * 0.5,
-        phaseX: Math.random() * Math.PI * 2,
-        phaseY: Math.random() * Math.PI * 2,
-        phaseZ: Math.random() * Math.PI * 2,
-        // random local wobble direction so particles don't all move same way
-        wobbleDir: new THREE.Vector3(
-          Math.random() * 2 - 1,
-          Math.random() * 2 - 1,
-          Math.random() * 2 - 1
-        ).normalize(),
-        baseScale,
-        // pulse scheduling: next pulse (seconds from start), duration and amplitude
-        pulseNext: Math.random() * 6 + 1, // first pulse after 1..7s
-        pulseDuration: 0.6 + Math.random() * 1.2, // 0.6..1.8s
-        pulseAmp: 0.06 + Math.random() * 0.24,
-        pulsing: false,
-        pulseStart: 0,
-      };
-      ambientParticles.push(ambObj);
-      // Ensure particles are not spawned too close to the camera
-      try {
-        const minCamDist = 35;
-        const camPos = camera.position.clone();
-        const d = ambObj.sprite.position.distanceTo(camPos);
-        if (d < minCamDist) {
-          const dir = ambObj.sprite.position.clone().sub(camPos).normalize();
-          ambObj.sprite.position.copy(
-            camPos.clone().add(dir.multiplyScalar(minCamDist))
-          );
-          ambObj.basePosition = ambObj.sprite.position.clone();
-        }
-      } catch (e) {}
-      ambientGroup.add(s);
-    }
-    scene.add(ambientGroup);
+    // Load user's GLB particle prototypes: ambient (Particles_1) and interactive (Particles_2)
+    let particleProto = null;
+    let interactiveParticleProto = null;
 
-    // === Particles: interactive (larger, follow mouse) ===
-    // Interactive particles now live on a sphere surrounding the scene center.
-    // We'll store each particle's base world position and then rotate the
-    // entire sphere (a quaternion) based on mouse yaw/pitch. This creates
-    // the effect of a spherical shell rotating toward the mouse, not a single
-    // flat ring.
-    const interactiveCount = 100;
-    const interactiveGroup = new THREE.Group();
-    const interactiveParticles = [];
-    // use true spheres (moderate segments for smooth reflections) so HDR env
-    // looks correct on the surface. Keep segments moderate for perf.
-    const interactiveGeom = new THREE.SphereGeometry(1.0, 12, 10);
-    for (let i = 0; i < interactiveCount; i++) {
-      const mat = new THREE.MeshStandardMaterial({
-        color: new THREE.Color("#ffffff"),
-        metalness: 1.0,
-        roughness: 0.06,
-        envMapIntensity: 1.6,
-      });
-      const m = new THREE.Mesh(interactiveGeom, mat);
-      // place on spherical shell radius 30..70
-      const r = 30 + Math.random() * 40;
-      const theta = Math.random() * Math.PI * 2; // azimuth
-      const phi = Math.acos(2 * Math.random() - 1); // inclination
-      const x = r * Math.sin(phi) * Math.cos(theta);
-      const y = r * Math.cos(phi);
-      const z = r * Math.sin(phi) * Math.sin(theta);
-      m.position.set(x, y, z);
-      // interactive spheres: increase size variety (some small, some larger)
-      const baseScale = 0.18 + Math.random() * 0.9; // 0.18 .. 1.08
-      m.scale.set(baseScale, baseScale, baseScale);
-      const intObj = {
-        mesh: m,
-        basePosition: m.position.clone(), // world-space base pos
-        baseScale,
-        // stronger autonomous amplitude so spheres move noticeably
-        amp: new THREE.Vector3(
-          0.4 + Math.random() * 1.2,
-          0.18 + Math.random() * 0.8,
-          0.4 + Math.random() * 1.2
-        ),
-        // per-axis frequencies/phases for unique autonomous motion (noticeably faster)
-        freqX: 0.16 + Math.random() * 0.7,
-        freqY: 0.12 + Math.random() * 0.6,
-        freqZ: 0.16 + Math.random() * 0.7,
-        phaseX: Math.random() * Math.PI * 2,
-        phaseY: Math.random() * Math.PI * 2,
-        phaseZ: Math.random() * Math.PI * 2,
-        // each particle has a slightly different wobble direction
-        wobbleDir: new THREE.Vector3(
-          Math.random() * 2 - 1,
-          Math.random() * 2 - 1,
-          Math.random() * 2 - 1
-        ).normalize(),
-        // pulse scheduling for interactive spheres as well
-        pulseNext: Math.random() * 5 + 0.8,
-        pulseDuration: 0.7 + Math.random() * 1.2,
-        pulseAmp: 0.08 + Math.random() * 0.22,
-        pulsing: false,
-        pulseStart: 0,
-      };
-      interactiveParticles.push(intObj);
-      try {
-        const minCamDistI = 35;
-        const camPosI = camera.position.clone();
-        const di = intObj.mesh.position.distanceTo(camPosI);
-        if (di < minCamDistI) {
-          const diri = intObj.mesh.position.clone().sub(camPosI).normalize();
-          intObj.mesh.position.copy(
-            camPosI.clone().add(diri.multiplyScalar(minCamDistI))
-          );
-          intObj.basePosition = intObj.mesh.position.clone();
+    const particleLoader = new GLTFLoader();
+    particleLoader.load(
+      "/Particles_1 (2).glb",
+      (gltf) => {
+        particleProto = gltf.scene;
+        // if HDR env already ready, assign envMap to proto materials
+        if (scene.environment) {
+          particleProto.traverse((c) => {
+            if (c.isMesh && c.material) {
+              c.material = new THREE.MeshStandardMaterial({
+                color: c.material.color || new THREE.Color("#ffffff"),
+                metalness: 1.0,
+                roughness: 0.12,
+                envMap: scene.environment,
+                envMapIntensity: 1.2,
+              });
+            }
+          });
         }
-      } catch (e) {}
-      interactiveGroup.add(m);
+        // If combinedParticles already exist, replace meshes of typeIndex===0
+        try {
+          if (
+            Array.isArray(combinedParticles) &&
+            combinedParticles.length &&
+            combinedGroup
+          ) {
+            combinedParticles.forEach((p) => {
+              try {
+                if (p.typeIndex !== 0) return;
+                const old = p.mesh;
+                const newInst = particleProto.clone(true);
+                newInst.traverse((c) => {
+                  if (c.isMesh) {
+                    c.material = new THREE.MeshStandardMaterial({
+                      color: new THREE.Color("#ffffff"),
+                      metalness: 1.0,
+                      roughness: 0.2,
+                      envMap: scene.environment || null,
+                      envMapIntensity: 1.0,
+                    });
+                    c.castShadow = false;
+                    c.receiveShadow = false;
+                  }
+                });
+                newInst.position.copy(old.position);
+                newInst.scale.copy(old.scale);
+                combinedGroup.remove(old);
+                combinedGroup.add(newInst);
+                p.mesh = newInst;
+                p.basePosition = newInst.position.clone();
+              } catch (e) {}
+            });
+          }
+        } catch (e) {}
+        // If models already loaded and particles not yet created, create them now
+        try {
+          if (modelsLoaded === modelInfos.length && !combinedParticles) {
+            createCombinedParticleGroups();
+            setLoading(false);
+            try {
+              renderer.domElement.style.visibility = "visible";
+            } catch (e) {}
+          }
+        } catch (e) {}
+      },
+      undefined,
+      (err) => {
+        // load failed; keep particleProto null and fall back to simple meshes
+        console.warn("Failed to load /Particles_1 (2).glb", err);
+      },
+    );
+
+    // Interactive particles use a different GLB prototype when available
+    const interactiveLoader = new GLTFLoader();
+    interactiveLoader.load(
+      "/Particles_2 (2).glb",
+      (gltf) => {
+        interactiveParticleProto = gltf.scene;
+        if (scene.environment) {
+          interactiveParticleProto.traverse((c) => {
+            if (c.isMesh && c.material) {
+              c.material = new THREE.MeshStandardMaterial({
+                color: c.material.color || new THREE.Color("#ffffff"),
+                metalness: 1.0,
+                roughness: 0.06,
+                envMap: scene.environment,
+                envMapIntensity: 1.6,
+              });
+            }
+          });
+        }
+        // Replace meshes of this type (typeIndex===1) if combinedParticles already exist
+        try {
+          if (
+            Array.isArray(combinedParticles) &&
+            combinedParticles.length &&
+            combinedGroup
+          ) {
+            combinedParticles.forEach((p) => {
+              try {
+                if (p.typeIndex !== 1) return;
+                const old = p.mesh;
+                const newInst = interactiveParticleProto.clone(true);
+                newInst.traverse((c) => {
+                  if (c.isMesh) {
+                    c.material = new THREE.MeshStandardMaterial({
+                      color: new THREE.Color("#ffffff"),
+                      metalness: 1.0,
+                      roughness: 0.06,
+                      envMap: scene.environment || null,
+                      envMapIntensity: 1.6,
+                    });
+                    c.castShadow = false;
+                    c.receiveShadow = false;
+                  }
+                });
+                newInst.position.copy(old.position);
+                newInst.scale.copy(old.scale);
+                combinedGroup.remove(old);
+                combinedGroup.add(newInst);
+                p.mesh = newInst;
+                p.basePosition = newInst.position.clone();
+              } catch (e) {}
+            });
+          }
+        } catch (e) {}
+        try {
+          if (modelsLoaded === modelInfos.length && !combinedParticles) {
+            createCombinedParticleGroups();
+            setLoading(false);
+            try {
+              renderer.domElement.style.visibility = "visible";
+            } catch (e) {}
+          }
+        } catch (e) {}
+      },
+      undefined,
+      (err) => {
+        console.warn("Failed to load /Particles_2 (2).glb", err);
+      },
+    );
+
+    // Load third prototype for variety
+    let thirdParticleProto = null;
+    const thirdLoader = new GLTFLoader();
+    thirdLoader.load(
+      "/Particles_3 (2).glb",
+      (gltf) => {
+        thirdParticleProto = gltf.scene;
+        if (scene.environment) {
+          thirdParticleProto.traverse((c) => {
+            if (c.isMesh && c.material) {
+              c.material = new THREE.MeshStandardMaterial({
+                color: c.material.color || new THREE.Color("#ffffff"),
+                metalness: 1.0,
+                roughness: 0.12,
+                envMap: scene.environment,
+                envMapIntensity: 1.1,
+              });
+            }
+          });
+        }
+        // Replace meshes of this type (typeIndex===2) if combinedParticles already exist
+        try {
+          if (
+            Array.isArray(combinedParticles) &&
+            combinedParticles.length &&
+            combinedGroup
+          ) {
+            combinedParticles.forEach((p) => {
+              try {
+                if (p.typeIndex !== 2) return;
+                const old = p.mesh;
+                const newInst = thirdParticleProto.clone(true);
+                newInst.traverse((c) => {
+                  if (c.isMesh) {
+                    c.material = new THREE.MeshStandardMaterial({
+                      color: new THREE.Color("#ffffff"),
+                      metalness: 1.0,
+                      roughness: 0.12,
+                      envMap: scene.environment || null,
+                      envMapIntensity: 1.1,
+                    });
+                    c.castShadow = false;
+                    c.receiveShadow = false;
+                  }
+                });
+                newInst.position.copy(old.position);
+                newInst.scale.copy(old.scale);
+                combinedGroup.remove(old);
+                combinedGroup.add(newInst);
+                p.mesh = newInst;
+                p.basePosition = newInst.position.clone();
+              } catch (e) {}
+            });
+          }
+        } catch (e) {}
+        try {
+          if (modelsLoaded === modelInfos.length && !combinedParticles) {
+            createCombinedParticleGroups();
+            setLoading(false);
+            try {
+              renderer.domElement.style.visibility = "visible";
+            } catch (e) {}
+          }
+        } catch (e) {}
+      },
+      undefined,
+      (err) => {
+        console.warn("Failed to load /Particles_3 (2).glb", err);
+      },
+    );
+
+    function createCombinedParticleGroups() {
+      // This function creates ambient + interactive particle groups using
+      // available GLB prototypes. It intentionally does NOT create primitive
+      // fallback meshes — the loader will remain visible until prototypes
+      // and models are ready.
+      try {
+        // Increase ambient particle count for denser dome (doubled)
+        const ambientCount = 360;
+        ambientGroup = new THREE.Group();
+        const ambientParticles = [];
+        if (particleProto) {
+          for (let i = 0; i < ambientCount; i++) {
+            const r = 30 + Math.random() * 40;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(Math.random());
+            const x = r * Math.sin(phi) * Math.cos(theta);
+            const y = r * Math.cos(phi);
+            const z = r * Math.sin(phi) * Math.sin(theta);
+            const zJitter = 20;
+            const zRand = (Math.random() - 0.5) * zJitter;
+            let baseScale = 0.12 + Math.random() * 0.6;
+            const inst = particleProto.clone(true);
+            inst.traverse((c) => {
+              if (c.isMesh) {
+                c.material = new THREE.MeshStandardMaterial({
+                  color: new THREE.Color("#ffffff"),
+                  metalness: 1.0,
+                  roughness: 0.2,
+                  envMap: scene.environment || null,
+                  envMapIntensity: 1.0,
+                });
+                c.castShadow = false;
+                c.receiveShadow = false;
+              }
+            });
+            inst.position.set(x, y, z + zRand);
+            inst.scale.set(baseScale, baseScale, baseScale);
+            const ambObj = {
+              mesh: inst,
+              basePosition: inst.position.clone(),
+              typeIndex: 0,
+              amp: new THREE.Vector3(
+                0.28 + Math.random() * 1.2,
+                0.16 + Math.random() * 0.7,
+                0.28 + Math.random() * 1.2,
+              ),
+              freqX: 0.12 + Math.random() * 0.5,
+              freqY: 0.1 + Math.random() * 0.4,
+              freqZ: 0.12 + Math.random() * 0.5,
+              phaseX: Math.random() * Math.PI * 2,
+              phaseY: Math.random() * Math.PI * 2,
+              phaseZ: Math.random() * Math.PI * 2,
+              wobbleDir: new THREE.Vector3(
+                Math.random() * 2 - 1,
+                Math.random() * 2 - 1,
+                Math.random() * 2 - 1,
+              ).normalize(),
+              baseScale,
+              pulseNext: Math.random() * 6 + 1,
+              pulseDuration: 0.6 + Math.random() * 1.2,
+              pulseAmp: 0.06 + Math.random() * 0.24,
+              pulsing: false,
+              pulseStart: 0,
+              initFacingOffset: new THREE.Quaternion().setFromEuler(
+                new THREE.Euler(
+                  THREE.MathUtils.degToRad(Math.random() * 40 - 20),
+                  THREE.MathUtils.degToRad(Math.random() * 40 - 20),
+                  Math.random() * Math.PI * 2,
+                ),
+              ),
+            };
+            ambientParticles.push(ambObj);
+            ambientGroup.add(inst);
+          }
+          scene.add(ambientGroup);
+        }
+
+        // Interactive particles
+        const interactiveCount = 200;
+        let interactiveGroup = new THREE.Group();
+        const interactiveParticles = [];
+        const preferredProto =
+          interactiveParticleProto ||
+          particleProto ||
+          thirdParticleProto ||
+          null;
+        if (preferredProto) {
+          for (let i = 0; i < interactiveCount; i++) {
+            const r = 30 + Math.random() * 40;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            const x = r * Math.sin(phi) * Math.cos(theta);
+            const y = r * Math.cos(phi);
+            const z = r * Math.sin(phi) * Math.sin(theta);
+            const inst = preferredProto.clone(true);
+            inst.traverse((c) => {
+              if (c.isMesh) {
+                const baseColor =
+                  (c.material && c.material.color) ||
+                  new THREE.Color("#ffffff");
+                const isInteractiveProto =
+                  preferredProto === interactiveParticleProto;
+                const isThirdProto = preferredProto === thirdParticleProto;
+                c.material = new THREE.MeshStandardMaterial({
+                  color: baseColor,
+                  metalness: 1.0,
+                  roughness: isInteractiveProto
+                    ? 0.06
+                    : isThirdProto
+                      ? 0.12
+                      : 0.08,
+                  envMap: scene.environment || null,
+                  envMapIntensity: isInteractiveProto
+                    ? 1.6
+                    : isThirdProto
+                      ? 1.1
+                      : 1.0,
+                });
+                c.castShadow = false;
+                c.receiveShadow = false;
+              }
+            });
+            inst.position.set(x, y, z);
+            let baseScale = 0.36 + Math.random() * 3.96;
+            inst.scale.set(baseScale, baseScale, baseScale);
+            const intObj = {
+              mesh: inst,
+              basePosition: inst.position.clone(),
+              baseScale,
+              typeIndex: 1,
+              amp: new THREE.Vector3(
+                (0.4 + Math.random() * 1.2) * 0.1,
+                (0.18 + Math.random() * 0.8) * 0.1,
+                (0.4 + Math.random() * 1.2) * 0.1,
+              ),
+              freqX: (0.16 + Math.random() * 0.7) * 0.1,
+              freqY: (0.12 + Math.random() * 0.6) * 0.1,
+              freqZ: (0.16 + Math.random() * 0.7) * 0.1,
+              phaseX: Math.random() * Math.PI * 2,
+              phaseY: Math.random() * Math.PI * 2,
+              phaseZ: Math.random() * Math.PI * 2,
+              wobbleDir: new THREE.Vector3(
+                Math.random() * 2 - 1,
+                Math.random() * 2 - 1,
+                Math.random() * 2 - 1,
+              ).normalize(),
+              pulseNext: Math.random() * 5 + 0.8,
+              pulseDuration: 0.7 + Math.random() * 1.2,
+              pulseAmp: 0.08 + Math.random() * 0.22,
+              pulsing: false,
+              pulseStart: 0,
+              initFacingOffset: new THREE.Quaternion().setFromEuler(
+                new THREE.Euler(
+                  THREE.MathUtils.degToRad(Math.random() * 40 - 20),
+                  THREE.MathUtils.degToRad(Math.random() * 40 - 20),
+                  Math.random() * Math.PI * 2,
+                ),
+              ),
+            };
+            interactiveParticles.push(intObj);
+            interactiveGroup.add(inst);
+          }
+          scene.add(interactiveGroup);
+        }
+
+        // Merge groups
+        try {
+          combinedGroup = new THREE.Group();
+          if (ambientGroup) {
+            ambientGroup.children.slice().forEach((c) => {
+              ambientGroup.remove(c);
+              combinedGroup.add(c);
+            });
+          }
+          if (interactiveGroup) {
+            interactiveGroup.children.slice().forEach((c) => {
+              interactiveGroup.remove(c);
+              combinedGroup.add(c);
+            });
+          }
+          combinedParticles = [];
+          if (
+            typeof ambientParticles !== "undefined" &&
+            Array.isArray(ambientParticles)
+          )
+            combinedParticles.push(...ambientParticles);
+          if (
+            typeof interactiveParticles !== "undefined" &&
+            Array.isArray(interactiveParticles)
+          )
+            combinedParticles.push(...interactiveParticles);
+          scene.add(combinedGroup);
+          try {
+            scene.remove(ambientGroup);
+          } catch (e) {}
+          try {
+            scene.remove(interactiveGroup);
+          } catch (e) {}
+          ambientGroup = null;
+          interactiveGroup = null;
+        } catch (e) {
+          console.warn("Failed to merge particle groups:", e);
+        }
+
+        // Size adjustments and fill to DESIRED_COUNT
+        try {
+          const DESIRED_COUNT = 400;
+          const MIN_BASE_SCALE = 3.0;
+          if (Array.isArray(combinedParticles)) {
+            combinedParticles.forEach((p) => {
+              try {
+                p.baseScale = Math.max((p.baseScale || 1) * 5, MIN_BASE_SCALE);
+                if (p.mesh)
+                  p.mesh.scale.set(p.baseScale, p.baseScale, p.baseScale);
+              } catch (e) {}
+            });
+            function makeParticleInstance() {
+              const r = 30 + Math.random() * 40;
+              const theta = Math.random() * Math.PI * 2;
+              const phi = Math.acos(2 * Math.random() - 1);
+              const x = r * Math.sin(phi) * Math.cos(theta);
+              const y = r * Math.cos(phi);
+              const z = r * Math.sin(phi) * Math.sin(theta);
+              const typeIndex = Math.floor(Math.random() * 3);
+              const proto =
+                typeIndex === 1
+                  ? interactiveParticleProto ||
+                    particleProto ||
+                    thirdParticleProto
+                  : typeIndex === 2
+                    ? thirdParticleProto ||
+                      particleProto ||
+                      interactiveParticleProto
+                    : particleProto ||
+                      interactiveParticleProto ||
+                      thirdParticleProto;
+              if (!proto) return null;
+              const inst = proto.clone(true);
+              inst.traverse((c) => {
+                if (c.isMesh) {
+                  c.material = new THREE.MeshStandardMaterial({
+                    color:
+                      (c.material && c.material.color) ||
+                      new THREE.Color("#ffffff"),
+                    metalness: 1.0,
+                    roughness:
+                      typeIndex === 1 ? 0.06 : typeIndex === 2 ? 0.12 : 0.2,
+                    envMap: scene.environment || null,
+                    envMapIntensity:
+                      typeIndex === 1 ? 1.6 : typeIndex === 2 ? 1.1 : 1.0,
+                  });
+                  c.castShadow = false;
+                  c.receiveShadow = false;
+                }
+              });
+              inst.position.set(x, y, z);
+              const baseScale = Math.max(
+                (0.36 + Math.random() * 3.96) * 5,
+                MIN_BASE_SCALE,
+              );
+              inst.scale.set(baseScale, baseScale, baseScale);
+              return {
+                mesh: inst,
+                basePosition: inst.position.clone(),
+                baseScale,
+                typeIndex,
+                amp: new THREE.Vector3(
+                  (0.4 + Math.random() * 1.2) * 0.1,
+                  (0.18 + Math.random() * 0.8) * 0.1,
+                  (0.4 + Math.random() * 1.2) * 0.1,
+                ),
+                freqX: (0.16 + Math.random() * 0.7) * 0.1,
+                freqY: (0.12 + Math.random() * 0.6) * 0.1,
+                freqZ: (0.16 + Math.random() * 0.7) * 0.1,
+                phaseX: Math.random() * Math.PI * 2,
+                phaseY: Math.random() * Math.PI * 2,
+                phaseZ: Math.random() * Math.PI * 2,
+                wobbleDir: new THREE.Vector3(
+                  Math.random() * 2 - 1,
+                  Math.random() * 2 - 1,
+                  Math.random() * 2 - 1,
+                ).normalize(),
+                pulseNext: Math.random() * 5 + 0.8,
+                pulseDuration: 0.7 + Math.random() * 1.2,
+                pulseAmp: 0.08 + Math.random() * 0.22,
+                pulsing: false,
+                pulseStart: 0,
+                initFacingOffset: new THREE.Quaternion().setFromEuler(
+                  new THREE.Euler(
+                    THREE.MathUtils.degToRad(Math.random() * 40 - 20),
+                    THREE.MathUtils.degToRad(Math.random() * 40 - 20),
+                    Math.random() * Math.PI * 2,
+                  ),
+                ),
+              };
+            }
+            while (combinedParticles.length < DESIRED_COUNT) {
+              try {
+                const np = makeParticleInstance();
+                if (!np) break;
+                combinedParticles.push(np);
+                if (combinedGroup && np.mesh) combinedGroup.add(np.mesh);
+              } catch (e) {
+                break;
+              }
+            }
+          }
+        } catch (e) {
+          console.warn("Failed to adjust combined particles:", e);
+        }
+      } catch (e) {
+        console.warn("createCombinedParticleGroups failed:", e);
+      }
     }
-    scene.add(interactiveGroup);
 
     // Sphere rotation state (smoothed)
     const sphereRotation = {
@@ -700,11 +1153,17 @@ export default function LogoAnimation({
     // not used to apply immediate deltas — we set target from absolute mouse
     // position and animate toward it with easing.
     const prevMouseNorm = new THREE.Vector2(0, 0);
+    // Quaternion offset to rotate particle prototype so its "front" faces camera.
+    // Adjust the Euler here if a different axis needs +90° rotation.
+    const particleFacingOffset = new THREE.Quaternion().setFromEuler(
+      new THREE.Euler(Math.PI / 2, 0, 0),
+    );
     // Max yaw: reduce dramatically (80% smaller than previous) so full-edge
     // pointer produces only a very small rotation. Previously ~63°; now 20%
     // of that -> PI*0.07 (~12.6°).
-    const MAX_YAW = Math.PI * 0.07; // ~12.6° max yaw
-    const MAX_PITCH = Math.PI * 0.28; // how far up/down the shell rotates
+    // Make mouse-driven rotation barely visible by reducing max angles
+    const MAX_YAW = Math.PI * 0.01; // ~1.8° max yaw (very small)
+    const MAX_PITCH = Math.PI * 0.03; // ~5.4° max pitch (small)
 
     // === Mouse influence ===
     const mouse = new THREE.Vector2(0, 0);
@@ -750,6 +1209,7 @@ export default function LogoAnimation({
     // --- ANIMACJA: renderuj tylko scenę ---
     const animate = () => {
       requestAnimationFrame(animate);
+      const t = performance.now() * 0.001;
       // Spotlight: pozycja przy kamerze bez wpływu rotacji (offset w osi świata)
       const lightWorldPos = camera.position
         .clone()
@@ -779,51 +1239,7 @@ export default function LogoAnimation({
       let pulse = Math.sin(glowPulse) * 0.06;
       glowMat.opacity = Math.min(1.0, base + pulse);
 
-      // Ambient particles drift
-      // Ambient particles: smooth sinusoidal motion around basePosition (slower, smoother)
-      const t = performance.now() * 0.001;
-      for (const ap of ambientParticles) {
-        // per-axis independent wobble, projected along a per-particle wobbleDir
-        const wx = Math.sin(t * ap.freqX + ap.phaseX) * ap.amp.x;
-        const wy = Math.cos(t * ap.freqY + ap.phaseY) * ap.amp.y;
-        const wz = Math.sin(t * ap.freqZ + ap.phaseZ) * ap.amp.z;
-        const target = ap.basePosition
-          .clone()
-          .add(
-            new THREE.Vector3(
-              ap.wobbleDir.x * wx,
-              ap.wobbleDir.y * wy,
-              ap.wobbleDir.z * wz
-            )
-          );
-        if (ap.sprite) {
-          ap.sprite.position.copy(target);
-          // scheduled pulsing: occasional grow -> shrink with random pauses
-          const now = t;
-          if (!ap.pulsing && now >= (ap.pulseNext || 0)) {
-            ap.pulsing = true;
-            ap.pulseStart = now;
-            ap.pulseEnd = now + (ap.pulseDuration || 1.0);
-          }
-          let newScale = ap.baseScale;
-          if (ap.pulsing) {
-            const p = Math.max(
-              0,
-              Math.min(1, (now - ap.pulseStart) / (ap.pulseDuration || 1.0))
-            );
-            if (p >= 1) {
-              ap.pulsing = false;
-              // schedule next pulse with a random gap (2..8s)
-              ap.pulseNext = now + 2 + Math.random() * 6;
-            } else {
-              // ease-in-out grow then shrink: use full cosine cycle (0->0, 0.5->1, 1->0)
-              const ease = 0.5 - 0.5 * Math.cos(p * Math.PI * 2);
-              newScale = ap.baseScale * (1 + (ap.pulseAmp || 0.12) * ease);
-            }
-          }
-          ap.sprite.scale.set(newScale, newScale, newScale);
-        }
-      }
+      // (Ambient loop removed) ambient + interactive are merged into combinedParticles
 
       // Interactive particles placed on a spherical shell. We rotate the
       // entire shell toward the mouse by building a quaternion from a
@@ -851,8 +1267,8 @@ export default function LogoAnimation({
       const pitchEase2 = 0.5 - 0.5 * Math.cos(pitchNorm2 * Math.PI);
       // dynamic lerp factor: base speed plus extra proportional to distance
       // slowed down by another 50% per request (smaller overall motion).
-      const BASE_SPEED = 0.0225; // half of previous
-      const EXTRA_SPEED = 0.45; // half of previous
+      const BASE_SPEED = 0.0045; // slowed 5x
+      const EXTRA_SPEED = 0.09; // slowed 5x
       // increase ease-in effect by applying a bias to the ease curve.
       // IN_BIAS < 1 amplifies the early portion of the ease (stronger in).
       const IN_BIAS = 0.5;
@@ -860,30 +1276,30 @@ export default function LogoAnimation({
       const pitchEaseIn = Math.pow(pitchEase2, IN_BIAS);
       const yawLerp = Math.min(
         1,
-        (BASE_SPEED + EXTRA_SPEED * yawNorm2) * yawEaseIn
+        (BASE_SPEED + EXTRA_SPEED * yawNorm2) * yawEaseIn,
       );
       const pitchLerp = Math.min(
         1,
-        (BASE_SPEED + EXTRA_SPEED * pitchNorm2) * pitchEaseIn
+        (BASE_SPEED + EXTRA_SPEED * pitchNorm2) * pitchEaseIn,
       );
       sphereRotation.currentYaw = THREE.MathUtils.lerp(
         sphereRotation.currentYaw,
         yawTarget,
-        yawLerp
+        yawLerp,
       );
       sphereRotation.currentPitch = THREE.MathUtils.lerp(
         sphereRotation.currentPitch,
         pitchTarget,
-        pitchLerp
+        pitchLerp,
       );
       // hard clamp to allowed range
       sphereRotation.currentYaw = Math.max(
         -MAX_YAW,
-        Math.min(MAX_YAW, sphereRotation.currentYaw)
+        Math.min(MAX_YAW, sphereRotation.currentYaw),
       );
       sphereRotation.currentPitch = Math.max(
         -MAX_PITCH,
-        Math.min(MAX_PITCH, sphereRotation.currentPitch)
+        Math.min(MAX_PITCH, sphereRotation.currentPitch),
       );
 
       // build quaternion (rotate Y then X)
@@ -891,62 +1307,71 @@ export default function LogoAnimation({
         sphereRotation.currentPitch,
         sphereRotation.currentYaw,
         0,
-        "YXZ"
+        "YXZ",
       );
       const rotQuat = new THREE.Quaternion().setFromEuler(euler);
 
       const centerVec = sceneCenter
         ? sceneCenter.clone()
         : new THREE.Vector3(0, 0, 0);
-      for (const ip of interactiveParticles) {
-        // per-axis independent wobble, projected along each particle's
-        // wobbleDir so autonomous motion varies per particle
-        const wx = Math.sin(t * ip.freqX + ip.phaseX) * ip.amp.x;
-        const wy = Math.cos(t * ip.freqY + ip.phaseY) * ip.amp.y;
-        const wz = Math.sin(t * ip.freqZ + ip.phaseZ) * ip.amp.z;
-        const iox = ip.wobbleDir.x * wx;
-        const ioy = ip.wobbleDir.y * wy;
-        const ioz = ip.wobbleDir.z * wz;
+      // Unified particle loop: apply sphere rotation + autonomous wobble + pulsing
+      const allParticles = Array.isArray(combinedParticles)
+        ? combinedParticles
+        : [];
+      for (const p of allParticles) {
+        // per-axis independent wobble
+        const wx = Math.sin(t * p.freqX + p.phaseX) * (p.amp ? p.amp.x : 0);
+        const wy = Math.cos(t * p.freqY + p.phaseY) * (p.amp ? p.amp.y : 0);
+        const wz = Math.sin(t * p.freqZ + p.phaseZ) * (p.amp ? p.amp.z : 0);
+        const iox = (p.wobbleDir ? p.wobbleDir.x : 0) * wx;
+        const ioy = (p.wobbleDir ? p.wobbleDir.y : 0) * wy;
+        const ioz = (p.wobbleDir ? p.wobbleDir.z : 0) * wz;
 
-        // base position relative to center, rotated by the global quaternion
-        const rel = ip.basePosition.clone().sub(centerVec);
+        const rel = p.basePosition.clone().sub(centerVec);
         const rotated = rel.applyQuaternion(rotQuat);
         const final = rotated
           .add(new THREE.Vector3(iox, ioy, ioz))
           .add(centerVec);
 
-        if (ip.mesh) {
-          ip.mesh.position.copy(final);
-          // scheduled pulsing for interactive spheres
-          const nowI = t;
-          if (!ip.pulsing && nowI >= (ip.pulseNext || 0)) {
-            ip.pulsing = true;
-            ip.pulseStart = nowI;
-            ip.pulseEnd = nowI + (ip.pulseDuration || 1.0);
+        if (p.mesh) {
+          p.mesh.position.copy(final);
+          try {
+            p.mesh.quaternion.copy(camera.quaternion);
+            p.mesh.quaternion.multiply(particleFacingOffset);
+            if (p.initFacingOffset)
+              p.mesh.quaternion.multiply(p.initFacingOffset);
+          } catch (e) {}
+
+          // pulsing
+          const now = t;
+          if (!p.pulsing && now >= (p.pulseNext || 0)) {
+            p.pulsing = true;
+            p.pulseStart = now;
+            p.pulseEnd = now + (p.pulseDuration || 1.0);
           }
-          let newScaleI = ip.baseScale;
-          if (ip.pulsing) {
-            const pI = Math.max(
+          let newScale = p.baseScale || 1;
+          if (p.pulsing) {
+            const pr = Math.max(
               0,
-              Math.min(1, (nowI - ip.pulseStart) / (ip.pulseDuration || 1.0))
+              Math.min(1, (now - p.pulseStart) / (p.pulseDuration || 1.0)),
             );
-            if (pI >= 1) {
-              ip.pulsing = false;
-              ip.pulseNext = nowI + 2 + Math.random() * 6;
+            if (pr >= 1) {
+              p.pulsing = false;
+              p.pulseNext = now + 2 + Math.random() * 6;
             } else {
-              const easeI = 0.5 - 0.5 * Math.cos(pI * Math.PI * 2);
-              newScaleI = ip.baseScale * (1 + (ip.pulseAmp || 0.12) * easeI);
+              const ease = 0.5 - 0.5 * Math.cos(pr * Math.PI * 2);
+              newScale = (p.baseScale || 1) * (1 + (p.pulseAmp || 0.12) * ease);
             }
           }
-          ip.mesh.scale.set(newScaleI, newScaleI, newScaleI);
-          // Clamp distance from center
+          p.mesh.scale.set(newScale, newScale, newScale);
+          // clamp
           const distFromCenter = new THREE.Vector3()
-            .subVectors(ip.mesh.position, centerVec)
+            .subVectors(p.mesh.position, centerVec)
             .length();
           if (distFromCenter > 200) {
-            const dir = ip.mesh.position.clone().sub(centerVec).normalize();
-            ip.mesh.position.copy(
-              centerVec.clone().add(dir.multiplyScalar(200))
+            const dir = p.mesh.position.clone().sub(centerVec).normalize();
+            p.mesh.position.copy(
+              centerVec.clone().add(dir.multiplyScalar(200)),
             );
           }
         }

@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import AnimatedText from "./AnimatedText";
 import GlitchButton from "./GlitchButton";
 
 function useInView(ref, offset = 200) {
@@ -34,6 +33,19 @@ export default function Section5() {
   const [error, setError] = useState("");
   const formRef = useRef(null);
   const inViewForm = useInView(formRef, 120);
+  // Instagram block ref + in-view state
+  const igRef = useRef(null);
+  const inViewIg = useInView(igRef, 120);
+
+  // IG animation states and timers
+  const [igWhiteActive, setIgWhiteActive] = useState(false);
+  const [igPurpleActive, setIgPurpleActive] = useState(false);
+  const [igHideWhite, setIgHideWhite] = useState(false);
+  const [igIsResetting, setIgIsResetting] = useState(false);
+  const [igIsHardReset, setIgIsHardReset] = useState(false);
+  const igPurpleTimeout = useRef();
+  const igResetTimeout = useRef();
+  const igHardResetTimeout = useRef();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -101,10 +113,45 @@ export default function Section5() {
     };
   }, [inViewForm]);
 
+  // Mirror animation lifecycle for IG block
+  useEffect(() => {
+    if (inViewIg) {
+      setIgIsResetting(false);
+      setIgIsHardReset(false);
+      setIgWhiteActive(true);
+      setIgHideWhite(false);
+      setIgPurpleActive(false);
+      igPurpleTimeout.current = setTimeout(() => {
+        setIgHideWhite(true);
+        setIgPurpleActive(true);
+      }, 3000);
+    } else {
+      setIgIsResetting(true);
+      setIgIsHardReset(true);
+      setIgWhiteActive(false);
+      setIgPurpleActive(false);
+      setIgHideWhite(false);
+      clearTimeout(igPurpleTimeout.current);
+      clearTimeout(igResetTimeout.current);
+      clearTimeout(igHardResetTimeout.current);
+      igResetTimeout.current = setTimeout(() => {
+        setIgIsResetting(false);
+      }, 50);
+      igHardResetTimeout.current = setTimeout(() => {
+        setIgIsHardReset(false);
+      }, 30);
+    }
+    return () => {
+      clearTimeout(igPurpleTimeout.current);
+      clearTimeout(igResetTimeout.current);
+      clearTimeout(igHardResetTimeout.current);
+    };
+  }, [inViewIg]);
+
   return (
     <section
       id="section5"
-      className="min-h-screen w-full bg-[#080808] flex flex-col items-center justify-center relative px-2 sm:px-6 md:px-12 lg:px-24 xl:px-32 z-10"
+      className="min-h-screen w-full bg-[#080808] flex flex-col items-center justify-center relative px-2 sm:px-6 md:px-12 lg:px-24 xl:px-32 z-10 py-[120px]"
       style={{
         backgroundImage: "url('/Cave.png')",
         backgroundSize: "cover",
@@ -138,7 +185,7 @@ export default function Section5() {
           background: "linear-gradient(to top, #080808 0%, transparent 100%)",
         }}
       />
-      <h1 className="text-[#f2f2f2] text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-12 appear">
+      <h1 className="text-[#f2f2f2] text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-12 appear z-20">
         {/* <AnimatedText text="Kontakt" inView={true} as="span" /> */}
         KONTAKT
       </h1>
@@ -149,10 +196,10 @@ export default function Section5() {
           isHardReset
             ? " extraordinary-animation-reset"
             : isResetting
-            ? ""
-            : `${whiteActive ? " extraordinary-animation-active" : ""}${
-                purpleActive ? " extraordinary-animation-active-purple" : ""
-              }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
+              ? ""
+              : `${whiteActive ? " extraordinary-animation-active" : ""}${
+                  purpleActive ? " extraordinary-animation-active-purple" : ""
+                }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
         } glassmorphism w-full max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl relative`}
         style={{
           opacity: inViewForm ? 1 : 0,
@@ -164,11 +211,6 @@ export default function Section5() {
       >
         {isSubmitted ? (
           <div className="bg-[#6a00d1] border border-[#f2f2f2] text-[#f2f2f2] font-lexend font-light px-4 py-3 rounded-[3px] relative appear text-base sm:text-lg md:text-xl lg:text-2xl">
-            {/* <AnimatedText
-              text="Wiadomość wysłana pomyślnie!"
-              inView={inViewForm}
-              as="span"
-            /> */}
             Wiadomość wysłana pomyślnie!
           </div>
         ) : (
@@ -245,14 +287,14 @@ export default function Section5() {
                 name="message"
                 className="text-[#f2f2f2] p-3 sm:p-4 md:p-5 w-full rounded-[3px] font-lexend font-light transition-colors duration-200 focus:outline-none placeholder-gray-400 sm:text-base md:text-lg lg:text-xl"
                 placeholder="Treść wiadomości"
-                rows="5"
+                rows="3"
                 style={{
                   border: "none",
                   boxShadow: "none",
                   position: "relative",
                   zIndex: 1, // Lower z-index so border is above
-                  minHeight: 120,
-                  fontSize: "1.1rem",
+                  minHeight: 80,
+                  fontSize: "1.05rem",
                   background: "rgba(31,31,31,1)",
                   width: "calc(100% - 4px)",
                   left: 2,
@@ -293,39 +335,66 @@ export default function Section5() {
         <div className="extraordinary-animation-glow-right-purple" />
       </div>
 
-      {/* Social media icons remain the same */}
-      {/* <div className="flex flex-row mt-3 gap-3">
+      {/* Instagram quick-contact block (glassmorphism + same animation behavior) */}
+      <div
+        ref={igRef}
+        className={`extraordinary-animation-wrapper${
+          igIsHardReset
+            ? " extraordinary-animation-reset"
+            : igIsResetting
+              ? ""
+              : `${igWhiteActive ? " extraordinary-animation-active" : ""}${
+                  igPurpleActive ? " extraordinary-animation-active-purple" : ""
+                }${igHideWhite ? " extraordinary-animation-hide-white" : ""}`
+        } glassmorphism w-full max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl relative mt-6`}
+        style={{
+          opacity: inViewIg ? 1 : 0,
+          transform: inViewIg ? "translateY(0)" : "translateY(60px)",
+          transition: "opacity 0.7s, transform 0.7s",
+          borderRadius: 3,
+          height: 150,
+          minHeight: 150,
+          maxHeight: 150,
+          marginBottom: 160,
+        }}
+      >
         <a
-          href="https://facebook.com"
-          className="hover:scale-110 transform transition"
+          href="https://www.instagram.com/vatro_visuals/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full h-full flex items-center justify-center gap-4 text-[#f2f2f2] text-xl lg:text-2xl font-lexend"
+          style={{ textDecoration: "none" }}
         >
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
-            alt="Facebook"
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
             className="w-10 h-10"
-          />
+            style={{ color: "#f2f2f2" }}
+          >
+            <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zM12 7.25a4.75 4.75 0 1 1 0 9.5 4.75 4.75 0 0 1 0-9.5zm0 1.5a3.25 3.25 0 1 0 0 6.5 3.25 3.25 0 0 0 0-6.5zM17.5 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+          </svg>
+          <span>Lub napisz do mnie na IG</span>
         </a>
-        <a
-          href="https://www.instagram.com/vatro_visuals/?hl=pl"
-          className="hover:scale-110 transform transition"
-        >
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
-            alt="Instagram"
-            className="w-10 h-10"
-          />
-        </a>
-        <a
-          href="https://youtube.com"
-          className="hover:scale-110 transform transition"
-        >
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/4/42/YouTube_icon_%282013-2017%29.png"
-            alt="YouTube"
-            className="w-10 h-10"
-          />
-        </a>
-      </div> */}
+        {/* WHITE PHASE: border + glow elements */}
+        <div className="extraordinary-animation-border-top-white" />
+        <div className="extraordinary-animation-border-bottom-white" />
+        <div className="extraordinary-animation-border-left-white" />
+        <div className="extraordinary-animation-border-right-white" />
+        <div className="extraordinary-animation-glow-top-white" />
+        <div className="extraordinary-animation-glow-bottom-white" />
+        <div className="extraordinary-animation-glow-left-white" />
+        <div className="extraordinary-animation-glow-right-white" />
+        {/* PURPLE PHASE: border + glow elements */}
+        <div className="extraordinary-animation-border-top-purple" />
+        <div className="extraordinary-animation-border-bottom-purple" />
+        <div className="extraordinary-animation-border-left-purple" />
+        <div className="extraordinary-animation-border-right-purple" />
+        <div className="extraordinary-animation-glow-top-purple" />
+        <div className="extraordinary-animation-glow-bottom-purple" />
+        <div className="extraordinary-animation-glow-left-purple" />
+        <div className="extraordinary-animation-glow-right-purple" />
+      </div>
       {/* Scroll to LogoAnimation button */}
 
       <div
@@ -359,6 +428,20 @@ export default function Section5() {
             </svg>
           }
         />
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          zIndex: 30,
+          bottom: 8,
+          left: "50%",
+          transform: "translateX(-50%)",
+          color: "#f2f2f2",
+          fontSize: "0.9rem",
+          textAlign: "center",
+        }}
+      >
+        Strona współtworzona z - michal.mibant@gmail.com
       </div>
     </section>
   );

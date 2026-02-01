@@ -309,7 +309,9 @@ body {
   z-index: 10;
   background: transparent;
   color: #f2f2f2;
-  transition: transform 0.2s ease, color 0.3s ease;
+  transition:
+    transform 0.2s ease,
+    color 0.3s ease;
   white-space: normal;
   font-weight: 500;
   min-width: unset;
@@ -686,19 +688,27 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 /* Szybkie animacje: width/height i opacity równo (dla glow) */
 .border-white-glow-top,
 .border-white-glow-bottom {
-  transition: width 0.6s linear, opacity 0.6s !important;
+  transition:
+    width 0.6s linear,
+    opacity 0.6s !important;
 }
 .border-white-glow-left,
 .border-white-glow-right {
-  transition: height 0.6s linear, opacity 0.6s !important;
+  transition:
+    height 0.6s linear,
+    opacity 0.6s !important;
 }
 .border-purple-glow-top,
 .border-purple-glow-bottom {
-  transition: width 0.6s linear, opacity 0.6s !important;
+  transition:
+    width 0.6s linear,
+    opacity 0.6s !important;
 }
 .border-purple-glow-left,
 .border-purple-glow-right {
-  transition: height 0.6s linear, opacity 0.6s !important;
+  transition:
+    height 0.6s linear,
+    opacity 0.6s !important;
 }
 
 /* Stan aktywny - pokazanie borderów */
@@ -794,7 +804,9 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-shadow: 0 0 8px 2px #f2f2f2;
   opacity: 0.7;
   z-index: 5;
-  transition: width 0.6s linear, opacity 0.3s;
+  transition:
+    width 0.6s linear,
+    opacity 0.3s;
   transition-delay: 0s, 0s !important;
 }
 .border-white-glow-bottom {
@@ -808,7 +820,9 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-shadow: 0 0 8px 2px #f2f2f2;
   opacity: 0.7;
   z-index: 5;
-  transition: width 0.6s linear, opacity 0.3s;
+  transition:
+    width 0.6s linear,
+    opacity 0.3s;
   transition-delay: 0s, 0s !important;
 }
 .border-white-glow-left {
@@ -822,7 +836,9 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-shadow: 0 0 8px 2px #f2f2f2;
   opacity: 0.7;
   z-index: 5;
-  transition: height 0.6s linear, opacity 0.3s;
+  transition:
+    height 0.6s linear,
+    opacity 0.3s;
   transition-delay: 0s, 0s !important;
 }
 .border-white-glow-right {
@@ -837,7 +853,9 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-shadow: 0 0 8px 2px #f2f2f2;
   opacity: 0.7;
   z-index: 5;
-  transition: height 30s linear, opacity 30s linear !important;
+  transition:
+    height 30s linear,
+    opacity 30s linear !important;
   transition-delay: 0s, 0s !important;
 }
 
@@ -852,7 +870,9 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-shadow: 0 0 12px 3px #6a00d1;
   opacity: 0.7;
   z-index: 5;
-  transition: width 0.6s linear, opacity 0.6s !important;
+  transition:
+    width 0.6s linear,
+    opacity 0.6s !important;
 }
 .border-purple-glow-bottom {
   position: absolute;
@@ -865,7 +885,9 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-shadow: 0 0 12px 3px #6a00d1;
   opacity: 0.7;
   z-index: 5;
-  transition: width 0.6s linear, opacity 0.6s !important;
+  transition:
+    width 0.6s linear,
+    opacity 0.6s !important;
 }
 .border-purple-glow-left {
   position: absolute;
@@ -878,7 +900,9 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-shadow: 0 0 12px 3px #6a00d1;
   opacity: 0.7;
   z-index: 5;
-  transition: height 0.6s linear, opacity 0.6s !important;
+  transition:
+    height 0.6s linear,
+    opacity 0.6s !important;
 }
 .border-purple-glow-right {
   position: absolute;
@@ -892,7 +916,9 @@ section#section5 input.button-border-content:-moz-autofill:focus {
   box-shadow: 0 0 12px 3px #6a00d1;
   opacity: 0.7;
   z-index: 5;
-  transition: height 30s linear, opacity 30s linear !important;
+  transition:
+    height 30s linear,
+    opacity 30s linear !important;
   transition-delay: 30s, 30s !important;
 }
 
@@ -1004,22 +1030,30 @@ section#section5 input.button-border-content:-moz-autofill:focus {
 /* Glow: width/height i opacity równo */
 .border-3x-slow .border-white-glow-top,
 .border-3x-slow .border-white-glow-bottom {
-  transition: width 30s linear, opacity 30s linear !important;
+  transition:
+    width 30s linear,
+    opacity 30s linear !important;
   transition-delay: 0s, 0s !important;
 }
 .border-3x-slow .border-white-glow-left,
 .border-3x-slow .border-white-glow-right {
-  transition: height 30s linear, opacity 30s linear !important;
+  transition:
+    height 30s linear,
+    opacity 30s linear !important;
   transition-delay: 0s, 0s !important;
 }
 .border-3x-slow .border-purple-glow-top,
 .border-3x-slow .border-purple-glow-bottom {
-  transition: width 30s linear, opacity 30s linear !important;
+  transition:
+    width 30s linear,
+    opacity 30s linear !important;
   transition-delay: 30s, 30s !important;
 }
 .border-3x-slow .border-purple-glow-left,
 .border-3x-slow .border-purple-glow-right {
-  transition: height 30s linear, opacity 30s linear !important;
+  transition:
+    height 30s linear,
+    opacity 30s linear !important;
   transition-delay: 30s, 30s !important;
 }
 
@@ -1250,7 +1284,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-radius: 3px 3px 0 0;
   box-shadow: none;
   z-index: 10;
-  transition: width 3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s !important;
+  transition:
+    width 3s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0s !important;
   transition-delay: 0s !important;
 }
 .extraordinary-animation-glow-top-white {
@@ -1271,7 +1307,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-radius: 0 0 3px 3px;
   box-shadow: none;
   z-index: 10;
-  transition: width 3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s !important;
+  transition:
+    width 3s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0s !important;
   transition-delay: 0s !important;
 }
 .extraordinary-animation-glow-bottom-white {
@@ -1292,7 +1330,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-radius: 3px 0 0 3px;
   box-shadow: none;
   z-index: 10;
-  transition: height 3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s !important;
+  transition:
+    height 3s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0s !important;
   transition-delay: 0s !important;
 }
 .extraordinary-animation-glow-left-white {
@@ -1313,7 +1353,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-radius: 0 3px 3px 0;
   box-shadow: none;
   z-index: 10;
-  transition: height 3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s !important;
+  transition:
+    height 3s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0s !important;
   transition-delay: 0s !important;
 }
 .extraordinary-animation-glow-right-white {
@@ -1335,7 +1377,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-radius: 3px 3px 0 0;
   box-shadow: none;
   z-index: 11;
-  transition: width 3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s !important;
+  transition:
+    width 3s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0s !important;
   transition-delay: 0s !important;
 }
 .extraordinary-animation-glow-top-purple {
@@ -1356,7 +1400,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-radius: 0 0 3px 3px;
   box-shadow: none;
   z-index: 11;
-  transition: width 3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s !important;
+  transition:
+    width 3s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0s !important;
   transition-delay: 0s !important;
 }
 .extraordinary-animation-glow-bottom-purple {
@@ -1377,7 +1423,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-radius: 3px 0 0 3px;
   box-shadow: none;
   z-index: 11;
-  transition: height 3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s !important;
+  transition:
+    height 3s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0s !important;
   transition-delay: 0s !important;
 }
 .extraordinary-animation-glow-left-purple {
@@ -1398,7 +1446,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-radius: 0 3px 3px 0;
   box-shadow: none;
   z-index: 11;
-  transition: height 3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s !important;
+  transition:
+    height 3s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0s !important;
   transition-delay: 0s !important;
 }
 .extraordinary-animation-glow-right-purple {
@@ -1546,8 +1596,8 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   width: 100%;
   opacity: 1;
   transform-origin: right;
-  animation: extraordinary-glow-shrink-width 3s cubic-bezier(0.19, 1, 0.22, 1)
-      forwards,
+  animation:
+    extraordinary-glow-shrink-width 3s cubic-bezier(0.19, 1, 0.22, 1) forwards,
     extraordinary-white-dim-extra 0.1s linear 0s forwards;
   animation-fill-mode: forwards;
 }
@@ -1556,8 +1606,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   width: 100%;
   opacity: 1;
   transform-origin: left;
-  animation: extraordinary-glow-shrink-width-bottom 3s
-      cubic-bezier(0.19, 1, 0.22, 1) forwards,
+  animation:
+    extraordinary-glow-shrink-width-bottom 3s cubic-bezier(0.19, 1, 0.22, 1)
+      forwards,
     extraordinary-white-dim-extra 0.1s linear 0s forwards;
   animation-fill-mode: forwards;
 }
@@ -1566,8 +1617,8 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   height: 100%;
   opacity: 1;
   transform-origin: bottom;
-  animation: extraordinary-glow-shrink-height 3s cubic-bezier(0.19, 1, 0.22, 1)
-      forwards,
+  animation:
+    extraordinary-glow-shrink-height 3s cubic-bezier(0.19, 1, 0.22, 1) forwards,
     extraordinary-white-dim-extra 0.1s linear 0s forwards;
   animation-fill-mode: forwards;
 }
@@ -1576,8 +1627,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   height: 100%;
   opacity: 1;
   transform-origin: top;
-  animation: extraordinary-glow-shrink-height-right 3s
-      cubic-bezier(0.19, 1, 0.22, 1) forwards,
+  animation:
+    extraordinary-glow-shrink-height-right 3s cubic-bezier(0.19, 1, 0.22, 1)
+      forwards,
     extraordinary-white-dim-extra 0.1s linear 0s forwards;
   animation-fill-mode: forwards;
 }
@@ -1636,7 +1688,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-radius: 3px 3px 0 0;
   box-shadow: none;
   z-index: 9;
-  transition: width 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
+  transition:
+    width 1s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0s;
   transition-delay: 0s;
 }
 .unusual-animation-glow-top-white {
@@ -1657,7 +1711,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-radius: 0 0 3px 3px;
   box-shadow: none;
   z-index: 9;
-  transition: width 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
+  transition:
+    width 1s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0s;
   transition-delay: 0s;
 }
 .unusual-animation-glow-bottom-white {
@@ -1678,7 +1734,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-radius: 3px 0 0 3px;
   box-shadow: none;
   z-index: 9;
-  transition: height 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
+  transition:
+    height 1s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0s;
   transition-delay: 0s;
 }
 .unusual-animation-glow-left-white {
@@ -1699,7 +1757,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-radius: 0 3px 3px 0;
   box-shadow: none;
   z-index: 9;
-  transition: height 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
+  transition:
+    height 1s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0s;
   transition-delay: 0s;
 }
 .unusual-animation-glow-right-white {
@@ -1721,7 +1781,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-radius: 3px 3px 0 0;
   box-shadow: none;
   z-index: 11;
-  transition: width 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
+  transition:
+    width 1s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0s;
   transition-delay: 1s;
 }
 .unusual-animation-glow-top-purple {
@@ -1742,7 +1804,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-radius: 0 0 3px 3px;
   box-shadow: none;
   z-index: 11;
-  transition: width 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
+  transition:
+    width 1s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0s;
   transition-delay: 1s;
 }
 .unusual-animation-glow-bottom-purple {
@@ -1763,7 +1827,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-radius: 3px 0 0 3px;
   box-shadow: none;
   z-index: 11;
-  transition: height 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
+  transition:
+    height 1s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0s;
   transition-delay: 1s;
 }
 .unusual-animation-glow-left-purple {
@@ -1784,7 +1850,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   border-radius: 0 3px 3px 0;
   box-shadow: none;
   z-index: 11;
-  transition: height 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0s;
+  transition:
+    height 1s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0s;
   transition-delay: 1s;
 }
 .unusual-animation-glow-right-purple {
@@ -1926,8 +1994,8 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   width: 100%;
   opacity: 1;
   transform-origin: right;
-  animation: unusual-glow-shrink-width 1s cubic-bezier(0.19, 1, 0.22, 1) 1s
-      forwards,
+  animation:
+    unusual-glow-shrink-width 1s cubic-bezier(0.19, 1, 0.22, 1) 1s forwards,
     unusual-white-dim 0.1s linear 1s forwards;
   animation-fill-mode: forwards;
 }
@@ -1937,8 +2005,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   width: 100%;
   opacity: 1;
   transform-origin: left;
-  animation: unusual-glow-shrink-width-bottom 1s cubic-bezier(0.19, 1, 0.22, 1)
-      1s forwards,
+  animation:
+    unusual-glow-shrink-width-bottom 1s cubic-bezier(0.19, 1, 0.22, 1) 1s
+      forwards,
     unusual-white-dim 0.1s linear 1s forwards;
   animation-fill-mode: forwards;
 }
@@ -1948,8 +2017,8 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   height: 100%;
   opacity: 1;
   transform-origin: bottom;
-  animation: unusual-glow-shrink-height 1s cubic-bezier(0.19, 1, 0.22, 1) 1s
-      forwards,
+  animation:
+    unusual-glow-shrink-height 1s cubic-bezier(0.19, 1, 0.22, 1) 1s forwards,
     unusual-white-dim 0.1s linear 1s forwards;
   animation-fill-mode: forwards;
 }
@@ -1959,8 +2028,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   height: 100%;
   opacity: 1;
   transform-origin: top;
-  animation: unusual-glow-shrink-height-right 1s cubic-bezier(0.19, 1, 0.22, 1)
-      1s forwards,
+  animation:
+    unusual-glow-shrink-height-right 1s cubic-bezier(0.19, 1, 0.22, 1) 1s
+      forwards,
     unusual-white-dim 0.1s linear 1s forwards;
   animation-fill-mode: forwards;
 }
@@ -1985,7 +2055,8 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 .unusual-animation-wrapper:not(:hover) .unusual-animation-glow-bottom-purple,
 .unusual-animation-wrapper:not(:hover) .unusual-animation-glow-left-purple,
 .unusual-animation-wrapper:not(:hover) .unusual-animation-glow-right-purple {
-  transition: width 0.3s cubic-bezier(0.39, 0.575, 0.565, 1),
+  transition:
+    width 0.3s cubic-bezier(0.39, 0.575, 0.565, 1),
     height 0.3s cubic-bezier(0.39, 0.575, 0.565, 1),
     opacity 0.3s cubic-bezier(0.39, 0.575, 0.565, 1);
   width: 0;
@@ -2002,7 +2073,8 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 .unusual-animation-wrapper:not(:hover) .unusual-animation-glow-bottom-white,
 .unusual-animation-wrapper:not(:hover) .unusual-animation-glow-left-white,
 .unusual-animation-wrapper:not(:hover) .unusual-animation-glow-right-white {
-  transition: width 0.3s cubic-bezier(0.39, 0.575, 0.565, 1),
+  transition:
+    width 0.3s cubic-bezier(0.39, 0.575, 0.565, 1),
     height 0.3s cubic-bezier(0.39, 0.575, 0.565, 1),
     opacity 0.3s cubic-bezier(0.39, 0.575, 0.565, 1);
   width: 0;
@@ -2087,7 +2159,8 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 .unusual-animation-wrapper:hover .glitch-stack span {
   color: #6a00d1 !important;
   transition: color 1.5s ease-in-out;
-  animation: glitch-stack 1s cubic-bezier(0.46, 0.29, 0, 1.24) 1 backwards
+  animation:
+    glitch-stack 1s cubic-bezier(0.46, 0.29, 0, 1.24) 1 backwards
       calc(var(--index) * 120ms),
     glitch-stack-glitch 1s ease infinite 3s alternate-reverse;
 }
@@ -2108,7 +2181,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   0% {
     opacity: 0;
     transform: translateX(-30px);
-    text-shadow: -2px 3px 0 #f2f2f2, 2px -3px 0 #6a00d1;
+    text-shadow:
+      -2px 3px 0 #f2f2f2,
+      2px -3px 0 #6a00d1;
   }
   60% {
     opacity: 0.5;
@@ -2117,7 +2192,9 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
   80% {
     transform: none;
     opacity: 1;
-    text-shadow: 2px -3px 0 #f2f2f2, -2px 3px 0 #6a00d1;
+    text-shadow:
+      2px -3px 0 #f2f2f2,
+      -2px 3px 0 #6a00d1;
   }
   100% {
     text-shadow: none;
@@ -2126,11 +2203,15 @@ Zamiast .fading na pojedynczych elementach, animacja fading będzie uruchamiana 
 
 @keyframes glitch-stack-glitch {
   0% {
-    text-shadow: -2px 3px 0 #6a00d1, 2px -3px 0 #f2f2f2;
+    text-shadow:
+      -2px 3px 0 #6a00d1,
+      2px -3px 0 #f2f2f2;
     transform: translate(var(--glitch-translate));
   }
   2% {
-    text-shadow: 2px -3px 0 #6a00d1, -2px 3px 0 #f2f2f2;
+    text-shadow:
+      2px -3px 0 #6a00d1,
+      -2px 3px 0 #f2f2f2;
   }
   10%,
   100% {
