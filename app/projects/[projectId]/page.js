@@ -480,7 +480,7 @@ export default function ProjectPage({ params }) {
           marginBottom: 32,
         }}
       >
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-center font-lexend text-[#f2f2f2] mb-4">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-center text-[#f2f2f2] mb-4">
           {project.title}
         </h1>
         <div className="text-lg md:text-xl text-center font-lexend font-light text-gray-300 mb-4">
