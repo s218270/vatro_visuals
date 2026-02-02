@@ -229,7 +229,7 @@ export default function Section5() {
             <div style={{ borderRadius: 3, padding: 0 }}>
               <label
                 htmlFor="email"
-                className="block text-base sm:text-lg md:text-xl lg:text-2xl font-medium text-gray-500 appear"
+                className="block text-base sm:text-lg md:text-xl lg:text-2xl font-medium text-[#f2f2f2] appear"
                 style={{
                   marginLeft: 12,
                   marginTop: 8,
@@ -270,7 +270,7 @@ export default function Section5() {
             <div style={{ borderRadius: 3, padding: 0 }}>
               <label
                 htmlFor="message"
-                className="block text-base sm:text-lg md:text-xl lg:text-2xl font-medium text-gray-500 appear"
+                className="block text-base sm:text-lg md:text-xl lg:text-2xl font-medium text-[#f2f2f2] appear"
                 style={{
                   marginLeft: 12,
                   marginTop: 8,
@@ -365,15 +365,12 @@ export default function Section5() {
           className="w-full h-full flex items-center justify-center gap-4 text-[#f2f2f2] text-xl lg:text-2xl font-lexend"
           style={{ textDecoration: "none" }}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
+          <img
+            src="/Instagram_Fill.svg"
+            alt="Instagram"
             className="w-10 h-10"
-            style={{ color: "#f2f2f2" }}
-          >
-            <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zM12 7.25a4.75 4.75 0 1 1 0 9.5 4.75 4.75 0 0 1 0-9.5zm0 1.5a3.25 3.25 0 1 0 0 6.5 3.25 3.25 0 0 0 0-6.5zM17.5 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
-          </svg>
+            style={{ display: "block" }}
+          />
           <span>Lub napisz do mnie na IG</span>
         </a>
         {/* WHITE PHASE: border + glow elements */}
@@ -430,6 +427,7 @@ export default function Section5() {
         />
       </div>
       <div
+        className="font-thin"
         style={{
           position: "absolute",
           zIndex: 30,
@@ -437,7 +435,7 @@ export default function Section5() {
           left: "50%",
           transform: "translateX(-50%)",
           color: "#f2f2f2",
-          fontSize: "0.9rem",
+          fontSize: "0.8rem",
           textAlign: "center",
         }}
       >

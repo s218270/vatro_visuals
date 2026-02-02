@@ -433,8 +433,8 @@ export default function ProjectPage({ params }) {
                 backgroundRepeat: "repeat-y",
                 backgroundSize: "100% auto",
                 backgroundPosition: "center top",
-                filter: "blur(40px)",
-                transform: "scale(1.03)",
+                filter: "blur(120px)",
+                transform: "scale(1.06)",
                 transition: "opacity 0.4s ease-in-out, transform 0.4s",
                 opacity: loaded.main ? 1 : 0,
                 zIndex: -1,
@@ -619,10 +619,7 @@ export default function ProjectPage({ params }) {
                         const isAuto = typeField === "mp4auto";
 
                         return (
-                          <div
-                            key={j}
-                            className={j > 0 ? "w-full mt-2" : "w-full"}
-                          >
+                          <div key={j} className={j > 0 ? "w-full" : "w-full"}>
                             {isImageLocal && url && (
                               <img
                                 src={url}
