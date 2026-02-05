@@ -626,6 +626,8 @@ export default function ProjectPage({ params }) {
                                 alt={
                                   file.description || `File ${idx + 1}-${j + 1}`
                                 }
+                                loading="lazy"
+                                decoding="async"
                                 onLoad={() => handleFileImageLoad(idx)}
                                 onError={() => handleFileImageLoad(idx)}
                                 style={{
@@ -644,6 +646,7 @@ export default function ProjectPage({ params }) {
                                 muted={isAuto}
                                 loop={isAuto}
                                 playsInline={isAuto}
+                                preload="metadata"
                                 style={{
                                   width: "100%",
                                   height: "auto",

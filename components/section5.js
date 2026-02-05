@@ -439,7 +439,7 @@ export default function Section5() {
           textAlign: "center",
         }}
       >
-        Strona współtworzona z - michal.mibant@gmail.com
+        Strona współtworzona z michal.mibant@gmail.com
       </div>
     </section>
   );

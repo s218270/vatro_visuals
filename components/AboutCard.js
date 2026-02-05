@@ -56,7 +56,7 @@ function AboutCard({ inView, omnieRef }) {
             : `${whiteActive ? " extraordinary-animation-active" : ""}${
                 purpleActive ? " extraordinary-animation-active-purple" : ""
               }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
-      } glassmorphism w-full flex flex-col flex-1`}
+      } glassmorphism w-full flex flex-col lg:flex-1`}
       style={{
         position: "relative",
         borderRadius: 3,

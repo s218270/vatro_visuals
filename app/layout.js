@@ -18,6 +18,11 @@ export const metadata = {
     "Vatro Visuals – Portfolio grafika komputerowego | 3D, animacja, branding",
   description:
     "Portfolio grafika komputerowego Vatro_Visuals. Projekty 3D, animacje, branding, motion design, grafika użytkowa. Zobacz realizacje i skontaktuj się!",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/vatro_visuals_website_icon.png?v=4",
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -52,6 +57,28 @@ export default function RootLayout({ children }) {
           property="og:title"
           content="Vatro Visuals – Portfolio grafika komputerowego | 3D, animacja, branding"
         />
+        {/* Favicons: prefer /favicon.ico, keep PNG as fallback for apple/touch */}
+        <link rel="icon" href="/favicon.ico" />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/vatro_visuals_website_icon.png?v=3"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/vatro_visuals_website_icon.png?v=3"
+        />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/vatro_visuals_website_icon.png?v=3"
+        />
+        <meta name="theme-color" content="#080808" />
+        {/* Inline SVG removed; using versioned PNG favicons instead */}
         <meta
           property="og:description"
           content="Portfolio grafika komputerowego Vatro_Visuals. Projekty 3D, animacje, branding, motion design, grafika użytkowa. Zobacz realizacje i skontaktuj się!"
@@ -84,6 +111,7 @@ export default function RootLayout({ children }) {
           href="/Logo%20Merged.svg"
           type="image/svg+xml"
         />
+        {/* removed duplicate favicon links */}
         {/* ...other meta tags... */}
       </head>
       <body
