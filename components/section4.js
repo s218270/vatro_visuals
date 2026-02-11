@@ -440,7 +440,7 @@ export default function Section4({ scrollToSection }) {
                     );
                   }}
                 >
-                  <a
+                  <Link
                     href={`/projects/${project.id}`}
                     className="w-full h-full"
                     style={{ display: "block", height: "100%" }}
@@ -601,7 +601,7 @@ export default function Section4({ scrollToSection }) {
                         </PreventDownloadWrapper>
                       </div>
                     </GlitchButton>
-                  </a>
+                  </Link>
                 </div>
               );
             })}
@@ -665,15 +665,8 @@ export default function Section4({ scrollToSection }) {
                 alignItems: "center",
               }}
               text={
-                <a
+                <Link
                   href="/projects"
-                  style={{
-                    position: "relative",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: "16px 24px",
-                  }}
                   onClick={(e) => {
                     if (
                       e.button === 0 &&
@@ -686,9 +679,16 @@ export default function Section4({ scrollToSection }) {
                       window.location.href = "/projects";
                     }
                   }}
+                  style={{
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "16px 24px",
+                  }}
                 >
                   Zobacz wszystkie projekty
-                </a>
+                </Link>
               }
             />
           </div>

@@ -334,17 +334,8 @@ export default function ProjectPage({ params }) {
           <GlitchButton
             styles={{ padding: "0" }}
             text={
-              <a
+              <Link
                 href="/projects"
-                style={{
-                  position: "relative",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "100%",
-                  height: "100%",
-                  padding: "16px 24px",
-                }}
                 onClick={(e) => {
                   if (
                     e.button === 0 &&
@@ -356,6 +347,15 @@ export default function ProjectPage({ params }) {
                     e.preventDefault();
                     window.location.href = "/projects";
                   }
+                }}
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "100%",
+                  height: "100%",
+                  padding: "16px 24px",
                 }}
               >
                 <svg
@@ -373,7 +373,7 @@ export default function ProjectPage({ params }) {
                     d="M19 9l-7 7-7-7"
                   />
                 </svg>
-              </a>
+              </Link>
             }
           />
         </div>

@@ -74,7 +74,7 @@ export default function ProjectsPage() {
           <GlitchButton
             styles={{ padding: "0" }}
             text={
-              <a
+              <Link
                 href="/"
                 style={{
                   position: "relative",
@@ -111,7 +111,7 @@ export default function ProjectsPage() {
                     d="M19 9l-7 7-7-7"
                   />
                 </svg>
-              </a>
+              </Link>
             }
           />
         </div>
@@ -128,7 +128,7 @@ export default function ProjectsPage() {
                 paddingX: "0 !important",
               }}
             >
-              <a
+              <Link
                 href={`/projects/${project.id}`}
                 className="block h-full w-full"
                 style={{ height: "100%" }}
@@ -216,7 +216,7 @@ export default function ProjectsPage() {
                     </p>
                   </div>
                 </div>
-              </a>
+              </Link>
             </GlitchButton>
           </div>
         ))}
