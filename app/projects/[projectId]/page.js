@@ -199,55 +199,6 @@ export default function ProjectPage({ params }) {
   const infoResetTimeout = useRef();
   const infoHardResetTimeout = useRef();
 
-  // scope ref for querying video elements within this page
-  const containerRef = useRef(null);
-
-  // Ensure mobile/inline playback attributes exist on rendered <video> elements.
-  // This addresses iOS/Android quirks where inline autoplay is only allowed
-  // when `playsinline` / `webkit-playsinline` are present and the video is muted.
-  useEffect(() => {
-    if (typeof window === "undefined" || !project) return;
-    const root = containerRef.current || document;
-    const vids = root.querySelectorAll("video");
-    vids.forEach((v) => {
-      try {
-        v.setAttribute("playsinline", "");
-        v.setAttribute("webkit-playsinline", "true");
-        v.playsInline = true;
-        // ensure muted for autoplay-capable videos
-        const hasAutoplayAttr = v.getAttribute("autoplay") !== null;
-        if (hasAutoplayAttr) v.muted = true;
-        // attempt to play muted autoplay videos; handle promise rejection gracefully
-        if (hasAutoplayAttr && v.muted) {
-          const p = v.play();
-          if (p && typeof p.then === "function") {
-            p.then(() => {
-              // eslint-disable-next-line no-console
-              console.log("Autoplay started for:", v.currentSrc || v.src);
-            }).catch((err) => {
-              // eslint-disable-next-line no-console
-              console.warn(
-                "Autoplay prevented for:",
-                v.currentSrc || v.src,
-                err,
-              );
-            });
-          }
-        }
-        // eslint-disable-next-line no-console
-        console.log("Video attrs ensured:", v.currentSrc || v.src, {
-          playsinline: v.getAttribute("playsinline"),
-          webkit: v.getAttribute("webkit-playsinline"),
-          muted: v.muted,
-          autoplay: v.getAttribute("autoplay"),
-        });
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.warn("Failed to set video attributes:", e);
-      }
-    });
-  }, [project]);
-
   // derive visible: show on initial page load until measurement completes
   const infoVisible = infoMeasured ? inViewInfo : true;
 
@@ -286,6 +237,39 @@ export default function ProjectPage({ params }) {
   }, [infoVisible]);
 
   // Reusable animated frame component for files and other blocks
+
+  // scope ref so we don't accidentally touch videos outside this page (navbar/logo)
+  const containerRef = useRef(null);
+
+  // Ensure only project-scoped videos get inline playback attributes.
+  // NOTE: do NOT call `play()` here — calling play() can trigger fullscreen/native
+  // player on some mobile browsers if applied to the wrong element (logo, etc.).
+  useEffect(() => {
+    if (typeof window === "undefined" || !project) return;
+    const root = containerRef.current || document;
+    const vids = root.querySelectorAll("video[data-project-video]");
+    vids.forEach((v) => {
+      try {
+        v.setAttribute("playsinline", "");
+        v.setAttribute("webkit-playsinline", "true");
+        v.playsInline = true;
+        // ensure muted for autoplay-capable videos
+        const hasAutoplayAttr = v.getAttribute("autoplay") !== null;
+        if (hasAutoplayAttr) v.muted = true;
+        // log only for diagnostics
+        // eslint-disable-next-line no-console
+        console.log("Project video attrs set:", v.currentSrc || v.src, {
+          playsinline: v.getAttribute("playsinline"),
+          webkit: v.getAttribute("webkit-playsinline"),
+          muted: v.muted,
+          autoplay: v.getAttribute("autoplay"),
+        });
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn("Failed to set project video attrs:", e);
+      }
+    });
+  }, [project]);
 
   // Helper to get image url from mainImage (supports string or storage reference)
   function getImageUrl(mainImage) {
@@ -447,6 +431,7 @@ export default function ProjectPage({ params }) {
               ) : (
                 <video
                   src="/Loading_WWW.webm"
+                  data-project-video
                   autoPlay
                   loop
                   muted
@@ -658,6 +643,7 @@ export default function ProjectPage({ params }) {
                           ) : (
                             <video
                               src="/Loading_WWW.webm"
+                              data-project-video
                               autoPlay
                               loop
                               muted
@@ -714,6 +700,7 @@ export default function ProjectPage({ params }) {
                             )}
                             {isVideoLocal && url && (
                               <video
+                                data-project-video
                                 src={url}
                                 controls={!isAuto}
                                 autoPlay={isAuto}
