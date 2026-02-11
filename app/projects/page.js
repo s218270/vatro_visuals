@@ -74,7 +74,7 @@ export default function ProjectsPage() {
           <GlitchButton
             styles={{ padding: "0" }}
             text={
-              <Link
+              <a
                 href="/"
                 style={{
                   position: "relative",
@@ -82,6 +82,18 @@ export default function ProjectsPage() {
                   alignItems: "center",
                   justifyContent: "center",
                   padding: "16px 24px",
+                }}
+                onClick={(e) => {
+                  if (
+                    e.button === 0 &&
+                    !e.metaKey &&
+                    !e.ctrlKey &&
+                    !e.shiftKey &&
+                    !e.altKey
+                  ) {
+                    e.preventDefault();
+                    window.location.href = "/";
+                  }
                 }}
               >
                 <svg
@@ -99,7 +111,7 @@ export default function ProjectsPage() {
                     d="M19 9l-7 7-7-7"
                   />
                 </svg>
-              </Link>
+              </a>
             }
           />
         </div>
@@ -116,10 +128,22 @@ export default function ProjectsPage() {
                 paddingX: "0 !important",
               }}
             >
-              <Link
+              <a
                 href={`/projects/${project.id}`}
                 className="block h-full w-full"
                 style={{ height: "100%" }}
+                onClick={(e) => {
+                  if (
+                    e.button === 0 &&
+                    !e.metaKey &&
+                    !e.ctrlKey &&
+                    !e.shiftKey &&
+                    !e.altKey
+                  ) {
+                    e.preventDefault();
+                    window.location.href = `/projects/${project.id}`;
+                  }
+                }}
               >
                 <div
                   className={`glassmorphism w-full h-64 flex flex-col justify-end relative transition-all duration-200 group-hover:scale-105 origin-bottom animate-fade-in`}
@@ -192,7 +216,7 @@ export default function ProjectsPage() {
                     </p>
                   </div>
                 </div>
-              </Link>
+              </a>
             </GlitchButton>
           </div>
         ))}

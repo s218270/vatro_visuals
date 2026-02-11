@@ -383,7 +383,7 @@ export default function Section3({ speed, scrollToSection }) {
         isScrolling={isScrolling}
       />
       <InfiniteScrollSVGLine
-        src="/Text_Outlines.svg"
+        src="/WWW Text_Outlines_1.svg"
         className="vatro-bg-svg visualsline"
         direction="right" // Opposite direction from first set
         svgWidth={9500}
@@ -422,7 +422,7 @@ export default function Section3({ speed, scrollToSection }) {
       />
       {/* Bottom line: center SVG at right: 0, scrolls left */}
       <InfiniteScrollSVGLine
-        src="/Text_Outlines.svg"
+        src="/WWW Text_Outlines_1.svg"
         className="vatro-bg-svg visualsline"
         direction="left"
         svgWidth={9500}

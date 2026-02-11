@@ -151,6 +151,13 @@ export default function ProjectPage({ params }) {
       // Fetch only the single project document to avoid loading all docs
       const found = await getProjectById(projectId);
       setProject(found);
+      // Debug: log fetched project object and files to console
+      // so we can inspect exactly what is returned from the DB.
+      // This prints the whole project object and the files array.
+      // eslint-disable-next-line no-console
+      console.log("Fetched project:", found);
+      // eslint-disable-next-line no-console
+      console.log("Project files:", found?.files);
       setLoaded({
         main: false,
         files:
@@ -319,7 +326,7 @@ export default function ProjectPage({ params }) {
 
   return (
     <div
-      className="min-h-screen bg-transparent text-[#f2f2f2] p-0 pt-0 w-full relative"
+      className="min-h-screen bg-[#080808] text-[#f2f2f2] p-0 pt-0 w-full relative"
       style={{ overflow: "hidden" }}
     >
       <div className="w-full flex items-start mt-4" style={{ height: 56 }}>
@@ -327,7 +334,7 @@ export default function ProjectPage({ params }) {
           <GlitchButton
             styles={{ padding: "0" }}
             text={
-              <Link
+              <a
                 href="/projects"
                 style={{
                   position: "relative",
@@ -337,6 +344,18 @@ export default function ProjectPage({ params }) {
                   width: "100%",
                   height: "100%",
                   padding: "16px 24px",
+                }}
+                onClick={(e) => {
+                  if (
+                    e.button === 0 &&
+                    !e.metaKey &&
+                    !e.ctrlKey &&
+                    !e.shiftKey &&
+                    !e.altKey
+                  ) {
+                    e.preventDefault();
+                    window.location.href = "/projects";
+                  }
                 }}
               >
                 <svg
@@ -354,7 +373,7 @@ export default function ProjectPage({ params }) {
                     d="M19 9l-7 7-7-7"
                   />
                 </svg>
-              </Link>
+              </a>
             }
           />
         </div>
@@ -402,7 +421,7 @@ export default function ProjectPage({ params }) {
               left: 0,
               right: 0,
               bottom: 0,
-              zIndex: -2,
+              zIndex: 0,
               pointerEvents: "none",
               overflow: "hidden",
             }}
@@ -419,7 +438,7 @@ export default function ProjectPage({ params }) {
                 backgroundPosition: "center top",
                 transition: "opacity 0.4s ease-in-out",
                 opacity: loaded.main ? 1 : 0,
-                zIndex: -2,
+                zIndex: 0,
               }}
             />
 
@@ -437,7 +456,7 @@ export default function ProjectPage({ params }) {
                 transform: "scale(1.06)",
                 transition: "opacity 0.4s ease-in-out, transform 0.4s",
                 opacity: loaded.main ? 1 : 0,
-                zIndex: -1,
+                zIndex: 1,
                 pointerEvents: "none",
                 // mask fades edges to transparent so the blurred halo is hidden
                 maskImage:
@@ -520,19 +539,24 @@ export default function ProjectPage({ params }) {
           {/* files list (each file will be wrapped in animated frame) */}
           <ul className="flex flex-col gap-8 mt-4">
             {project.files.map((file, idx) => {
-              // collect multiple path/path1/path2... and corresponding types
+              // collect multiple path/path1/path2... and pair each with its matching type/type1/type2...
               const paths = [];
-              if (file.path) paths.push(file.path);
-              for (let n = 1; ; n++) {
-                const key = `path${n}`;
-                if (file[key]) paths.push(file[key]);
-                else break;
-              }
-
               const types = [];
-              for (let i = 0; i < paths.length; i++) {
-                const tKey = i === 0 ? "type" : `type${i}`;
-                types.push(file[tKey] || "");
+              // handle base 'path' key
+              if (file.path) {
+                paths.push(file.path);
+                types.push(file.type || "");
+              }
+              // handle numbered keys 'path1'..'pathN' and their corresponding 'type1'..'typeN'
+              for (let n = 1; ; n++) {
+                const pKey = `path${n}`;
+                const tKey = `type${n}`;
+                if (file[pKey]) {
+                  paths.push(file[pKey]);
+                  types.push(file[tKey] || "");
+                } else {
+                  break;
+                }
               }
 
               const getUrl = (p) => {
@@ -645,7 +669,9 @@ export default function ProjectPage({ params }) {
                                 autoPlay={isAuto}
                                 muted={isAuto}
                                 loop={isAuto}
-                                playsInline={isAuto}
+                                playsInline
+                                // ensure webkit inline playback on iOS
+                                webkitPlaysInline
                                 preload="metadata"
                                 style={{
                                   width: "100%",

@@ -440,10 +440,25 @@ export default function Section4({ scrollToSection }) {
                     );
                   }}
                 >
-                  <Link
+                  <a
                     href={`/projects/${project.id}`}
                     className="w-full h-full"
                     style={{ display: "block", height: "100%" }}
+                    onClick={(e) => {
+                      // For left-click without modifiers, force a full navigation
+                      // immediately so the browser switches pages on slow networks.
+                      if (
+                        e.button === 0 &&
+                        !e.metaKey &&
+                        !e.ctrlKey &&
+                        !e.shiftKey &&
+                        !e.altKey
+                      ) {
+                        e.preventDefault();
+                        window.location.href = `/projects/${project.id}`;
+                      }
+                      // Otherwise (middle-click / cmd/ctrl) allow default behavior.
+                    }}
                   >
                     <GlitchButton
                       styles={{
@@ -586,7 +601,7 @@ export default function Section4({ scrollToSection }) {
                         </PreventDownloadWrapper>
                       </div>
                     </GlitchButton>
-                  </Link>
+                  </a>
                 </div>
               );
             })}
@@ -650,7 +665,7 @@ export default function Section4({ scrollToSection }) {
                 alignItems: "center",
               }}
               text={
-                <Link
+                <a
                   href="/projects"
                   style={{
                     position: "relative",
@@ -659,9 +674,21 @@ export default function Section4({ scrollToSection }) {
                     justifyContent: "center",
                     padding: "16px 24px",
                   }}
+                  onClick={(e) => {
+                    if (
+                      e.button === 0 &&
+                      !e.metaKey &&
+                      !e.ctrlKey &&
+                      !e.shiftKey &&
+                      !e.altKey
+                    ) {
+                      e.preventDefault();
+                      window.location.href = "/projects";
+                    }
+                  }}
                 >
                   Zobacz wszystkie projekty
-                </Link>
+                </a>
               }
             />
           </div>
