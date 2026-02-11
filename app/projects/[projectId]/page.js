@@ -199,6 +199,55 @@ export default function ProjectPage({ params }) {
   const infoResetTimeout = useRef();
   const infoHardResetTimeout = useRef();
 
+  // scope ref for querying video elements within this page
+  const containerRef = useRef(null);
+
+  // Ensure mobile/inline playback attributes exist on rendered <video> elements.
+  // This addresses iOS/Android quirks where inline autoplay is only allowed
+  // when `playsinline` / `webkit-playsinline` are present and the video is muted.
+  useEffect(() => {
+    if (typeof window === "undefined" || !project) return;
+    const root = containerRef.current || document;
+    const vids = root.querySelectorAll("video");
+    vids.forEach((v) => {
+      try {
+        v.setAttribute("playsinline", "");
+        v.setAttribute("webkit-playsinline", "true");
+        v.playsInline = true;
+        // ensure muted for autoplay-capable videos
+        const hasAutoplayAttr = v.getAttribute("autoplay") !== null;
+        if (hasAutoplayAttr) v.muted = true;
+        // attempt to play muted autoplay videos; handle promise rejection gracefully
+        if (hasAutoplayAttr && v.muted) {
+          const p = v.play();
+          if (p && typeof p.then === "function") {
+            p.then(() => {
+              // eslint-disable-next-line no-console
+              console.log("Autoplay started for:", v.currentSrc || v.src);
+            }).catch((err) => {
+              // eslint-disable-next-line no-console
+              console.warn(
+                "Autoplay prevented for:",
+                v.currentSrc || v.src,
+                err,
+              );
+            });
+          }
+        }
+        // eslint-disable-next-line no-console
+        console.log("Video attrs ensured:", v.currentSrc || v.src, {
+          playsinline: v.getAttribute("playsinline"),
+          webkit: v.getAttribute("webkit-playsinline"),
+          muted: v.muted,
+          autoplay: v.getAttribute("autoplay"),
+        });
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn("Failed to set video attributes:", e);
+      }
+    });
+  }, [project]);
+
   // derive visible: show on initial page load until measurement completes
   const infoVisible = infoMeasured ? inViewInfo : true;
 
@@ -326,6 +375,7 @@ export default function ProjectPage({ params }) {
 
   return (
     <div
+      ref={containerRef}
       className="min-h-screen bg-[#080808] text-[#f2f2f2] p-0 pt-0 w-full relative"
       style={{ overflow: "hidden" }}
     >
