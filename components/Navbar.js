@@ -108,7 +108,7 @@ export default function Navbar({ scrollToSection }) {
             purple.classList.remove("glitch-out");
             purple.classList.add("glitch-done");
           },
-          { once: true }
+          { once: true },
         );
       };
       wrapper.addEventListener("mouseleave", onMouseLeave);
@@ -123,7 +123,7 @@ export default function Navbar({ scrollToSection }) {
     if (typeof window !== "undefined") {
       const checkMobile = () => {
         setIsMobile(
-          window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent)
+          window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent),
         );
       };
       checkMobile();
@@ -201,10 +201,13 @@ export default function Navbar({ scrollToSection }) {
         </div>
 
         {/* Center spacer sits in middle grid column and will align exactly with the absolutely-positioned logo */}
-        <div className="center-spacer hidden w-24 h-20 pointer-events-none" aria-hidden="true" />
+        <div
+          className="center-spacer hidden w-24 h-20 pointer-events-none"
+          aria-hidden="true"
+        />
 
         {/* Right buttons (desktop) */}
-  <div className="hidden nav-right-group min-w-0 items-center gap-6">
+        <div className="hidden nav-right-group min-w-0 items-center gap-6">
           <div className="h-full px-2 flex items-center justify-center">
             <GlitchButton
               onClick={() => handleNav("section4")}
@@ -221,7 +224,8 @@ export default function Navbar({ scrollToSection }) {
         {/* Video background z fallbackiem na iOS */}
         {/* Center logo — absolutely centered on large screens via .grid-at-940 media rules */}
         {isIOS ? (
-          <span className="logo-wrapper relative w-24 h-20 ml-4 cursor-pointer bg-transparent"
+          <span
+            className="logo-wrapper relative w-24 h-20 ml-4 cursor-pointer bg-transparent"
             onClick={() => handleNav(null)}
             role="img"
             aria-label="Logo"
@@ -336,9 +340,9 @@ export default function Navbar({ scrollToSection }) {
             )}
           </div>
         )}
-  {/* (right group removed — combined into the single desktop group above) */}
-  {/* Hamburger Menu (mobile only, hidden at >=940px) */}
-  <div className="hamburger-toggle mr-6">
+        {/* (right group removed — combined into the single desktop group above) */}
+        {/* Hamburger Menu (mobile only, hidden at >=940px) */}
+        <div className="hamburger-toggle mr-6">
           <button
             onClick={toggleMenu}
             className="focus:outline-none"
@@ -364,11 +368,12 @@ export default function Navbar({ scrollToSection }) {
         </div>
       </div>
       {/* Mobile Menu Dropdown */}
-        {isMenuOpen && (
-        <div className="mobile-sidebar glassmorphism fixed right-0 h-screen mobile-only z-50 open"
+      {isMenuOpen && (
+        <div
+          className="mobile-sidebar glassmorphism fixed right-0 h-screen mobile-only z-50 open"
           style={{
             border: "none",
-            top: "88px", // ustawione na wysokość navbaru (h-24 = 6rem = 96px)
+            top: "80px", // ustawione na wysokość navbaru (h-24 = 6rem = 96px)
             borderRadius: 0,
             width: "80vw", // zwiększona szerokość sidebaru na mobile
             maxWidth: "400px", // opcjonalnie ograniczenie szerokości

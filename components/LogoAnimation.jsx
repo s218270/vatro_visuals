@@ -125,287 +125,263 @@ export default function LogoAnimation({
     new RGBELoader()
       .setDataType(THREE.FloatType)
       .setPath("/hdri/")
-      .load(
-        "stock-photo-degree-full-panorama-environment-map-of-empty-black-room-studio-with-metal-elements-d-re.hdr",
-        (hdrEquirect) => {
-          const envMap =
-            pmremGenerator.fromEquirectangular(hdrEquirect).texture;
-          scene.environment = envMap;
+      .load("Metal_Texture_HDRI.hdr", (hdrEquirect) => {
+        const envMap = pmremGenerator.fromEquirectangular(hdrEquirect).texture;
+        scene.environment = envMap;
 
-          // If the particle prototype or particle groups already exist,
-          // assign the new envMap so cloned GLB particles get proper HDR reflections.
-          try {
-            if (typeof particleProto !== "undefined" && particleProto)
-              particleProto.traverse((c) => {
-                if (c.isMesh && c.material) {
-                  c.material.envMap = scene.environment;
-                  c.material.envMapIntensity =
-                    c.material.envMapIntensity || 1.0;
-                  c.material.needsUpdate = true;
-                }
-              });
-          } catch (e) {
-            // particleProto may not be declared yet; ignore
+        // If the particle prototype or particle groups already exist,
+        // assign the new envMap so cloned GLB particles get proper HDR reflections.
+        try {
+          if (typeof particleProto !== "undefined" && particleProto)
+            particleProto.traverse((c) => {
+              if (c.isMesh && c.material) {
+                c.material.envMap = scene.environment;
+                c.material.envMapIntensity = c.material.envMapIntensity || 1.0;
+                c.material.needsUpdate = true;
+              }
+            });
+        } catch (e) {
+          // particleProto may not be declared yet; ignore
+        }
+        try {
+          if (
+            typeof interactiveParticleProto !== "undefined" &&
+            interactiveParticleProto
+          )
+            interactiveParticleProto.traverse((c) => {
+              if (c.isMesh && c.material) {
+                c.material.envMap = scene.environment;
+                c.material.envMapIntensity = c.material.envMapIntensity || 1.0;
+                c.material.needsUpdate = true;
+              }
+            });
+        } catch (e) {
+          // interactiveParticleProto may not be declared yet; ignore
+        }
+
+        try {
+          if (combinedGroup) {
+            combinedGroup.traverse((child) => {
+              if (child.isMesh && child.material) {
+                child.material.envMap = scene.environment;
+                child.material.envMapIntensity =
+                  child.material.envMapIntensity || 1.0;
+                child.material.needsUpdate = true;
+              }
+            });
           }
-          try {
-            if (
-              typeof interactiveParticleProto !== "undefined" &&
-              interactiveParticleProto
-            )
-              interactiveParticleProto.traverse((c) => {
-                if (c.isMesh && c.material) {
-                  c.material.envMap = scene.environment;
-                  c.material.envMapIntensity =
-                    c.material.envMapIntensity || 1.0;
-                  c.material.needsUpdate = true;
+        } catch (e) {
+          // combinedGroup may not exist yet
+        }
+
+        const loader = new GLTFLoader();
+
+        modelInfos.forEach(({ name, position }) => {
+          loader.load(`/meshes/${name}`, (gltf) => {
+            const model = gltf.scene;
+            model.position.set(...position);
+            modelPositions.push(model.position.clone());
+            if (name === "Dot.glb") dotPosition.copy(model.position);
+
+            model.traverse((child) => {
+              if (child.isMesh) {
+                child.material = new THREE.MeshStandardMaterial({
+                  color: child.material.color || 0xffffff,
+                  map: child.material.map || null,
+                  envMap: webgl2Supported ? envMap : null,
+                  envMapIntensity: 1.5,
+                  metalness: 1.0,
+                  roughness: webgl2Supported ? 0.1 : 0.2,
+                });
+              }
+            });
+
+            scene.add(model);
+            modelsLoaded++;
+            if (modelsLoaded === modelInfos.length) {
+              // don't hide loader yet — wait for particle prototypes
+              const protosReady = !!(
+                particleProto ||
+                interactiveParticleProto ||
+                thirdParticleProto
+              );
+              if (protosReady) {
+                try {
+                  createCombinedParticleGroups();
+                } catch (e) {}
+                setLoading(false);
+                try {
+                  renderer.domElement.style.visibility = "visible";
+                } catch (e) {}
+              } else {
+                // keep loader visible; canvas remains hidden until prototypes load
+                console.log(
+                  "Models loaded; waiting for particle prototypes before showing scene",
+                );
+              }
+
+              // Calculate centroid of all models
+              const center = new THREE.Vector3();
+              modelPositions.forEach((pos) => center.add(pos));
+              center.divideScalar(modelPositions.length);
+              // store in outer-scoped sceneCenter for positioning particles/domes
+              sceneCenter.copy(center);
+              // if ambientGroup already exists, position it around the models' centroid
+              try {
+                if (ambientGroup) ambientGroup.position.copy(sceneCenter);
+                // If interactive particles were created before models finished
+                // loading, shift their base positions so the spherical shell
+                // centers on the models' centroid.
+                try {
+                  if (
+                    typeof interactiveGroup !== "undefined" &&
+                    interactiveGroup
+                  )
+                    interactiveGroup.children.forEach((c) =>
+                      c.position.add(sceneCenter),
+                    );
+                  if (
+                    typeof interactiveParticles !== "undefined" &&
+                    interactiveParticles
+                  )
+                    interactiveParticles.forEach((ip) => {
+                      if (ip.basePosition) ip.basePosition.add(sceneCenter);
+                      if (ip.mesh) ip.mesh.position.add(sceneCenter);
+                    });
+                } catch (e) {
+                  // ignore if interactiveGroup/interactiveParticles not yet defined
                 }
-              });
-          } catch (e) {
-            // interactiveParticleProto may not be declared yet; ignore
-          }
-
-          try {
-            if (combinedGroup) {
-              combinedGroup.traverse((child) => {
-                if (child.isMesh && child.material) {
-                  child.material.envMap = scene.environment;
-                  child.material.envMapIntensity =
-                    child.material.envMapIntensity || 1.0;
-                  child.material.needsUpdate = true;
-                }
-              });
-            }
-          } catch (e) {
-            // combinedGroup may not exist yet
-          }
-
-          const loader = new GLTFLoader();
-
-          modelInfos.forEach(({ name, position }) => {
-            loader.load(`/meshes/${name}`, (gltf) => {
-              const model = gltf.scene;
-              model.position.set(...position);
-              modelPositions.push(model.position.clone());
-              if (name === "Dot.glb") dotPosition.copy(model.position);
-
-              model.traverse((child) => {
-                if (child.isMesh) {
-                  child.material = new THREE.MeshStandardMaterial({
-                    color: child.material.color || 0xffffff,
-                    map: child.material.map || null,
-                    envMap: webgl2Supported ? envMap : null,
-                    envMapIntensity: 1.5,
-                    metalness: 1.0,
-                    roughness: webgl2Supported ? 0.1 : 0.2,
+                // If HDR env is ready, assign it to particle materials so they get metallic reflections
+                if (scene.environment) {
+                  [
+                    ambientGroup,
+                    typeof interactiveGroup !== "undefined"
+                      ? interactiveGroup
+                      : null,
+                  ].forEach((g) => {
+                    if (!g) return;
+                    g.traverse((child) => {
+                      if (child.isMesh && child.material) {
+                        child.material.envMap = scene.environment;
+                        child.material.needsUpdate = true;
+                      }
+                    });
                   });
                 }
-              });
+              } catch (e) {
+                // ignore if ambientGroup not defined yet
+              }
 
-              scene.add(model);
-              modelsLoaded++;
-              if (modelsLoaded === modelInfos.length) {
-                // don't hide loader yet — wait for particle prototypes
-                const protosReady = !!(
-                  particleProto ||
-                  interactiveParticleProto ||
-                  thirdParticleProto
-                );
-                if (protosReady) {
-                  try {
-                    createCombinedParticleGroups();
-                  } catch (e) {}
-                  setLoading(false);
-                  try {
-                    renderer.domElement.style.visibility = "visible";
-                  } catch (e) {}
-                } else {
-                  // keep loader visible; canvas remains hidden until prototypes load
-                  console.log(
-                    "Models loaded; waiting for particle prototypes before showing scene",
-                  );
-                }
+              // Wszystkie modele załadowane — teraz ustaw kamerę i animację
+              let skewAngle = THREE.MathUtils.degToRad(startSkewDeg);
+              const initialVerticalTilt =
+                THREE.MathUtils.degToRad(startVerticalTiltDeg);
+              // Offset the starting angle by 180° (π radians) to start from the opposite side
+              const angleOffset =
+                THREE.MathUtils.degToRad(startAngleDeg) + Math.PI;
+              const angleDelta = THREE.MathUtils.degToRad(angleDeltaDeg);
+              let verticalTiltDelta =
+                THREE.MathUtils.degToRad(verticalTiltDeltaDeg);
+              if (invertVertical) verticalTiltDelta = -verticalTiltDelta;
 
-                // Calculate centroid of all models
-                const center = new THREE.Vector3();
-                modelPositions.forEach((pos) => center.add(pos));
-                center.divideScalar(modelPositions.length);
-                // store in outer-scoped sceneCenter for positioning particles/domes
-                sceneCenter.copy(center);
-                // if ambientGroup already exists, position it around the models' centroid
-                try {
-                  if (ambientGroup) ambientGroup.position.copy(sceneCenter);
-                  // If interactive particles were created before models finished
-                  // loading, shift their base positions so the spherical shell
-                  // centers on the models' centroid.
-                  try {
-                    if (
-                      typeof interactiveGroup !== "undefined" &&
-                      interactiveGroup
-                    )
-                      interactiveGroup.children.forEach((c) =>
-                        c.position.add(sceneCenter),
-                      );
-                    if (
-                      typeof interactiveParticles !== "undefined" &&
-                      interactiveParticles
-                    )
-                      interactiveParticles.forEach((ip) => {
-                        if (ip.basePosition) ip.basePosition.add(sceneCenter);
-                        if (ip.mesh) ip.mesh.position.add(sceneCenter);
-                      });
-                  } catch (e) {
-                    // ignore if interactiveGroup/interactiveParticles not yet defined
-                  }
-                  // If HDR env is ready, assign it to particle materials so they get metallic reflections
-                  if (scene.environment) {
-                    [
-                      ambientGroup,
-                      typeof interactiveGroup !== "undefined"
-                        ? interactiveGroup
-                        : null,
-                    ].forEach((g) => {
-                      if (!g) return;
-                      g.traverse((child) => {
-                        if (child.isMesh && child.material) {
-                          child.material.envMap = scene.environment;
-                          child.material.needsUpdate = true;
-                        }
-                      });
+              // --- ENTRY ANIMATION LOGIC ---
+              const playScrollAnimations = () => {
+                // Animate skew (roll) value from startSkewDeg to 0 (0-70% scroll)
+                let skewObj = { value: skewAngle };
+                gsap.to(skewObj, {
+                  value: 0,
+                  scrollTrigger: {
+                    trigger: mount,
+                    start: "top top",
+                    end: "280%", // 70% of 400vh
+                    scrub: true,
+                  },
+                  onUpdate: () => {
+                    skewAngle = skewObj.value;
+                  },
+                });
+
+                // Animate each model's z position to 0 on scroll (0-70% scroll)
+                scene.children.forEach((child) => {
+                  if (child.isGroup || child.isMesh) {
+                    gsap.to(child.position, {
+                      z: 0,
+                      scrollTrigger: {
+                        trigger: mount,
+                        start: "top top",
+                        end: "280%", // 70% of 400vh
+                        scrub: true,
+                      },
                     });
                   }
-                } catch (e) {
-                  // ignore if ambientGroup not defined yet
+                });
+
+                // Camera animation: angle/tilt for 0-100% scroll (continuous, as before)
+                function updateCameraPosition(
+                  angleRad,
+                  verticalTiltRad,
+                  extra = {},
+                ) {
+                  // extra: {x, y, roll} offset for camera position and additional roll
+                  let extraX = extra.x || 0;
+                  let extraY = extra.y || 0;
+                  let extraRoll = extra.roll || 0; // rotation around Z axis (roll)
+                  const x = radius * Math.sin(angleRad) + extraX;
+                  const y = radius * Math.cos(verticalTiltRad) + extraY;
+                  const z = radius * Math.cos(angleRad);
+                  const camPos = new THREE.Vector3(
+                    center.x + x,
+                    center.y + y,
+                    center.z + z,
+                  );
+                  camera.position.copy(camPos);
+                  const up = new THREE.Vector3(0, 1, 0);
+                  const lookAtMatrix = new THREE.Matrix4();
+                  lookAtMatrix.lookAt(camPos, center, up);
+                  const quat = new THREE.Quaternion();
+                  quat.setFromRotationMatrix(lookAtMatrix);
+                  // Apply extra roll (rotation around Z axis, like tilting your head)
+                  if (extraRoll) {
+                    const rollQuat = new THREE.Quaternion();
+                    rollQuat.setFromAxisAngle(
+                      new THREE.Vector3(0, 0, 1),
+                      extraRoll,
+                    );
+                    quat.multiply(rollQuat);
+                  }
+                  // Apply skew (roll) as before
+                  const skewQuat = new THREE.Quaternion();
+                  skewQuat.setFromAxisAngle(
+                    new THREE.Vector3(0, 0, 1),
+                    -skewAngle,
+                  );
+                  quat.multiply(skewQuat);
+                  camera.quaternion.copy(quat);
                 }
 
-                // Wszystkie modele załadowane — teraz ustaw kamerę i animację
-                let skewAngle = THREE.MathUtils.degToRad(startSkewDeg);
-                const initialVerticalTilt =
-                  THREE.MathUtils.degToRad(startVerticalTiltDeg);
-                // Offset the starting angle by 180° (π radians) to start from the opposite side
-                const angleOffset =
-                  THREE.MathUtils.degToRad(startAngleDeg) + Math.PI;
-                const angleDelta = THREE.MathUtils.degToRad(angleDeltaDeg);
-                let verticalTiltDelta =
-                  THREE.MathUtils.degToRad(verticalTiltDeltaDeg);
-                if (invertVertical) verticalTiltDelta = -verticalTiltDelta;
+                updateCameraPosition(-angleOffset, initialVerticalTilt);
 
-                // --- ENTRY ANIMATION LOGIC ---
-                const playScrollAnimations = () => {
-                  // Animate skew (roll) value from startSkewDeg to 0 (0-70% scroll)
-                  let skewObj = { value: skewAngle };
-                  gsap.to(skewObj, {
-                    value: 0,
-                    scrollTrigger: {
-                      trigger: mount,
-                      start: "top top",
-                      end: "280%", // 70% of 400vh
-                      scrub: true,
-                    },
-                    onUpdate: () => {
-                      skewAngle = skewObj.value;
-                    },
-                  });
-
-                  // Animate each model's z position to 0 on scroll (0-70% scroll)
-                  scene.children.forEach((child) => {
-                    if (child.isGroup || child.isMesh) {
-                      gsap.to(child.position, {
-                        z: 0,
-                        scrollTrigger: {
-                          trigger: mount,
-                          start: "top top",
-                          end: "280%", // 70% of 400vh
-                          scrub: true,
-                        },
-                      });
-                    }
-                  });
-
-                  // Camera animation: angle/tilt for 0-100% scroll (continuous, as before)
-                  function updateCameraPosition(
-                    angleRad,
-                    verticalTiltRad,
-                    extra = {},
-                  ) {
-                    // extra: {x, y, roll} offset for camera position and additional roll
-                    let extraX = extra.x || 0;
-                    let extraY = extra.y || 0;
-                    let extraRoll = extra.roll || 0; // rotation around Z axis (roll)
-                    const x = radius * Math.sin(angleRad) + extraX;
-                    const y = radius * Math.cos(verticalTiltRad) + extraY;
-                    const z = radius * Math.cos(angleRad);
-                    const camPos = new THREE.Vector3(
-                      center.x + x,
-                      center.y + y,
-                      center.z + z,
-                    );
-                    camera.position.copy(camPos);
-                    const up = new THREE.Vector3(0, 1, 0);
-                    const lookAtMatrix = new THREE.Matrix4();
-                    lookAtMatrix.lookAt(camPos, center, up);
-                    const quat = new THREE.Quaternion();
-                    quat.setFromRotationMatrix(lookAtMatrix);
-                    // Apply extra roll (rotation around Z axis, like tilting your head)
-                    if (extraRoll) {
-                      const rollQuat = new THREE.Quaternion();
-                      rollQuat.setFromAxisAngle(
-                        new THREE.Vector3(0, 0, 1),
-                        extraRoll,
-                      );
-                      quat.multiply(rollQuat);
-                    }
-                    // Apply skew (roll) as before
-                    const skewQuat = new THREE.Quaternion();
-                    skewQuat.setFromAxisAngle(
-                      new THREE.Vector3(0, 0, 1),
-                      -skewAngle,
-                    );
-                    quat.multiply(skewQuat);
-                    camera.quaternion.copy(quat);
-                  }
-
-                  updateCameraPosition(-angleOffset, initialVerticalTilt);
-
-                  const orbit = {
-                    angle: -angleOffset, // start angle
-                    verticalTilt: initialVerticalTilt, // start vertical tilt
-                  };
-                  gsap.set(orbit, {
-                    angle: -angleOffset,
-                    verticalTilt: initialVerticalTilt,
-                  });
-                  // Animacja orbity przez cały scroll (0-100%)
-                  gsap.to(orbit, {
-                    id: "camera-orbit-1",
-                    angle: -angleOffset - Math.PI * 1.1, // rotate further right
-                    verticalTilt: Math.PI / 2 + Math.PI * 0.1, // tilt more forward
-                    scrollTrigger: {
-                      trigger: mount,
-                      start: "top top",
-                      end: "400%", // 100% of 400vh
-                      scrub: true,
-                      onUpdate: (self) => {
-                        let roll = 0;
-                        // Use self?.progress or fallback to ScrollTrigger's progress
-                        const progress =
-                          self && typeof self.progress === "number"
-                            ? self.progress
-                            : self &&
-                                self.scrollTrigger &&
-                                typeof self.scrollTrigger.progress === "number"
-                              ? self.scrollTrigger.progress
-                              : 0;
-                        if (progress > 0.55) {
-                          // tilt starts at 55%
-                          roll = -((progress - 0.55) / 0.45) * 0.35;
-                        }
-                        updateCameraPosition(orbit.angle, orbit.verticalTilt, {
-                          roll,
-                        });
-                      },
-                    },
+                const orbit = {
+                  angle: -angleOffset, // start angle
+                  verticalTilt: initialVerticalTilt, // start vertical tilt
+                };
+                gsap.set(orbit, {
+                  angle: -angleOffset,
+                  verticalTilt: initialVerticalTilt,
+                });
+                // Animacja orbity przez cały scroll (0-100%)
+                gsap.to(orbit, {
+                  id: "camera-orbit-1",
+                  angle: -angleOffset - Math.PI * 1.1, // rotate further right
+                  verticalTilt: Math.PI / 2 + Math.PI * 0.1, // tilt more forward
+                  scrollTrigger: {
+                    trigger: mount,
+                    start: "top top",
+                    end: "400%", // 100% of 400vh
+                    scrub: true,
                     onUpdate: (self) => {
                       let roll = 0;
+                      // Use self?.progress or fallback to ScrollTrigger's progress
                       const progress =
                         self && typeof self.progress === "number"
                           ? self.progress
@@ -415,58 +391,76 @@ export default function LogoAnimation({
                             ? self.scrollTrigger.progress
                             : 0;
                       if (progress > 0.55) {
+                        // tilt starts at 55%
                         roll = -((progress - 0.55) / 0.45) * 0.35;
                       }
                       updateCameraPosition(orbit.angle, orbit.verticalTilt, {
                         roll,
                       });
                     },
-                    onComplete: () => {
-                      ScrollTrigger.refresh();
-                    },
-                  });
-
-                  // Animate radius (zoom out) after 45% scroll, mocniej i wcześniej
-                  let radiusObj = {
-                    value: getResponsiveRadius(startRadius),
-                  };
-                  gsap.to(radiusObj, {
-                    value: getResponsiveRadius(startRadius * 1.35), // mocniejsze oddalenie
-                    scrollTrigger: {
-                      trigger: mount,
-                      start: "180%", // 45% of 400vh
-                      end: "400%", // 100%
-                      scrub: true,
-                    },
-                    ease: "power1.inOut",
-                    onUpdate: () => {
-                      radius = radiusObj.value;
-                    },
-                  });
-
-                  ScrollTrigger.refresh();
-                };
-
-                // --- ENTRY ANIMATION: Always play on mount, camera always scroll-synced ---
-                scene.children.forEach((child, i) => {
-                  if (child.isGroup || child.isMesh) {
-                    const origY = child.position.y;
-                    child.position.y = origY + 1; // start above
-                    gsap.to(child.position, {
-                      y: origY,
-                      duration: 1.1,
-                      delay: i * 0.08,
-                      ease: "power2.out",
+                  },
+                  onUpdate: (self) => {
+                    let roll = 0;
+                    const progress =
+                      self && typeof self.progress === "number"
+                        ? self.progress
+                        : self &&
+                            self.scrollTrigger &&
+                            typeof self.scrollTrigger.progress === "number"
+                          ? self.scrollTrigger.progress
+                          : 0;
+                    if (progress > 0.55) {
+                      roll = -((progress - 0.55) / 0.45) * 0.35;
+                    }
+                    updateCameraPosition(orbit.angle, orbit.verticalTilt, {
+                      roll,
                     });
-                  }
+                  },
+                  onComplete: () => {
+                    ScrollTrigger.refresh();
+                  },
                 });
-                // Always enable scroll-driven logic immediately
-                playScrollAnimations();
-              }
-            });
+
+                // Animate radius (zoom out) after 45% scroll, mocniej i wcześniej
+                let radiusObj = {
+                  value: getResponsiveRadius(startRadius),
+                };
+                gsap.to(radiusObj, {
+                  value: getResponsiveRadius(startRadius * 1.35), // mocniejsze oddalenie
+                  scrollTrigger: {
+                    trigger: mount,
+                    start: "180%", // 45% of 400vh
+                    end: "400%", // 100%
+                    scrub: true,
+                  },
+                  ease: "power1.inOut",
+                  onUpdate: () => {
+                    radius = radiusObj.value;
+                  },
+                });
+
+                ScrollTrigger.refresh();
+              };
+
+              // --- ENTRY ANIMATION: Always play on mount, camera always scroll-synced ---
+              scene.children.forEach((child, i) => {
+                if (child.isGroup || child.isMesh) {
+                  const origY = child.position.y;
+                  child.position.y = origY + 1; // start above
+                  gsap.to(child.position, {
+                    y: origY,
+                    duration: 1.1,
+                    delay: i * 0.08,
+                    ease: "power2.out",
+                  });
+                }
+              });
+              // Always enable scroll-driven logic immediately
+              playScrollAnimations();
+            }
           });
-        },
-      );
+        });
+      });
 
     // Usunięto poprzednie fioletowe tło shaderowe — zostaje tylko nowe tło (promień + particles)
 

@@ -325,6 +325,11 @@ export default function ProjectPage({ params }) {
     dateString = new Date(project.date.seconds * 1000).toLocaleDateString();
   }
 
+  // Prepare long description: prefer `fullDescription`, fallback to legacy `fullDesctiption`.
+  const longDescriptionText = project
+    ? ((project.fullDescription || project.fullDesctiption || "") + "").trim()
+    : "";
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#080808] text-[#f2f2f2] flex flex-col items-center justify-center">
@@ -522,7 +527,7 @@ export default function ProjectPage({ params }) {
               : `${whiteActive ? " extraordinary-animation-active" : ""}${
                   purpleActive ? " extraordinary-animation-active-purple" : ""
                 }${hideWhite ? " extraordinary-animation-hide-white" : ""}`
-        } glassmorphism w-full max-w-2xl mx-auto relative`}
+        } glassmorphism w-full md:max-w-[60vw] max-w-[90vw] mx-auto relative`}
         style={{
           opacity: inViewInfo ? 1 : 0,
           transform: inViewInfo ? "translateY(0)" : "translateY(40px)",
@@ -540,9 +545,11 @@ export default function ProjectPage({ params }) {
         <div className="text-lg md:text-xl text-center font-lexend font-light text-gray-300 mb-4">
           {project.shortDescription || "-"}
         </div>
-        <div className="whitespace-pre-line text-base md:text-lg font-lexend font-light text-[#f2f2f2]">
-          {project.fullDescription || project.fullDesctiption || "-"}
-        </div>
+        {longDescriptionText ? (
+          <div className="whitespace-pre-line text-base md:text-lg font-lexend font-light text-[#f2f2f2]">
+            {longDescriptionText}
+          </div>
+        ) : null}
 
         {/* WHITE PHASE borders + glow */}
         <div className="extraordinary-animation-border-top-white" />
@@ -703,6 +710,14 @@ export default function ProjectPage({ params }) {
                                 data-project-video
                                 src={url}
                                 controls={!isAuto}
+                                // prevent browser download/picture-in-picture/remote-playback UI
+                                controlsList={
+                                  !isAuto
+                                    ? "nodownload noremoteplayback"
+                                    : undefined
+                                }
+                                disablePictureInPicture
+                                disableRemotePlayback
                                 autoPlay={isAuto}
                                 muted={isAuto}
                                 loop={isAuto}

@@ -646,6 +646,7 @@ export default function ThreeFallbackScene({
     scene.add(volumetricCone);
 
     // Resize
+    let lastViewportWidth = window.innerWidth;
     function handleResize() {
       if (!mount) return;
       camera.aspect = mount.clientWidth / mount.clientHeight;
@@ -653,7 +654,10 @@ export default function ThreeFallbackScene({
       renderer.setSize(mount.clientWidth, mount.clientHeight);
       radius = getResponsiveRadius(startRadius);
       // no static glow scaling here; animate() computes exact world size per-frame
-      ScrollTrigger.refresh();
+      if (window.innerWidth !== lastViewportWidth) {
+        lastViewportWidth = window.innerWidth;
+        ScrollTrigger.refresh();
+      }
     }
     window.addEventListener("resize", handleResize);
     // Animacja z throttlingiem (~30 FPS)

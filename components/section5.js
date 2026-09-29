@@ -239,7 +239,7 @@ export default function Section5() {
                 }}
               >
                 {/* <AnimatedText text="Email" inView={inViewForm} as="span" /> */}
-                Email
+                E-mail
               </label>
               <input
                 type="email"
@@ -247,7 +247,7 @@ export default function Section5() {
                 name="email"
                 autoComplete="email"
                 className="text-[#f2f2f2] p-3 sm:p-4 md:p-5 w-full rounded-[3px] font-lexend font-light transition-colors duration-200 focus:outline-none placeholder-gray-400 sm:text-base md:text-lg lg:text-xl"
-                placeholder="Twój email"
+                placeholder="Twój e-mail"
                 style={{
                   border: "none",
                   boxShadow: "none",
@@ -371,7 +371,7 @@ export default function Section5() {
             className="w-10 h-10"
             style={{ display: "block" }}
           />
-          <span>Lub napisz do mnie na IG</span>
+          <span>Lub napisz do mnie na Instagramie</span>
         </a>
         {/* WHITE PHASE: border + glow elements */}
         <div className="extraordinary-animation-border-top-white" />
