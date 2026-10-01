@@ -4,11 +4,9 @@ import { useEffect } from "react";
 
 export default function DevTools() {
   useEffect(() => {
-    if (process.env.NODE_ENV === "development") {
-      import("eruda").then((eruda) => {
-        eruda.default.init();
-      });
-    }
+    import("eruda").then((eruda) => {
+      eruda.default.init();
+    });
   }, []);
 
   return null;
