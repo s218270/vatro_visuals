@@ -2,7 +2,7 @@
 // Użycie: scrollWithRAF(targetId, options)
 export function scrollWithRAF(
   targetId,
-  options = { behavior: "smooth", block: "start" }
+  options = { behavior: "smooth", block: "start" },
 ) {
   // Globalny lock na czas animacji scrolla
   if (window.__scrollWithRAFLock) {
@@ -11,9 +11,10 @@ export function scrollWithRAF(
   }
 
   if (typeof window === "undefined") return;
+  window.__scrollWithRAFLock = true;
   // Znajdź wrapper LogoAnimation
   const logoWrapper = document.querySelector(
-    ".h-\\[400vh\\], .h-\\[300vh\\], .h-\\[200vh\\]"
+    ".h-\\[400vh\\], .h-\\[300vh\\], .h-\\[200vh\\]",
   );
   let originalHeight = null;
   if (logoWrapper) {
@@ -60,6 +61,7 @@ export function scrollWithRAF(
           window.__scrollWithRAFLock = false;
         }
         restoreHeight();
+        return;
       }
       const rect = target.getBoundingClientRect();
       targetY = rect.top + window.scrollY;
@@ -76,11 +78,6 @@ export function scrollWithRAF(
       if (progress < 1) {
         requestAnimationFrame(animateScroll);
       } else {
-        // Dokończ scroll do sekcji
-        if (!scrollToTop && targetId !== null) {
-          const target = document.getElementById(targetId);
-          if (target) target.scrollIntoView(options);
-        }
         // Przywróć oryginalną wysokość LogoAnimation
         if (logoWrapper) {
           logoWrapper.style.height = originalHeight || "";
@@ -106,6 +103,23 @@ export function scrollWithRAF(
             }
             observer.disconnect();
           }, 1000);
+        }
+        // Po przywróceniu wysokości pozycja sekcji zmienia się o różnicę
+        // między 100vh a docelową wysokością wrappera.
+        if (!scrollToTop && targetId !== null) {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              const target = document.getElementById(targetId);
+              if (target) {
+                const targetY =
+                  target.getBoundingClientRect().top + window.scrollY;
+                window.scrollTo({ top: targetY, behavior: "auto" });
+              }
+              window.__scrollWithRAFLock = false;
+            });
+          });
+        } else {
+          window.__scrollWithRAFLock = false;
         }
         // Resetuj scrollTo w URL
         if (typeof window !== "undefined") {

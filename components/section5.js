@@ -362,7 +362,7 @@ export default function Section5() {
           href="https://www.instagram.com/vatro_visuals/"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full h-full flex items-center justify-center gap-4 text-[#f2f2f2] text-xl lg:text-2xl font-lexend"
+          className="w-full h-full flex items-center justify-center gap-4 text-[#f2f2f2] text-xl lg:text-2xl font-lexend p-4"
           style={{ textDecoration: "none" }}
         >
           <img
