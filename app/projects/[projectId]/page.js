@@ -139,6 +139,21 @@ export function AnimatedFrame({ children, className = "", style = {} }) {
   );
 }
 
+function LazyProjectMedia({ children }) {
+  const [ref, inView] = useElementInView(120);
+  const [hasBeenVisible, setHasBeenVisible] = useState(false);
+
+  useEffect(() => {
+    if (inView) setHasBeenVisible(true);
+  }, [inView]);
+
+  return (
+    <div ref={ref} style={hasBeenVisible ? undefined : { minHeight: 240 }}>
+      {hasBeenVisible ? children : null}
+    </div>
+  );
+}
+
 export default function ProjectPage({ params }) {
   const { projectId } = params;
   const [project, setProject] = useState(null);
@@ -633,121 +648,132 @@ export default function ProjectPage({ params }) {
                   ) : null}
 
                   <AnimatedFrame style={{ padding: 0 }}>
-                    <PreventDownloadWrapper className="w-full rounded-[3px] relative flex flex-col items-center">
-                      {!loaded.files[idx] && (
-                        <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-[#080808]/60">
-                          {typeof window !== "undefined" && isIOS() ? (
-                            <div
-                              style={{
-                                width: 48,
-                                height: 48,
-                                border: "6px solid #6a00d1",
-                                borderTop: "6px solid #f2f2f2",
-                                borderRadius: "50%",
-                                animation: "spin 1.2s linear infinite",
-                              }}
-                            />
-                          ) : (
-                            <video
-                              src="/Loading_WWW.webm"
-                              data-project-video
-                              autoPlay
-                              loop
-                              muted
-                              style={{
-                                width: 48,
-                                height: 48,
-                                objectFit: "contain",
-                                background: "none",
-                              }}
-                            />
-                          )}
-                          <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
-                        </div>
-                      )}
-
-                      {paths.map((p, j) => {
-                        const url = getUrl(p);
-                        let ext = "";
-                        if (url) {
-                          const match = url.match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
-                          ext = match ? match[1].toLowerCase() : "";
-                        }
-                        const typeField = types[j] || "";
-                        const isImageLocal =
-                          typeField === "image" ||
-                          ["jpg", "jpeg", "png", "webp", "gif", "svg"].includes(
-                            ext,
-                          );
-                        const isVideoLocal =
-                          typeField === "mp4" ||
-                          typeField === "mp4auto" ||
-                          ["mp4", "mov", "webm"].includes(ext);
-                        const isAuto = typeField === "mp4auto";
-
-                        return (
-                          <div key={j} className={j > 0 ? "w-full" : "w-full"}>
-                            {isImageLocal && url && (
-                              <img
-                                src={url}
-                                alt={
-                                  file.description || `File ${idx + 1}-${j + 1}`
-                                }
-                                loading="lazy"
-                                decoding="async"
-                                onLoad={() => handleFileImageLoad(idx)}
-                                onError={() => handleFileImageLoad(idx)}
+                    <LazyProjectMedia>
+                      <PreventDownloadWrapper className="w-full rounded-[3px] relative flex flex-col items-center">
+                        {!loaded.files[idx] && (
+                          <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-[#080808]/60">
+                            {typeof window !== "undefined" && isIOS() ? (
+                              <div
                                 style={{
-                                  width: "100%",
-                                  height: "auto",
-                                  borderRadius: "inherit",
-                                  display: "block",
+                                  width: 48,
+                                  height: 48,
+                                  border: "6px solid #6a00d1",
+                                  borderTop: "6px solid #f2f2f2",
+                                  borderRadius: "50%",
+                                  animation: "spin 1.2s linear infinite",
                                 }}
                               />
-                            )}
-                            {isVideoLocal && url && (
+                            ) : (
                               <video
+                                src="/Loading_WWW.webm"
                                 data-project-video
-                                src={url}
-                                controls={!isAuto}
-                                // prevent browser download/picture-in-picture/remote-playback UI
-                                controlsList={
-                                  !isAuto
-                                    ? "nodownload noremoteplayback"
-                                    : undefined
-                                }
-                                disablePictureInPicture
-                                disableRemotePlayback
-                                autoPlay={isAuto}
-                                muted={isAuto}
-                                loop={isAuto}
-                                playsInline
-                                // ensure webkit inline playback on iOS
-                                webkitPlaysInline
-                                preload="metadata"
+                                autoPlay
+                                loop
+                                muted
                                 style={{
-                                  width: "100%",
-                                  height: "auto",
-                                  borderRadius: "inherit",
+                                  width: 48,
+                                  height: 48,
+                                  objectFit: "contain",
+                                  background: "none",
                                 }}
-                                onLoadedData={() => handleFileImageLoad(idx)}
-                                onError={() => handleFileImageLoad(idx)}
                               />
                             )}
-                            {!isImageLocal && !isVideoLocal && url && (
-                              <a
-                                href={url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="mt-2"
-                              >
-                                Zobacz plik
-                              </a>
-                            )}
+                            <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
                           </div>
-                        );
-                      })}
-                    </PreventDownloadWrapper>
+                        )}
+
+                        {paths.map((p, j) => {
+                          const url = getUrl(p);
+                          let ext = "";
+                          if (url) {
+                            const match = url.match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
+                            ext = match ? match[1].toLowerCase() : "";
+                          }
+                          const typeField = types[j] || "";
+                          const isImageLocal =
+                            typeField === "image" ||
+                            [
+                              "jpg",
+                              "jpeg",
+                              "png",
+                              "webp",
+                              "gif",
+                              "svg",
+                            ].includes(ext);
+                          const isVideoLocal =
+                            typeField === "mp4" ||
+                            typeField === "mp4auto" ||
+                            ["mp4", "mov", "webm"].includes(ext);
+                          const isAuto = typeField === "mp4auto";
+
+                          return (
+                            <div
+                              key={j}
+                              className={j > 0 ? "w-full" : "w-full"}
+                            >
+                              {isImageLocal && url && (
+                                <img
+                                  src={url}
+                                  alt={
+                                    file.description ||
+                                    `File ${idx + 1}-${j + 1}`
+                                  }
+                                  loading="lazy"
+                                  decoding="async"
+                                  onLoad={() => handleFileImageLoad(idx)}
+                                  onError={() => handleFileImageLoad(idx)}
+                                  style={{
+                                    width: "100%",
+                                    height: "auto",
+                                    borderRadius: "inherit",
+                                    display: "block",
+                                  }}
+                                />
+                              )}
+                              {isVideoLocal && url && (
+                                <video
+                                  data-project-video
+                                  src={url}
+                                  controls={!isAuto}
+                                  // prevent browser download/picture-in-picture/remote-playback UI
+                                  controlsList={
+                                    !isAuto
+                                      ? "nodownload noremoteplayback"
+                                      : undefined
+                                  }
+                                  disablePictureInPicture
+                                  disableRemotePlayback
+                                  autoPlay={isAuto}
+                                  muted={isAuto}
+                                  loop={isAuto}
+                                  playsInline
+                                  // ensure webkit inline playback on iOS
+                                  webkitPlaysInline
+                                  preload="metadata"
+                                  style={{
+                                    width: "100%",
+                                    height: "auto",
+                                    borderRadius: "inherit",
+                                  }}
+                                  onLoadedData={() => handleFileImageLoad(idx)}
+                                  onError={() => handleFileImageLoad(idx)}
+                                />
+                              )}
+                              {!isImageLocal && !isVideoLocal && url && (
+                                <a
+                                  href={url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="mt-2"
+                                >
+                                  Zobacz plik
+                                </a>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </PreventDownloadWrapper>
+                    </LazyProjectMedia>
                   </AnimatedFrame>
                 </li>
               );

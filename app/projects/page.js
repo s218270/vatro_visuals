@@ -197,6 +197,7 @@ export default function ProjectsPage() {
                             src={thumbSrc}
                             alt={project.title}
                             fill
+                            loading="lazy"
                             className="object-cover"
                             sizes="(max-width: 768px) 100vw, 33vw"
                             onLoad={() => handleImageLoad(idx)}
