@@ -78,9 +78,22 @@ export function scrollWithRAF(
       if (progress < 1) {
         requestAnimationFrame(animateScroll);
       } else {
+        const target =
+          !scrollToTop && targetId !== null
+            ? document.getElementById(targetId)
+            : null;
+        const targetTopBeforeRestore = target?.getBoundingClientRect().top;
         // Przywróć oryginalną wysokość LogoAnimation
         if (logoWrapper) {
           logoWrapper.style.height = originalHeight || "";
+          // Wymuś przeliczenie układu i wyrównaj viewport przed repaintem.
+          if (target && targetTopBeforeRestore !== undefined) {
+            const targetTopAfterRestore = target.getBoundingClientRect().top;
+            window.scrollBy({
+              top: targetTopAfterRestore - targetTopBeforeRestore,
+              behavior: "auto",
+            });
+          }
           // MutationObserver pilnujący wysokości
           const expectedHeights = ["400vh", "300vh", "200vh"];
           const observer = new MutationObserver(() => {
@@ -104,23 +117,7 @@ export function scrollWithRAF(
             observer.disconnect();
           }, 1000);
         }
-        // Po przywróceniu wysokości pozycja sekcji zmienia się o różnicę
-        // między 100vh a docelową wysokością wrappera.
-        if (!scrollToTop && targetId !== null) {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              const target = document.getElementById(targetId);
-              if (target) {
-                const targetY =
-                  target.getBoundingClientRect().top + window.scrollY;
-                window.scrollTo({ top: targetY, behavior: "auto" });
-              }
-              window.__scrollWithRAFLock = false;
-            });
-          });
-        } else {
-          window.__scrollWithRAFLock = false;
-        }
+        window.__scrollWithRAFLock = false;
         // Resetuj scrollTo w URL
         if (typeof window !== "undefined") {
           const url = new URL(window.location);
