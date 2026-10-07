@@ -349,11 +349,9 @@ export default function ProjectPage({ params }) {
     return (
       <div className="min-h-screen bg-[#080808] text-[#f2f2f2] flex flex-col items-center justify-center">
         <div className="flex items-center justify-center w-full h-full z-20">
-          <video
-            src="/Loading_WWW.webm"
-            autoPlay
-            loop
-            muted
+          <img
+            src="/Loading_WWW.gif"
+            alt=""
             style={{
               width: 96,
               height: 96,
@@ -438,23 +436,21 @@ export default function ProjectPage({ params }) {
           {!loaded.main && (
             <div className="flex items-center justify-center w-full h-full z-20 fixed inset-0">
               {typeof window !== "undefined" && isIOS() ? (
-                <div
+                <img
+                  src="/Loading_WWW.gif"
+                  alt=""
                   style={{
                     width: 96,
                     height: 96,
-                    border: "6px solid #6a00d1",
-                    borderTop: "6px solid #f2f2f2",
-                    borderRadius: "50%",
-                    animation: "spin 1.2s linear infinite",
+                    objectFit: "contain",
+                    background: "none",
                   }}
                 />
               ) : (
-                <video
-                  src="/Loading_WWW.webm"
+                <img
+                  src="/Loading_WWW.gif"
+                  alt=""
                   data-project-video
-                  autoPlay
-                  loop
-                  muted
                   style={{
                     width: 96,
                     height: 96,
@@ -653,23 +649,21 @@ export default function ProjectPage({ params }) {
                         {!loaded.files[idx] && (
                           <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-[#080808]/60">
                             {typeof window !== "undefined" && isIOS() ? (
-                              <div
+                              <img
+                                src="/Loading_WWW.gif"
+                                alt=""
                                 style={{
                                   width: 48,
                                   height: 48,
-                                  border: "6px solid #6a00d1",
-                                  borderTop: "6px solid #f2f2f2",
-                                  borderRadius: "50%",
-                                  animation: "spin 1.2s linear infinite",
+                                  objectFit: "contain",
+                                  background: "none",
                                 }}
                               />
                             ) : (
-                              <video
-                                src="/Loading_WWW.webm"
+                              <img
+                                src="/Loading_WWW.gif"
+                                alt=""
                                 data-project-video
-                                autoPlay
-                                loop
-                                muted
                                 style={{
                                   width: 48,
                                   height: 48,

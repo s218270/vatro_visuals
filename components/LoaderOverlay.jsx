@@ -16,22 +16,20 @@ export default function LoaderOverlay() {
     <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#080808] bg-opacity-90 pointer-events-auto">
       {isClient ? (
         isIos ? (
-          <div
+          <img
+            src="/Loading_WWW.gif"
+            alt=""
             style={{
               width: 96,
               height: 96,
-              border: "6px solid #6a00d1",
-              borderTop: "6px solid #f2f2f2",
-              borderRadius: "50%",
-              animation: "spin 1.2s linear infinite",
+              objectFit: "contain",
+              background: "none",
             }}
           />
         ) : (
-          <video
-            src="/Loading_WWW.webm"
-            autoPlay
-            loop
-            muted
+          <img
+            src="/Loading_WWW.gif"
+            alt=""
             style={{
               width: 96,
               height: 96,
@@ -41,9 +39,6 @@ export default function LoaderOverlay() {
           />
         )
       ) : null}
-      <style>{`
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-      `}</style>
     </div>
   );
 }

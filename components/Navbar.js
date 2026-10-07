@@ -12,8 +12,7 @@ export default function Navbar({ scrollToSection }) {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isIOS, setIsIOS] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
-  const [videoLoaded, setVideoLoaded] = useState(false);
-  const videoRef = useRef(null);
+  const [gifFailed, setGifFailed] = useState(false);
   const router = useRouter();
   let pathname = typeof window !== "undefined" ? window.location.pathname : "/";
 
@@ -171,13 +170,6 @@ export default function Navbar({ scrollToSection }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY, isMobile]);
 
-  // Ensure videoLoaded is set if video is already loaded (e.g. from cache)
-  useEffect(() => {
-    if (!videoLoaded && videoRef.current && videoRef.current.readyState >= 3) {
-      setVideoLoaded(true);
-    }
-  }, [videoLoaded]);
-
   return (
     <nav
       className={`fixed z-50 top-0 w-full h-[80px] text-[#f2f2f2] text-lg flex items-center flex-row text-nowrap glassmorphism transition-transform duration-300${
@@ -256,49 +248,21 @@ export default function Navbar({ scrollToSection }) {
           </span>
         ) : (
           <div className="logo-wrapper relative w-24 h-20 ml-4 cursor-pointer bg-transparent">
-            {/* Always render video, but hide it until loaded. Show SVG only if not loaded. */}
-            <video
-              ref={videoRef}
-              autoPlay
-              loop
-              muted
+            <img
+              src="/Logo_WWW.gif"
+              alt=""
               className="w-24 h-full object-cover ml-4 md:ml-0 left-auto right-auto cursor-pointer bg-transparent"
               style={{
                 position: "absolute",
                 top: 0,
                 left: 0,
                 zIndex: 2,
-                display: videoLoaded ? "block" : "none",
+                display: "block",
               }}
               onClick={() => handleNav(null)}
-              onLoadedData={() => setVideoLoaded(true)}
-              onError={() => setVideoLoaded(true)}
-            >
-              <source src="/Logo_WWW_2.webm" type="video/webm" />
-              {/* Inline SVG fallback for video (for browsers that don't support webm) */}
-              <svg
-                version="1.1"
-                id="Logo_Merged"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-                x="0px"
-                y="0px"
-                viewBox="0 0 2000 2000"
-                style={{
-                  enableBackground: "new 0 0 2000 2000",
-                  width: "100%",
-                  height: "100%",
-                }}
-                xmlSpace="preserve"
-              >
-                <style type="text/css">{`.st0{fill:#F2F2F2;}`}</style>
-                <path
-                  className="st0"
-                  d="M1237.5,1512.32l95-54.85v-109.7l-95,54.85V1512.32z M1427.5,1402.62l483.61-279.21L1047.5,624.8v997.22 l95-54.85V789.35l578.61,334.06l-293.61,169.52V1402.62z M857.5,1457.47l-578.61-334.06l110.02-63.52v-109.7L88.89,1123.41 l863.61,498.61V624.8l-95,54.85V1457.47z M1721.11,794.32L1000,377.98L278.89,794.32v109.7L952.5,515.11l47.5-27.43l47.5,27.43 l673.61,388.91V794.32z"
-                />
-              </svg>
-            </video>
-            {!videoLoaded && (
+              onError={() => setGifFailed(true)}
+            />
+            {gifFailed && (
               <span
                 className="w-24 h-full left-auto right-auto cursor-pointer bg-transparent"
                 style={{
