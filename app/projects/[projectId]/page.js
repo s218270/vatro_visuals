@@ -503,8 +503,8 @@ export default function ProjectPage({ params }) {
                 backgroundRepeat: "repeat-y",
                 backgroundSize: "100% auto",
                 backgroundPosition: "center top",
-                filter: "blur(120px)",
-                transform: "scale(1.06)",
+                filter: "blur(220px)",
+                transform: "scale(1.14)",
                 transition: "opacity 0.4s ease-in-out, transform 0.4s",
                 opacity: loaded.main ? 1 : 0,
                 zIndex: 1,
@@ -741,8 +741,7 @@ export default function ProjectPage({ params }) {
                                   muted={isAuto}
                                   loop={isAuto}
                                   playsInline
-                                  // ensure webkit inline playback on iOS
-                                  webkitPlaysInline
+                                  webkitplaysinline=""
                                   preload="metadata"
                                   style={{
                                     width: "100%",
