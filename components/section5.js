@@ -371,7 +371,7 @@ export default function Section5() {
             className="w-10 h-10"
             style={{ display: "block" }}
           />
-          <span>Lub napisz do mnie na Instagramie</span>
+          <span>Napisz do mnie na Instagramie</span>
         </a>
         {/* WHITE PHASE: border + glow elements */}
         <div className="extraordinary-animation-border-top-white" />

@@ -18,6 +18,8 @@ export default function Section4({ scrollToSection }) {
   const [visibleCount, setVisibleCount] = useState(3);
 
   const carouselRef = useRef(null);
+  const swipeStartRef = useRef(null);
+  const suppressCardClickRef = useRef(false);
   const [slideDirection, setSlideDirection] = useState(null); // 'next' | 'prev' | null
   const [displayed, setDisplayed] = useState([]);
   const buffer = 2; // liczba slotów bufora po każdej stronie
@@ -215,6 +217,36 @@ export default function Section4({ scrollToSection }) {
     setTransitionIndex(activeIndex); // start from current
   };
 
+  const handleTouchStart = (event) => {
+    const touch = event.touches[0];
+    swipeStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleTouchEnd = (event) => {
+    const start = swipeStartRef.current;
+    const touch = event.changedTouches[0];
+    swipeStartRef.current = null;
+
+    if (!start || !touch) return;
+
+    const horizontalDistance = touch.clientX - start.x;
+    const verticalDistance = touch.clientY - start.y;
+
+    if (
+      Math.abs(horizontalDistance) < 50 ||
+      Math.abs(horizontalDistance) <= Math.abs(verticalDistance)
+    ) {
+      return;
+    }
+
+    suppressCardClickRef.current = true;
+    if (horizontalDistance < 0) {
+      handleNext();
+    } else {
+      handlePrev();
+    }
+  };
+
   // Automatyczne przesuwanie karuzeli co 5 sekund (pauza na hover)
   //   useEffect(() => {
   useEffect(() => {
@@ -372,10 +404,13 @@ export default function Section4({ scrollToSection }) {
           <div className="relative w-full">
             <div
               ref={carouselRef}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
               style={{
                 width: "100%",
                 height: "20rem",
                 position: "relative",
+                touchAction: "pan-y",
                 // left: "500px",
               }}
             >
@@ -446,6 +481,11 @@ export default function Section4({ scrollToSection }) {
                       className="w-full h-full"
                       style={{ display: "block", height: "100%" }}
                       onClick={(e) => {
+                        if (suppressCardClickRef.current) {
+                          e.preventDefault();
+                          suppressCardClickRef.current = false;
+                          return;
+                        }
                         // For left-click without modifiers, force a full navigation
                         // immediately so the browser switches pages on slow networks.
                         if (
@@ -605,7 +645,7 @@ export default function Section4({ scrollToSection }) {
               })}
             </div>
 
-            <div className="absolute inset-x-0 top-4 h-[14.5rem] min-[900px]:top-[24rem] min-[900px]:h-auto min-[900px]:-translate-y-1/2 flex items-center justify-between px-4 z-30 pointer-events-none">
+            <div className="absolute inset-x-0 top-[24rem] h-auto -translate-y-1/2 flex items-center justify-between px-4 z-30 pointer-events-none">
               <div className="pointer-events-auto">
                 <GlitchButton
                   onClick={handlePrev}
@@ -683,7 +723,7 @@ export default function Section4({ scrollToSection }) {
                       padding: "16px 24px",
                     }}
                   >
-                    Zobacz wszystkie projekty
+                    Projekty
                   </Link>
                 }
               />

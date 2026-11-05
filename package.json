@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "populate-media-dimensions": "node scripts/populate-project-media-dimensions.js"
   },
   "dependencies": {
     "@splinetool/react-spline": "^4.0.0",

@@ -139,7 +139,7 @@ export function AnimatedFrame({ children, className = "", style = {} }) {
   );
 }
 
-function LazyProjectMedia({ children }) {
+function LazyProjectMedia({ children, aspectRatio, debugInfo }) {
   const [ref, inView] = useElementInView(120);
   const [hasBeenVisible, setHasBeenVisible] = useState(false);
 
@@ -147,8 +147,43 @@ function LazyProjectMedia({ children }) {
     if (inView) setHasBeenVisible(true);
   }, [inView]);
 
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return undefined;
+
+    const logSize = (event) => {
+      const { width, height } = element.getBoundingClientRect();
+      console.info("[Project media frame]", {
+        event,
+        fileIndex: debugInfo.fileIndex,
+        reservedAspectRatio: aspectRatio || null,
+        expectedMediaDimensions: debugInfo.mediaDimensions,
+        rendered: hasBeenVisible,
+        width: Math.round(width),
+        height: Math.round(height),
+        actualAspectRatio:
+          width > 0 ? Number((width / height).toFixed(4)) : null,
+      });
+    };
+
+    logSize("frame mounted");
+    if (!aspectRatio) {
+      console.warn("[Project media frame] Missing width/height metadata", {
+        fileIndex: debugInfo.fileIndex,
+        expectedMediaDimensions: debugInfo.mediaDimensions,
+      });
+    }
+
+    const resizeObserver = new ResizeObserver(() => logSize("frame resized"));
+    resizeObserver.observe(element);
+    return () => resizeObserver.disconnect();
+  }, [aspectRatio, debugInfo, hasBeenVisible]);
+
   return (
-    <div ref={ref} style={hasBeenVisible ? undefined : { minHeight: 240 }}>
+    <div
+      ref={ref}
+      style={aspectRatio ? { aspectRatio, minHeight: 240 } : { minHeight: 240 }}
+    >
       {hasBeenVisible ? children : null}
     </div>
   );
@@ -200,6 +235,25 @@ export default function ProjectPage({ params }) {
       if (prev.files[idx]) return prev; // already loaded, avoid state update
       const nextFiles = prev.files.map((v, i) => (i === idx ? true : v));
       return { ...prev, files: nextFiles };
+    });
+  }
+
+  function logMediaLayout(event, fileIndex, mediaIndex, expectedDimensions) {
+    const media = event.currentTarget;
+    const { width, height } = media.getBoundingClientRect();
+    const naturalWidth = media.videoWidth || media.naturalWidth || null;
+    const naturalHeight = media.videoHeight || media.naturalHeight || null;
+    console.info("[Project media loaded]", {
+      fileIndex,
+      mediaIndex,
+      tagName: media.tagName,
+      expectedDimensions: expectedDimensions || null,
+      naturalWidth,
+      naturalHeight,
+      renderedWidth: Math.round(width),
+      renderedHeight: Math.round(height),
+      renderedAspectRatio:
+        width > 0 ? Number((width / height).toFixed(4)) : null,
     });
   }
 
@@ -612,6 +666,34 @@ export default function ProjectPage({ params }) {
                 }
               }
 
+              const storedMediaDimensions = Array.isArray(file.mediaDimensions)
+                ? file.mediaDimensions
+                : [];
+              const mediaDimensions = paths.map((_, mediaIndex) => {
+                const suffix = mediaIndex === 0 ? "" : mediaIndex;
+                const width = Number(file[`width${suffix}`]);
+                const height = Number(file[`height${suffix}`]);
+                const stored = storedMediaDimensions[mediaIndex];
+                return width > 0 && height > 0
+                  ? { width, height }
+                  : stored?.width > 0 && stored?.height > 0
+                    ? stored
+                    : null;
+              });
+              const hasAllDimensions = mediaDimensions.every(Boolean);
+              const storedHeightRatio = Number(file.heightRatio);
+              const frameAspectRatio =
+                storedHeightRatio > 0
+                  ? 1 / storedHeightRatio
+                  : hasAllDimensions
+                    ? 1 /
+                      mediaDimensions.reduce(
+                        (heightRatio, dimensions) =>
+                          heightRatio + dimensions.height / dimensions.width,
+                        0,
+                      )
+                    : undefined;
+
               const getUrl = (p) => {
                 if (!p) return null;
                 if (typeof p === "string") return p;
@@ -644,7 +726,13 @@ export default function ProjectPage({ params }) {
                   ) : null}
 
                   <AnimatedFrame style={{ padding: 0 }}>
-                    <LazyProjectMedia>
+                    <LazyProjectMedia
+                      aspectRatio={frameAspectRatio}
+                      debugInfo={{
+                        fileIndex: idx,
+                        mediaDimensions,
+                      }}
+                    >
                       <PreventDownloadWrapper className="w-full rounded-[3px] relative flex flex-col items-center">
                         {!loaded.files[idx] && (
                           <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-[#080808]/60">
@@ -699,11 +787,19 @@ export default function ProjectPage({ params }) {
                             typeField === "mp4auto" ||
                             ["mp4", "mov", "webm"].includes(ext);
                           const isAuto = typeField === "mp4auto";
+                          const dimensions = mediaDimensions[j];
 
                           return (
                             <div
                               key={j}
                               className={j > 0 ? "w-full" : "w-full"}
+                              style={
+                                dimensions
+                                  ? {
+                                      aspectRatio: `${dimensions.width} / ${dimensions.height}`,
+                                    }
+                                  : undefined
+                              }
                             >
                               {isImageLocal && url && (
                                 <img
@@ -714,7 +810,12 @@ export default function ProjectPage({ params }) {
                                   }
                                   loading="lazy"
                                   decoding="async"
-                                  onLoad={() => handleFileImageLoad(idx)}
+                                  width={dimensions?.width}
+                                  height={dimensions?.height}
+                                  onLoad={(event) => {
+                                    handleFileImageLoad(idx);
+                                    logMediaLayout(event, idx, j, dimensions);
+                                  }}
                                   onError={() => handleFileImageLoad(idx)}
                                   style={{
                                     width: "100%",
@@ -743,11 +844,16 @@ export default function ProjectPage({ params }) {
                                   playsInline
                                   webkitplaysinline=""
                                   preload="metadata"
+                                  width={dimensions?.width}
+                                  height={dimensions?.height}
                                   style={{
                                     width: "100%",
-                                    height: "auto",
+                                    height: dimensions ? "100%" : "auto",
                                     borderRadius: "inherit",
                                   }}
+                                  onLoadedMetadata={(event) =>
+                                    logMediaLayout(event, idx, j, dimensions)
+                                  }
                                   onLoadedData={() => handleFileImageLoad(idx)}
                                   onError={() => handleFileImageLoad(idx)}
                                 />
