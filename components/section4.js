@@ -546,7 +546,7 @@ export default function Section4({ scrollToSection }) {
                                   }}
                                 >
                                   <img
-                                    src="/Loading_WWW.gif"
+                                    src="/Loading_WWW-ezgif.com-optimize (1).gif"
                                     alt=""
                                     style={{
                                       width: 96,
@@ -559,7 +559,7 @@ export default function Section4({ scrollToSection }) {
                                 </div>
                               ) : (
                                 <img
-                                  src="/Loading_WWW.gif"
+                                  src="/Loading_WWW-ezgif.com-optimize (1).gif"
                                   alt=""
                                   style={{
                                     width: 96,

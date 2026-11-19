@@ -161,7 +161,7 @@ export default function ProjectsPage() {
                       <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-[#080808]/60">
                         {typeof window !== "undefined" && isIOS() ? (
                           <img
-                            src="/Loading_WWW.gif"
+                            src="/Loading_WWW-ezgif.com-optimize (1).gif"
                             alt=""
                             style={{
                               width: 96,
@@ -172,7 +172,7 @@ export default function ProjectsPage() {
                           />
                         ) : (
                           <img
-                            src="/Loading_WWW.gif"
+                            src="/Loading_WWW-ezgif.com-optimize (1).gif"
                             alt=""
                             style={{
                               width: 96,

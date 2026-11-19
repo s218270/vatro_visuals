@@ -249,8 +249,9 @@ export default function Navbar({ scrollToSection }) {
         ) : (
           <div className="logo-wrapper relative w-24 h-20 ml-4 cursor-pointer bg-transparent">
             <img
-              src="/Logo_WWW.gif"
+              src="/Logo_WWW1-ezgif.com-optimize.gif"
               alt=""
+              fetchpriority="high"
               className="w-24 h-full object-cover ml-4 md:ml-0 left-auto right-auto cursor-pointer bg-transparent"
               style={{
                 position: "absolute",

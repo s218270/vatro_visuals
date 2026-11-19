@@ -17,7 +17,7 @@ export default function LoaderOverlay() {
       {isClient ? (
         isIos ? (
           <img
-            src="/Loading_WWW.gif"
+            src="/Loading_WWW-ezgif.com-optimize (1).gif"
             alt=""
             style={{
               width: 96,
@@ -28,7 +28,7 @@ export default function LoaderOverlay() {
           />
         ) : (
           <img
-            src="/Loading_WWW.gif"
+            src="/Loading_WWW-ezgif.com-optimize (1).gif"
             alt=""
             style={{
               width: 96,
