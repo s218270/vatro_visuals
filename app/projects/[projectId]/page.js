@@ -139,52 +139,50 @@ export function AnimatedFrame({ children, className = "", style = {} }) {
   );
 }
 
-function LazyProjectMedia({ children, aspectRatio, debugInfo }) {
-  const [ref, inView] = useElementInView(120);
+function LazyProjectMedia({ children, dimensions, enabled, loading }) {
+  const ref = useRef(null);
   const [hasBeenVisible, setHasBeenVisible] = useState(false);
 
   useEffect(() => {
-    if (inView) setHasBeenVisible(true);
-  }, [inView]);
-
-  useEffect(() => {
     const element = ref.current;
-    if (!element) return undefined;
-
-    const logSize = (event) => {
-      const { width, height } = element.getBoundingClientRect();
-      console.info("[Project media frame]", {
-        event,
-        fileIndex: debugInfo.fileIndex,
-        reservedAspectRatio: aspectRatio || null,
-        expectedMediaDimensions: debugInfo.mediaDimensions,
-        rendered: hasBeenVisible,
-        width: Math.round(width),
-        height: Math.round(height),
-        actualAspectRatio:
-          width > 0 ? Number((width / height).toFixed(4)) : null,
-      });
-    };
-
-    logSize("frame mounted");
-    if (!aspectRatio) {
-      console.warn("[Project media frame] Missing width/height metadata", {
-        fileIndex: debugInfo.fileIndex,
-        expectedMediaDimensions: debugInfo.mediaDimensions,
-      });
+    if (!element || !enabled || hasBeenVisible) return;
+    if (!("IntersectionObserver" in window)) {
+      setHasBeenVisible(true);
+      return;
     }
-
-    const resizeObserver = new ResizeObserver(() => logSize("frame resized"));
-    resizeObserver.observe(element);
-    return () => resizeObserver.disconnect();
-  }, [aspectRatio, debugInfo, hasBeenVisible]);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasBeenVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "800px 0px" },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [enabled, hasBeenVisible]);
 
   return (
     <div
       ref={ref}
-      style={aspectRatio ? { aspectRatio, minHeight: 240 } : { minHeight: 240 }}
+      className="w-full relative"
+      style={
+        dimensions
+          ? { aspectRatio: `${dimensions.width} / ${dimensions.height}` }
+          : undefined
+      }
     >
       {hasBeenVisible ? children : null}
+      {hasBeenVisible && loading && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#080808]/60 pointer-events-none">
+          <img
+            src="/Loading_WWW-ezgif.com-optimize (1).gif"
+            alt=""
+            style={{ width: 48, height: 48, objectFit: "contain" }}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -192,12 +190,14 @@ function LazyProjectMedia({ children, aspectRatio, debugInfo }) {
 export default function ProjectPage({ params }) {
   const { projectId } = params;
   const [project, setProject] = useState(null);
-  const [loaded, setLoaded] = useState({ main: false, files: [] });
+  const [loaded, setLoaded] = useState({ main: false });
   const [isLoading, setIsLoading] = useState(true);
+  const [resolvedMedia, setResolvedMedia] = useState({});
 
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
+      setResolvedMedia({});
       // Fetch only the single project document to avoid loading all docs
       const found = await getProjectById(projectId);
       setProject(found);
@@ -208,11 +208,7 @@ export default function ProjectPage({ params }) {
       console.log("Fetched project:", found);
       // eslint-disable-next-line no-console
       console.log("Project files:", found?.files);
-      setLoaded({
-        main: false,
-        files:
-          found && found.files ? Array(found.files.length).fill(false) : [],
-      });
+      setLoaded({ main: false });
       setIsLoading(false);
     }
     fetchData();
@@ -229,13 +225,11 @@ export default function ProjectPage({ params }) {
   function handleMainImageLoad() {
     setLoaded((prev) => ({ ...prev, main: true }));
   }
-  function handleFileImageLoad(idx) {
-    setLoaded((prev) => {
-      if (!prev || !prev.files) return prev;
-      if (prev.files[idx]) return prev; // already loaded, avoid state update
-      const nextFiles = prev.files.map((v, i) => (i === idx ? true : v));
-      return { ...prev, files: nextFiles };
-    });
+  function handleMediaResolved(fileIndex, mediaIndex) {
+    const key = `${fileIndex}-${mediaIndex}`;
+    setResolvedMedia((previous) =>
+      previous[key] ? previous : { ...previous, [key]: true },
+    );
   }
 
   function logMediaLayout(event, fileIndex, mediaIndex, expectedDimensions) {
@@ -428,6 +422,8 @@ export default function ProjectPage({ params }) {
       </div>
     );
   }
+
+  let waitingForUnknownMedia = false;
 
   return (
     <div
@@ -680,20 +676,6 @@ export default function ProjectPage({ params }) {
                     ? stored
                     : null;
               });
-              const hasAllDimensions = mediaDimensions.every(Boolean);
-              const storedHeightRatio = Number(file.heightRatio);
-              const frameAspectRatio =
-                storedHeightRatio > 0
-                  ? 1 / storedHeightRatio
-                  : hasAllDimensions
-                    ? 1 /
-                      mediaDimensions.reduce(
-                        (heightRatio, dimensions) =>
-                          heightRatio + dimensions.height / dimensions.width,
-                        0,
-                      )
-                    : undefined;
-
               const getUrl = (p) => {
                 if (!p) return null;
                 if (typeof p === "string") return p;
@@ -726,153 +708,124 @@ export default function ProjectPage({ params }) {
                   ) : null}
 
                   <AnimatedFrame style={{ padding: 0 }}>
-                    <LazyProjectMedia
-                      aspectRatio={frameAspectRatio}
-                      debugInfo={{
-                        fileIndex: idx,
-                        mediaDimensions,
-                      }}
+                    <PreventDownloadWrapper
+                      className="w-full rounded-[3px] relative flex flex-col items-center"
+                      style={
+                        Number(file.heightRatio) > 0
+                          ? { aspectRatio: 1 / Number(file.heightRatio) }
+                          : undefined
+                      }
                     >
-                      <PreventDownloadWrapper className="w-full rounded-[3px] relative flex flex-col items-center">
-                        {!loaded.files[idx] && (
-                          <div className="flex items-center justify-center w-full h-full z-20 absolute left-0 top-0 right-0 bottom-0 bg-[#080808]/60">
-                            {typeof window !== "undefined" && isIOS() ? (
+                      {paths.map((p, j) => {
+                        const url = getUrl(p);
+                        let ext = "";
+                        if (url) {
+                          const match = url.match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
+                          ext = match ? match[1].toLowerCase() : "";
+                        }
+                        const typeField = types[j] || "";
+                        const isImageLocal =
+                          typeField === "image" ||
+                          ["jpg", "jpeg", "png", "webp", "gif", "svg"].includes(
+                            ext,
+                          );
+                        const isVideoLocal =
+                          typeField === "mp4" ||
+                          typeField === "mp4auto" ||
+                          ["mp4", "mov", "webm"].includes(ext);
+                        const isAuto = typeField === "mp4auto";
+                        const dimensions = mediaDimensions[j];
+                        const enabled = !waitingForUnknownMedia;
+                        if (
+                          url &&
+                          (isImageLocal || isVideoLocal) &&
+                          !dimensions &&
+                          !resolvedMedia[`${idx}-${j}`]
+                        ) {
+                          waitingForUnknownMedia = true;
+                        }
+
+                        return (
+                          <LazyProjectMedia
+                            key={j}
+                            dimensions={dimensions}
+                            enabled={enabled}
+                            loading={
+                              !!url &&
+                              (isImageLocal || isVideoLocal) &&
+                              !resolvedMedia[`${idx}-${j}`]
+                            }
+                          >
+                            {isImageLocal && url && (
                               <img
-                                src="/Loading_WWW-ezgif.com-optimize (1).gif"
-                                alt=""
-                                style={{
-                                  width: 48,
-                                  height: 48,
-                                  objectFit: "contain",
-                                  background: "none",
+                                src={url}
+                                alt={
+                                  file.description || `File ${idx + 1}-${j + 1}`
+                                }
+                                loading="eager"
+                                decoding="async"
+                                width={dimensions?.width}
+                                height={dimensions?.height}
+                                onLoad={(event) => {
+                                  handleMediaResolved(idx, j);
+                                  logMediaLayout(event, idx, j, dimensions);
                                 }}
-                              />
-                            ) : (
-                              <img
-                                src="/Loading_WWW-ezgif.com-optimize (1).gif"
-                                alt=""
-                                data-project-video
+                                onError={() => handleMediaResolved(idx, j)}
                                 style={{
-                                  width: 48,
-                                  height: 48,
-                                  objectFit: "contain",
-                                  background: "none",
+                                  width: "100%",
+                                  height: "auto",
+                                  borderRadius: "inherit",
+                                  display: "block",
                                 }}
                               />
                             )}
-                            <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
-                          </div>
-                        )}
-
-                        {paths.map((p, j) => {
-                          const url = getUrl(p);
-                          let ext = "";
-                          if (url) {
-                            const match = url.match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
-                            ext = match ? match[1].toLowerCase() : "";
-                          }
-                          const typeField = types[j] || "";
-                          const isImageLocal =
-                            typeField === "image" ||
-                            [
-                              "jpg",
-                              "jpeg",
-                              "png",
-                              "webp",
-                              "gif",
-                              "svg",
-                            ].includes(ext);
-                          const isVideoLocal =
-                            typeField === "mp4" ||
-                            typeField === "mp4auto" ||
-                            ["mp4", "mov", "webm"].includes(ext);
-                          const isAuto = typeField === "mp4auto";
-                          const dimensions = mediaDimensions[j];
-
-                          return (
-                            <div
-                              key={j}
-                              className={j > 0 ? "w-full" : "w-full"}
-                              style={
-                                dimensions
-                                  ? {
-                                      aspectRatio: `${dimensions.width} / ${dimensions.height}`,
-                                    }
-                                  : undefined
-                              }
-                            >
-                              {isImageLocal && url && (
-                                <img
-                                  src={url}
-                                  alt={
-                                    file.description ||
-                                    `File ${idx + 1}-${j + 1}`
-                                  }
-                                  loading="lazy"
-                                  decoding="async"
-                                  width={dimensions?.width}
-                                  height={dimensions?.height}
-                                  onLoad={(event) => {
-                                    handleFileImageLoad(idx);
-                                    logMediaLayout(event, idx, j, dimensions);
-                                  }}
-                                  onError={() => handleFileImageLoad(idx)}
-                                  style={{
-                                    width: "100%",
-                                    height: "auto",
-                                    borderRadius: "inherit",
-                                    display: "block",
-                                  }}
-                                />
-                              )}
-                              {isVideoLocal && url && (
-                                <video
-                                  data-project-video
-                                  src={url}
-                                  controls={!isAuto}
-                                  // prevent browser download/picture-in-picture/remote-playback UI
-                                  controlsList={
-                                    !isAuto
-                                      ? "nodownload noremoteplayback"
-                                      : undefined
-                                  }
-                                  disablePictureInPicture
-                                  disableRemotePlayback
-                                  autoPlay={isAuto}
-                                  muted={isAuto}
-                                  loop={isAuto}
-                                  playsInline
-                                  webkitplaysinline=""
-                                  preload="metadata"
-                                  width={dimensions?.width}
-                                  height={dimensions?.height}
-                                  style={{
-                                    width: "100%",
-                                    height: dimensions ? "100%" : "auto",
-                                    borderRadius: "inherit",
-                                  }}
-                                  onLoadedMetadata={(event) =>
-                                    logMediaLayout(event, idx, j, dimensions)
-                                  }
-                                  onLoadedData={() => handleFileImageLoad(idx)}
-                                  onError={() => handleFileImageLoad(idx)}
-                                />
-                              )}
-                              {!isImageLocal && !isVideoLocal && url && (
-                                <a
-                                  href={url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="mt-2"
-                                >
-                                  Zobacz plik
-                                </a>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </PreventDownloadWrapper>
-                    </LazyProjectMedia>
+                            {isVideoLocal && url && (
+                              <video
+                                data-project-video
+                                src={url}
+                                controls={!isAuto}
+                                // prevent browser download/picture-in-picture/remote-playback UI
+                                controlsList={
+                                  !isAuto
+                                    ? "nodownload noremoteplayback"
+                                    : undefined
+                                }
+                                disablePictureInPicture
+                                disableRemotePlayback
+                                autoPlay={isAuto}
+                                muted={isAuto}
+                                loop={isAuto}
+                                playsInline
+                                webkitplaysinline=""
+                                preload="metadata"
+                                width={dimensions?.width}
+                                height={dimensions?.height}
+                                style={{
+                                  width: "100%",
+                                  height: dimensions ? "100%" : "auto",
+                                  borderRadius: "inherit",
+                                }}
+                                onLoadedMetadata={(event) => {
+                                  handleMediaResolved(idx, j);
+                                  logMediaLayout(event, idx, j, dimensions);
+                                }}
+                                onError={() => handleMediaResolved(idx, j)}
+                              />
+                            )}
+                            {!isImageLocal && !isVideoLocal && url && (
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-2"
+                              >
+                                Zobacz plik
+                              </a>
+                            )}
+                          </LazyProjectMedia>
+                        );
+                      })}
+                    </PreventDownloadWrapper>
                   </AnimatedFrame>
                 </li>
               );
