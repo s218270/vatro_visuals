@@ -10,8 +10,6 @@ export default function Section4({ scrollToSection }) {
   const [activeIndex, setActiveIndex] = useState(1);
   const [transitionIndex, setTransitionIndex] = useState(1); // for animation
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [backgroundImage, setBackgroundImage] = useState("");
-  const [nextBackgroundImage, setNextBackgroundImage] = useState("");
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [projects, setProjects] = useState([]);
 
@@ -179,22 +177,12 @@ export default function Section4({ scrollToSection }) {
   }
 
   // Reset animation on hover for carousel cards
-  function handleCardMouseEnter(index, item) {
+  function handleCardMouseEnter(index) {
     setHoveredIndex(index);
-    setNextBackgroundImage(getImageUrl(item.mainImage));
     if (borderRefs.current[index]) {
       resetBorderAnimation({ current: borderRefs.current[index] });
     }
   }
-
-  // Update background image to center visible project when no card is hovered
-  useEffect(() => {
-    if (hoveredIndex === null && projects.length > 0) {
-      const centerIdx =
-        (activeIndex + getCenteredItemIndex()) % projects.length;
-      setNextBackgroundImage(getImageUrl(projects[centerIdx]?.mainImage) || "");
-    }
-  }, [hoveredIndex, activeIndex, projects, visibleCount, getCenteredItemIndex]);
 
   // Reset animation on hover for nav buttons
   function handleNavButtonMouseEnter(idx) {
@@ -302,11 +290,6 @@ export default function Section4({ scrollToSection }) {
     // eslint-disable-next-line
   }, [projects.length, isTransitioning, visibleCount]);
 
-  // Calculate centered item index (musi być przed JSX!)
-  function getCenteredItemIndex() {
-    return Math.floor(visibleCount / 2);
-  }
-
   // Resetuj loaded jeśli zmienia się liczba projektów lub widocznych slotów
   //   useEffect(() => {
   //     setLoaded(Array(displayed.length).fill(false));
@@ -375,22 +358,6 @@ export default function Section4({ scrollToSection }) {
           background: "linear-gradient(to top, #080808 0%, transparent 100%)",
         }}
       />
-      {/* Additional background layer for smooth transition */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: `linear-gradient(rgba(8, 8, 8, 0.5), rgba(8, 8, 8, 0.5)), url(${nextBackgroundImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          opacity:
-            nextBackgroundImage && nextBackgroundImage !== backgroundImage
-              ? 1
-              : 0,
-          transition: "opacity 0.5s ease-in-out",
-          filter: "blur(6px)",
-        }}
-      />
       <div className="z-50 w-full flex flex-col items-center justify-center">
         <h1 className="text-[#f2f2f2] text-[48px] lg:text-[72px] w-full text-center mb-8">
           Projekty
@@ -398,7 +365,7 @@ export default function Section4({ scrollToSection }) {
 
         {/* Carousel Container */}
         <div className="w-full max-w-6xl mx-auto relative flex flex-col items-center">
-          {/* Navigation buttons will sit below the carousel in normal flow */}
+          {/* Navigation buttons are centered beside the carousel items */}
 
           {/* --- NOWA KARUZELA --- */}
           <div className="relative w-full">
@@ -463,18 +430,8 @@ export default function Section4({ scrollToSection }) {
                       boxSizing: "border-box",
                       transform: `translateX(${slotWidth * pos}%)`,
                     }}
-                    onMouseEnter={() => handleCardMouseEnter(i, project)}
-                    onMouseLeave={() => {
-                      setHoveredIndex(null);
-                      setNextBackgroundImage(
-                        getImageUrl(
-                          projects[
-                            (activeIndex + getCenteredItemIndex()) %
-                              projects.length
-                          ]?.mainImage,
-                        ) || "",
-                      );
-                    }}
+                    onMouseEnter={() => handleCardMouseEnter(i)}
+                    onMouseLeave={() => setHoveredIndex(null)}
                   >
                     <Link
                       href={`/projects/${project.id}`}
@@ -643,56 +600,75 @@ export default function Section4({ scrollToSection }) {
                   </div>
                 );
               })}
+
+              <div
+                className="absolute h-auto -translate-y-1/2 flex items-center justify-between z-30 pointer-events-none max-xl:inset-x-0 max-xl:px-4 xl:left-[-4rem] xl:right-[-4rem]"
+                style={{ top: "calc(50% - 1.75rem)" }}
+              >
+                <div
+                  className="pointer-events-auto"
+                  style={{
+                    outline: "2px solid #f2f2f2",
+                    outlineOffset: "-2px",
+                    borderRadius: 3,
+                    boxShadow: "0 0 30px 2px rgba(242, 242, 242, 0.25)",
+                  }}
+                >
+                  <GlitchButton
+                    onClick={handlePrev}
+                    text={
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="2"
+                        stroke="currentColor"
+                        className="w-6 h-6 text-[#f2f2f2]"
+                        style={{ transform: "rotate(90deg)" }}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    }
+                  />
+                </div>
+                <div
+                  className="pointer-events-auto"
+                  style={{
+                    outline: "2px solid #f2f2f2",
+                    outlineOffset: "-2px",
+                    borderRadius: 3,
+                    boxShadow: "0 0 30px 2px rgba(242, 242, 242, 0.25)",
+                  }}
+                >
+                  <GlitchButton
+                    onClick={handleNext}
+                    text={
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="2"
+                        stroke="currentColor"
+                        className="w-6 h-6 text-[#f2f2f2]"
+                        style={{ transform: "rotate(-90deg)" }}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    }
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="absolute inset-x-0 top-[24rem] h-auto -translate-y-1/2 flex items-center justify-between px-4 z-30 pointer-events-none">
-              <div className="pointer-events-auto">
-                <GlitchButton
-                  onClick={handlePrev}
-                  text={
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="2"
-                      stroke="currentColor"
-                      className="w-6 h-6 text-[#f2f2f2]"
-                      style={{ transform: "rotate(90deg)" }}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  }
-                />
-              </div>
-              <div className="pointer-events-auto">
-                <GlitchButton
-                  onClick={handleNext}
-                  text={
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="2"
-                      stroke="currentColor"
-                      className="w-6 h-6 text-[#f2f2f2]"
-                      style={{ transform: "rotate(-90deg)" }}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="w-full flex justify-center items-center z-20 h-32">
+            <div className="w-full flex justify-center items-center z-20 h-16">
               <GlitchButton
                 styles={{
                   padding: "0",
@@ -723,7 +699,7 @@ export default function Section4({ scrollToSection }) {
                       padding: "16px 24px",
                     }}
                   >
-                    Projekty
+                    Wszystkie
                   </Link>
                 }
               />

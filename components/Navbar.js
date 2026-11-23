@@ -251,7 +251,7 @@ export default function Navbar({ scrollToSection }) {
             <img
               src="/Logo_WWW1-ezgif.com-optimize.gif"
               alt=""
-              fetchpriority="high"
+              fetchPriority="high"
               className="w-24 h-full object-cover ml-4 md:ml-0 left-auto right-auto cursor-pointer bg-transparent"
               style={{
                 position: "absolute",

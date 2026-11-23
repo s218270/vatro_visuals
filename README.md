@@ -24,17 +24,17 @@ A personal portfolio website for **Vatro Visuals**, a computer graphics artist s
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | [Next.js 14](https://nextjs.org/) |
-| Styling | [Tailwind CSS](https://tailwindcss.com/) |
-| Animations | [GSAP](https://greensock.com/gsap/), [react-scroll-parallax](https://react-scroll-parallax.damnthat.tv/) |
-| 3D | [Three.js](https://threejs.org/), [Spline](https://spline.design/) |
-| Database | [Firebase Firestore](https://firebase.google.com/docs/firestore) |
-| Storage | [Firebase Storage](https://firebase.google.com/docs/storage) |
-| Image optimization | [Sharp](https://sharp.pixelplumbing.com/) |
-| Deployment | [Vercel](https://vercel.com/) |
-| Fonts | Geist Sans & Geist Mono (local) |
+| Layer              | Technology                                                                                               |
+| ------------------ | -------------------------------------------------------------------------------------------------------- |
+| Framework          | [Next.js 14](https://nextjs.org/)                                                                        |
+| Styling            | [Tailwind CSS](https://tailwindcss.com/)                                                                 |
+| Animations         | [GSAP](https://greensock.com/gsap/), [react-scroll-parallax](https://react-scroll-parallax.damnthat.tv/) |
+| 3D                 | [Three.js](https://threejs.org/), [Spline](https://spline.design/)                                       |
+| Database           | [Firebase Firestore](https://firebase.google.com/docs/firestore)                                         |
+| Storage            | [Firebase Storage](https://firebase.google.com/docs/storage)                                             |
+| Image optimization | [Sharp](https://sharp.pixelplumbing.com/)                                                                |
+| Deployment         | [Vercel](https://vercel.com/)                                                                            |
+| Fonts              | Geist Sans & Geist Mono (local)                                                                          |
 
 ---
 
@@ -63,11 +63,9 @@ vatro_visuals/
 │   ├── getProjects.js         # Fetch projects from Firestore
 │   └── getProjectById.js      # Fetch a single project by ID
 ├── config/
-│   ├── firebaseConfig.js      # Firebase initialization
-│   └── carousel-config.js     # Static carousel configuration
+│   └── firebaseConfig.js      # Firebase initialization
 ├── utils/
 │   ├── scrollWithRAF.js       # Smooth scroll with requestAnimationFrame
-│   ├── scrollWithObserver.js  # Scroll helper using IntersectionObserver
 │   └── logoUtils.js           # Logo animation utilities
 └── public/                    # Static assets (images, videos, SVGs, favicon)
 ```
@@ -124,12 +122,12 @@ npm run start
 
 ## Available Scripts
 
-| Script | Description |
-|---|---|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
+| Script          | Description              |
+| --------------- | ------------------------ |
+| `npm run dev`   | Start development server |
+| `npm run build` | Build for production     |
+| `npm run start` | Start production server  |
+| `npm run lint`  | Run ESLint               |
 
 ---
 

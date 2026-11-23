@@ -1,0 +1,1 @@
+self.__REACT_LOADABLE_MANIFEST="{\"app\\\\page.js -> ../components/section3\":{\"id\":\"app\\\\page.js -> ../components/section3\",\"files\":[\"static/chunks/_app-pages-browser_components_section3_js.js\"]},\"app\\\\page.js -> ../components/section4\":{\"id\":\"app\\\\page.js -> ../components/section4\",\"files\":[\"static/chunks/_app-pages-browser_components_section4_js.js\"]}}"
