@@ -103,10 +103,10 @@ export default function LogoAnimation({
 
     // Model info (reverse z positions for all models)
     const modelInfos = [
-      { name: "V.glb", position: [-0.002, 0, 0] },
-      { name: "A.glb", position: [0.002, 0, -0.1] },
-      { name: "Dot.glb", position: [0, 0, -0.2] },
-      { name: "T.glb", position: [0, 0, 0.1] },
+      { name: "V_123.glb", position: [-0.002, 0, 0] },
+      { name: "A_123.glb", position: [0.002, 0, -0.1] },
+      { name: "Dot_123.glb", position: [0, 0, -0.2] },
+      { name: "T_123.glb", position: [0, 0, 0.1] },
     ];
 
     const dotPosition = new THREE.Vector3();

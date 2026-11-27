@@ -14,10 +14,9 @@ const geistMono = localFont({
 });
 
 export const metadata = {
-  title:
-    "Vatro Visuals – Portfolio grafika komputerowego | 3D, animacja, branding",
+  title: "VatroVisuals - Graphic & Motion Designer",
   description:
-    "Portfolio grafika komputerowego Vatro_Visuals. Projekty 3D, animacje, branding, motion design, grafika użytkowa. Zobacz realizacje i skontaktuj się!",
+    "Cześć! Nazywam się Piotr vatro_visuals Doniek. Jestem motion designerem i grafikiem, który zamienia pomysły w angażujące formy wizualne.",
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
@@ -27,7 +26,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="pl">
       <head>
         <meta
           name="google-site-verification"
@@ -35,13 +34,10 @@ export default function RootLayout({ children }) {
         />
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>
-          Vatro Visuals – Portfolio grafika komputerowego | 3D, animacja,
-          branding
-        </title>
+        <title>VatroVisuals - Graphic &amp; Motion Designer</title>
         <meta
           name="description"
-          content="Portfolio grafika komputerowego Vatro_Visuals. Projekty 3D, animacje, branding, motion design, grafika użytkowa. Zobacz realizacje i skontaktuj się!"
+          content="Cześć! Nazywam się Piotr vatro_visuals Doniek. Jestem motion designerem i grafikiem, który zamienia pomysły w angażujące formy wizualne."
         />
         <meta name="author" content="Vatro_Visuals" />
         <meta
@@ -55,7 +51,7 @@ export default function RootLayout({ children }) {
         <meta property="og:type" content="website" />
         <meta
           property="og:title"
-          content="Vatro Visuals – Portfolio grafika komputerowego | 3D, animacja, branding"
+          content="VatroVisuals - Graphic &amp; Motion Designer"
         />
         {/* Favicons: prefer /favicon.ico, keep PNG as fallback for apple/touch */}
         <link rel="icon" href="/favicon.ico" />
@@ -81,7 +77,7 @@ export default function RootLayout({ children }) {
         {/* Inline SVG removed; using versioned PNG favicons instead */}
         <meta
           property="og:description"
-          content="Portfolio grafika komputerowego Vatro_Visuals. Projekty 3D, animacje, branding, motion design, grafika użytkowa. Zobacz realizacje i skontaktuj się!"
+          content="Cześć! Nazywam się Piotr vatro_visuals Doniek. Jestem motion designerem i grafikiem, który zamienia pomysły w angażujące formy wizualne."
         />
         <meta property="og:url" content="https://vatro-visuals.vercel.app/" />
         <meta
@@ -92,11 +88,11 @@ export default function RootLayout({ children }) {
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:title"
-          content="Vatro Visuals – Portfolio grafika komputerowego | 3D, animacja, branding"
+          content="VatroVisuals - Graphic &amp; Motion Designer"
         />
         <meta
           name="twitter:description"
-          content="Portfolio grafika komputerowego Vatro_Visuals. Projekty 3D, animacje, branding, motion design, grafika użytkowa. Zobacz realizacje i skontaktuj się!"
+          content="Cześć! Nazywam się Piotr vatro_visuals Doniek. Jestem motion designerem i grafikiem, który zamienia pomysły w angażujące formy wizualne."
         />
         <meta
           name="twitter:image"

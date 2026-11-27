@@ -38,7 +38,6 @@ export default function ThreeFallbackScene({
     });
     renderer.setSize(mount.clientWidth, mount.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
     // Usuń wszystkie dzieci mount przed dodaniem canvas
     while (mount.firstChild) {
       mount.removeChild(mount.firstChild);
@@ -48,42 +47,62 @@ export default function ThreeFallbackScene({
     try {
       renderer.domElement.style.visibility = "hidden";
     } catch (e) {}
-    // Lighting (identycznie jak w fallbacku z LogoAnimation.jsx)
-    const ambient = new THREE.AmbientLight(0xffffff, 12.0);
-    const hemi = new THREE.HemisphereLight(0xffffff, 0xccccff, 8.0);
-    const dir1 = new THREE.DirectionalLight(0xffffff, 4.0);
-    dir1.position.set(0, 10, 10);
-    dir1.castShadow = false;
-    const dir2 = new THREE.DirectionalLight(0xffffff, 4.5);
-    dir2.position.set(10, 10, -10);
-    dir2.castShadow = false;
-    const dir3 = new THREE.DirectionalLight(0xffffff, 4.5);
-    dir3.position.set(-10, 10, 10);
-    dir3.castShadow = false;
-    const dir4 = new THREE.DirectionalLight(0xffffff, 3.5);
-    dir4.position.set(0, -10, -10);
-    dir4.castShadow = false;
-    const dir5 = new THREE.DirectionalLight(0xffffff, 4.5);
-    dir5.position.set(0, 0, 15);
-    dir5.castShadow = false;
-    const dir6 = new THREE.DirectionalLight(0xffffff, 4.5);
-    dir6.position.set(0, 0, -15);
-    dir6.castShadow = false;
-    scene.add(ambient);
-    scene.add(hemi);
-    scene.add(dir1);
-    scene.add(dir2);
-    scene.add(dir3);
-    scene.add(dir4);
-    scene.add(dir5);
-    scene.add(dir6);
-    renderer.toneMappingExposure = 2.2;
+    // Oświetlenie jak na desktopie (LogoAnimation.jsx)
+    const ambient = new THREE.AmbientLight(0xffffff, 1.2);
+    const spot = new THREE.SpotLight(0xffffff, 2.5);
+    spot.position.set(10, 10, 10);
+    scene.add(ambient, spot);
+
+    // Mapa odbić z PNG zamiast HDR; materiały bez własnego envMap używają scene.environment
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    scene.environmentIntensity = 1.5;
+    let envReady = false;
+    let modelsReady = false;
+    // Scena pojawia się dopiero gdy są i modele, i mapa odbić (inaczej są czarne)
+    function revealWhenReady() {
+      if (!envReady || !modelsReady) return;
+      setFallbackLoading(false);
+      try {
+        removePrimitivePlaceholders();
+        renderer.domElement.style.visibility = "visible";
+      } catch (e) {}
+      scene.children.forEach((child, i) => {
+        if (child.isGroup || child.isMesh) {
+          const origY = child.position.y;
+          child.position.y = origY + 1;
+          gsap.to(child.position, {
+            y: origY,
+            duration: 1.1,
+            delay: i * 0.08,
+            ease: "power2.out",
+          });
+        }
+      });
+    }
+    new THREE.TextureLoader().load(
+      encodeURI("/Metal_Texture_HDRI.jpg"),
+      (tex) => {
+        tex.mapping = THREE.EquirectangularReflectionMapping;
+        tex.colorSpace = THREE.SRGBColorSpace;
+        const envRT = pmremGenerator.fromEquirectangular(tex);
+        scene.environment = envRT.texture;
+        tex.dispose();
+        pmremGenerator.dispose();
+        envReady = true;
+        revealWhenReady();
+      },
+      undefined,
+      () => {
+        envReady = true;
+        revealWhenReady();
+      },
+    );
     // Model info
     const modelInfos = [
-      { name: "V.glb", position: [-0.002, 0, 0] },
-      { name: "A.glb", position: [0.002, 0, -0.1] },
-      { name: "Dot.glb", position: [0, 0, -0.2] },
-      { name: "T.glb", position: [0, 0, 0.1] },
+      { name: "V_123.glb", position: [-0.002, 0, 0] },
+      { name: "A_123.glb", position: [0.002, 0, -0.1] },
+      { name: "Dot_123.glb", position: [0, 0, -0.2] },
+      { name: "T_123.glb", position: [0, 0, 0.1] },
     ];
     const dotPosition = new THREE.Vector3();
     const modelPositions = [];
@@ -181,14 +200,14 @@ export default function ThreeFallbackScene({
         const model = gltf.scene;
         model.position.set(...position);
         modelPositions.push(model.position.clone());
-        if (name === "Dot.glb") dotPosition.copy(model.position);
+        if (name === "Dot_123.glb") dotPosition.copy(model.position);
         model.traverse((child) => {
           if (child.isMesh) {
             // Wymuś jasny metaliczny materiał w fallbacku
             child.material = new THREE.MeshStandardMaterial({
-              color: 0xe0e0e0,
+              color: 0xffffff,
               metalness: 1.0,
-              roughness: 0.15,
+              roughness: 0.1,
               envMap: null,
               envMapIntensity: 0.0,
             });
@@ -201,7 +220,6 @@ export default function ThreeFallbackScene({
             child.material.vertexColors = false;
             child.material.depthWrite = true;
             child.material.depthTest = true;
-            child.material.side = THREE.DoubleSide;
             child.material.needsUpdate = true;
             child.castShadow = false;
             child.receiveShadow = false;
@@ -210,11 +228,8 @@ export default function ThreeFallbackScene({
         scene.add(model);
         modelsLoaded++;
         if (modelsLoaded === modelInfos.length) {
-          setFallbackLoading(false);
-          try {
-            removePrimitivePlaceholders();
-            renderer.domElement.style.visibility = "visible";
-          } catch (e) {}
+          modelsReady = true;
+          revealWhenReady();
           // --- Synchronizuj animację z główną sceną ---
           const center = new THREE.Vector3();
           modelPositions.forEach((pos) => center.add(pos));
@@ -364,19 +379,7 @@ export default function ThreeFallbackScene({
             },
           });
 
-          // 5. ENTRY ANIMATION: Always play on mount, camera always scroll-synced
-          scene.children.forEach((child, i) => {
-            if (child.isGroup || child.isMesh) {
-              const origY = child.position.y;
-              child.position.y = origY + 1;
-              gsap.to(child.position, {
-                y: origY,
-                duration: 1.1,
-                delay: i * 0.08,
-                ease: "power2.out",
-              });
-            }
-          });
+          // 5. ENTRY ANIMATION startuje w revealWhenReady, gdy scena jest widoczna
           ScrollTrigger.refresh();
         }
       });

@@ -106,7 +106,7 @@ function AboutCard({ inView, omnieRef }) {
             whiteSpace: "normal",
           }}
         >
-          Cześć! Nazywam się Piotr <b>vatro_visuals</b> Doniek. Jestem{" "}
+          Cześć! Nazywam się Piotr <b>VatroVisuals</b> Doniek. Jestem{" "}
           <b>motion designerem</b> i <b>grafikiem</b>, który zamienia pomysły w
           angażujące formy wizualne. Uwielbiam tworzyć dynamiczne animacje,
           eksperymentować z formą i szukać najlepszych sposobów na
